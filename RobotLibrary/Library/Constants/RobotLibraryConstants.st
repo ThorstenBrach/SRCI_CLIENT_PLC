@@ -26,7 +26,7 @@ VAR_GLOBAL CONSTANT
   /// Bit 5-7 : Major version = Breaking change (0..07)
   SRCIVersion             : VersionStruct := ( MajorVersion := 1, MinorVersion := 5, PatchVersion := 0); // ST-FIX PLC library still says 1.3.0, but implements SRCI 1.5 (SDK: SRCI_VERSION 1.5)
   /// Version of the PLC library
-  PLCLibraryVersion       : VersionStruct := ( MajorVersion := 0, MinorVersion := 0, PatchVersion := 49);
+  PLCLibraryVersion       : VersionStruct := ( MajorVersion := 1, MinorVersion := 5, PatchVersion := 3);
   /// Minimal axes group ID
   AXES_GROUP_ID_MIN       : BYTE := 0;  
   /// Maximal axes groups ID
@@ -49,6 +49,9 @@ VAR_GLOBAL CONSTANT
   BUFFER_CMD              : UDINT := 2;
   /// Maximal length of additional text 
   MAX_ADD_TEXT_LENGTH     : DINT := 40;
+  /// ST-FIX F108: characters of a log line per ReadServerLog response (SRCI SDK 1.1: 179;
+  /// spec table 6-124: 187)
+  SERVER_LOG_CONTENT_MAX  : DINT := 179;
  END_VAR
 
 

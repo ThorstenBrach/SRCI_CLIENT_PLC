@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+ - ST-FIX F108: the mandatory Core functions CreateServerLog (9003) and ReadServerLog (9004) were only empty placeholders (`MC_CreateServerLog_ToDo`, `MC_ReadServerLog`). New: `MC_CreateServerLogFB` (Execute, ProcessingMode / SequenceFlag / ListenerID like the other trigger capable commands, `OutCmd.ServerLogID`) and `MC_ReadServerLogFB` (Execute; reads the server log `ParCmd.ServerLogID` (-1 latest, 0 oldest) from `ParCmd.StartLine` on with `ParCmd.ContextFilter` line by line into the in-out array `LogFile : ARRAY[*] OF STRING(RobotLibraryParameter.LOG_LINE_LEN)`, joins the parts of a line, ends with `Done` when the RC reports the end of the log or `LogFile` is full; `Execute` may be reset during the transfer; a new rising edge starts it again; `ExportMode` 1 (optional export to a file) is rejected with 16#8419). `CmdType.CreateServerLog` / `ReadServerLog`, `RobotLibraryConstants.SERVER_LOG_CONTENT_MAX` (179), `RobotLibraryParameter.LOG_LINE_LEN` (1023). Telegram layout of the SRCI SDK 1.1 (Siemens): the command has `Offset` (request counter, bytes 12-15, ContextFilter from byte 16), the response the bits IsStartOfLine / IsEndOfLine / EndOfLogReached (byte 13), `LogLine`, `Offset` and up to 179 characters; spec tables 6-116 (ends at byte 7), 6-123 and 6-124 differ. Tested with SRCI_PY against the SDK (SDK-LOG-001 ... 014) (spec: 6.2.5, 6.2.6, 5.5.11.8)
+ - The placeholders `MC_CreateServerLog_ToDo` / `MC_ReadServerLog` are removed after the TcUnit tests of the new blocks
+
 ## [1.5.2.0]
 
 Fixes of the findings F104 … F107, found with the new SDK tests of SRCI_PY and ported and tested in the

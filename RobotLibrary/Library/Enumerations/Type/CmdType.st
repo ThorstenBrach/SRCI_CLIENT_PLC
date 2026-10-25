@@ -251,7 +251,11 @@ TYPE CmdType :
   /// Measure the length of objects in the cartesian space, execution time for specified section of a job or signal output time of a specified signal
   UnitMeasurement := 7004,   
   /// ST-FIX F35: spec 6.3.12 Type 2109 (missing in the library)
-  MoveLinearAbsoluteJ := 2109
+  MoveLinearAbsoluteJ := 2109,
+  /// ST-FIX F108: create a server log on the RC (spec 6.2.5)
+  CreateServerLog := 9003,
+  /// ST-FIX F108: read a server log from the RC (spec 6.2.6)
+  ReadServerLog := 9004
 )UINT;
 END_TYPE
 

@@ -60,6 +60,8 @@ VAR_GLOBAL CONSTANT
   INVALID_FRAMES_CHECK_TIMEOUT        : TIME := T#60S;
   /// Warning limit for ACR registers running low
   ACR_USAGE_WARNING_LIMIT             : REAL := 80.0;  
+  /// ST-FIX F108: maximal length of a log line of ReadServerLog / ReadClientLog (element of LogFile)
+  LOG_LINE_LEN                        : DINT := 1023;
 END_VAR
 
 
