@@ -418,8 +418,19 @@ END_VAR
     // check unique ID found ?
     IF ( Register[_regIdx].UniqueID = NotifyParameterChanged )
     THEN  
-      IF (( Register[_regIdx].Command[ACTIVE_CMD].State <> BufferStateCmd.SENDING   ) AND
-          ( Register[_regIdx].Command[ACTIVE_CMD].State <> BufferStateCmd.PROCESSED ))
+      // ST-FIX F114: a parameter change before the command is sent (state CREATED) must not turn the new
+      // command into a parameter update (it was never sent): the command keeps the parameters of the rising edge
+      IF ( Register[_regIdx].Command[ACTIVE_CMD].State = BufferStateCmd.CREATED )
+      THEN
+        // Create log entry
+        CreateLogMessagePara1 ( Timestamp   := SystemTime,
+                                MessageType := MessageType.CMD,
+                                Severity    := Severity.INFO,
+                                MessageCode := 0,
+                                MessageText := 'ACR-ID [{1}]: Cmd-Parameter changed before the command was sent -> ignored',
+                                Para1       :=  DINT_TO_STRING(_regIdx));
+      ELSIF (( Register[_regIdx].Command[ACTIVE_CMD].State <> BufferStateCmd.SENDING   ) AND
+             ( Register[_regIdx].Command[ACTIVE_CMD].State <> BufferStateCmd.PROCESSED ))
       THEN
         // Check pointer is valid ? 
         IF ( Register[_regIdx].pCommandFB <> RobotLibraryConstants.NULL_POINTER )

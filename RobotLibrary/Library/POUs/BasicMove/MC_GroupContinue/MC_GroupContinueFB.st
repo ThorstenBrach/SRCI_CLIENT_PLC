@@ -104,8 +104,10 @@ END_VAR
   _parameterChanged := ( SysDepMemCmp(pData1 := ADR(ParCmd), pData2 := ADR(_parCmd), DataLen := SIZEOF(ParCmd)) <> RobotLibraryConstants.OK );
   // check parameter valid ?
   _parameterValid   := CheckParameterValid( AxesGroup := AxesGroup );
-  // check synchronization valid ?
-  _synchronizationValid := CheckSynchronizationValid( AxesGroup := AxesGroup );
+  // ST-FIX F129: the synchronization is checked only at the start of the command (OnExecRun step 0);
+  // while the command runs the RC decides about a loss of the synchronization via SyncReaction (spec 5.6.7.5)
+  // _synchronizationValid := CheckSynchronizationValid( AxesGroup := AxesGroup );
+  _synchronizationValid := TRUE;
   
   
   IF ((  _parameterChanged        )  AND 

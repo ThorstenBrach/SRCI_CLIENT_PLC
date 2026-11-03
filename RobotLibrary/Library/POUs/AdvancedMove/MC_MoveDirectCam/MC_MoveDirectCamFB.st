@@ -1,0 +1,2061 @@
+/// Set a trigger in a defined position of a path (PTP) and switch periphery.
+/// F109: new function block (SRCI command 2401 MoveDirectCam, spec 6.4.9)
+FUNCTION_BLOCK MC_MoveDirectCamFB EXTENDS RobotLibraryBaseExecuteFB
+// -------------------------------------------------------------------------
+//  SRCI Robot Library
+// -------------------------------------------------------------------------
+//
+//  Object:      MC_MoveDirectCamFB
+//  Author:      Thorsten Brach
+//  Date:        2026-10-25
+//
+//  Description:
+//    MoveDirectCam (spec 6.4.9, type 2401): PTP movement to an absolute cartesian position that
+//    writes a digital output (Index, OutputBitmask, Value) at a trigger point of the path.
+//    Same payload as MoveLinearCam (type 2402); byte 15 is reserved instead of OriMode.
+//    F109: new function block (SRCI command 2401 MoveDirectCam, spec 6.4.9)
+//
+//  Copyright:
+//    (C) 2026 Thorsten Brach. All rights reserved
+//             Licensed under the MIT License.
+//
+//  Disclaimer:
+//    This project is provided without any guarantee and can be used for
+//    private and commercial purposes. Any use is at the user's
+//    own risk and responsibility.
+//
+// -------------------------------------------------------------------------
+VAR_INPUT
+  /// Parameter which determines the behavior towards the previously sent and still active or buffered commands
+  AbortingMode       : AbortingMode;
+  /// Defines the target sequence in which the command will be executed
+  SequenceFlag       : SequenceFlag;
+  /// command parameter
+  ParCmd             : MoveDirectCamParCmd;
+END_VAR
+
+VAR_OUTPUT
+  /// Command is transferred and confirmed by the RC
+  CommandBuffered    : BOOL;
+  /// The command takes control of the motion of the according axis group
+  Active             : BOOL;
+  /// The command was aborted by another command.
+  CommandAborted     : BOOL;
+  /// TRUE, while command is interrupted during execution and can be continued
+  CommandInterrupted : BOOL;
+  /// command outputs
+  OutCmd             : MoveDirectCamOutCmd;
+END_VAR
+
+VAR
+  /// internal copy of command parameter
+ _parCmd             : MoveDirectCamParCmd;
+  /// command data to send
+ _command            : MoveDirectCamSendData;
+  /// response data received
+ _response           : MoveDirectCamRecvData;
+END_VAR
+
+  SUPER^(AxesGroup := AxesGroup);
+
+END_FUNCTION_BLOCK
+
+METHOD INTERNAL CheckAddParameter : BOOL
+VAR_INPUT
+  /// Payload pointer
+  PayloadPtr : UDINT;
+END_VAR
+VAR
+  /// Payload as byte array
+  Payload    : ARRAY [1..SIZEOF(_command)] OF BYTE;
+  /// Null Byte array
+  Null       : ARRAY [1..SIZEOF(_command)] OF BYTE;
+  /// Data length to compare
+  DataLen    : UDINT;
+END_VAR
+
+  // Payload pointer must be decreased by one byte, because ADR(Payload) is already one byte !
+  PayloadPtr := LIMIT (0, PayloadPtr - 1, SIZEOF(Payload) -1);
+  // Convert command struct to payload array
+  SysDepMemCpy( pDest := ADR(Payload), pSrc := ADR(_command), DataLen := SIZEOF(_command));
+  // Calculate the data length to compare - at least one byte must be compared !
+  DataLen := LIMIT(1, SIZEOF(Payload) - PayloadPtr, SIZEOF(Payload));
+  // Compare Payload-Array with Null-Byte-Array
+  CheckAddParameter := SysDepMemCmp( pData1 := ADR(Payload) + PayloadPtr , pData2 := ADR(Null), DataLen := DataLen) <>  RobotLibraryConstants.OK ;
+  
+  // payload order differs from the structure layout -> always add the parameter
+  CheckAddParameter := TRUE;
+
+END_METHOD
+
+METHOD PROTECTED CheckFunctionSupported : BOOL
+VAR_IN_OUT
+  /// Robot assignment of function
+  AxesGroup : AxesGroup;
+END_VAR
+
+  CheckFunctionSupported := AxesGroup.State.RobotData.RCSupportedFunctions.MoveDirectCam;
+  
+  IF ( NOT CheckFunctionSupported )
+  THEN
+    // call base implementation for set error and create log entry
+    SUPER^.CheckFunctionSupported(AxesGroup := AxesGroup);
+  END_IF
+
+END_METHOD
+
+METHOD PROTECTED CheckParameterChanged : BOOL
+VAR_IN_OUT
+  /// Robot assignment of function
+  AxesGroup    : AxesGroup;
+END_VAR
+
+  // Check ParCmd Size is > 0, because MemCmp does not work correctly with size = 0
+  IF (SIZEOF(ParCmd) = 0) OR (_stepCmd = 0)
+  THEN
+    RETURN;
+  END_IF
+  
+  // compare memory
+  _parameterChanged := ( SysDepMemCmp(pData1 := ADR(ParCmd), pData2 := ADR(_parCmd), DataLen := SIZEOF(ParCmd)) <> RobotLibraryConstants.OK );
+  
+  // check parameter valid ?
+  _parameterValid   := CheckParameterValid( AxesGroup := AxesGroup );
+  
+  IF ((  _parameterChanged        )  AND
+      (  _parameterValid          )) OR
+      (  _parameterUpdateInternal )
+  THEN
+    // Create log entry for parameter changed event
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.DEBUG,
+                            MessageCode := 0,
+                            MessageText := 'NotifyParameterChanged Event {1}',
+                            Para1       :=  '' );
+  
+    // reset internal flag for send parameter update
+   _parameterUpdateInternal := FALSE;
+    // update internal copy of parameters
+   _parCmd := ParCmd;
+    // inc parameter sequence
+   _command.ParSeq := _command.ParSeq + 1;
+    // update command data
+    CommandData := CreateCommandPayload(AxesGroup := AxesGroup); // ( Access via reference to rCommandFB in ACR )
+    // notify active command register
+    AxesGroup.Acyclic.ActiveCommandRegister.NotifyParameterChanged := _uniqueID;
+  END_IF
+
+END_METHOD
+
+METHOD PROTECTED CheckParameterValid : BOOL
+VAR_IN_OUT
+  /// Robot assignment of function
+  AxesGroup : AxesGroup;
+END_VAR
+VAR
+  /// internal index for loops
+ _idx : DINT;
+END_VAR
+
+  CheckParameterValid := TRUE;
+  
+  // Check AbortingMode valid ?
+  IF (( AbortingMode <> AbortingModeEnum.BUFFER ) AND
+      ( AbortingMode <> AbortingModeEnum.ABORT  ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_ABORTINGMODE_INVALID, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter AbortingMode = {1}',
+                            Para1       := ABORTING_MODE_TO_STRING(AbortingMode));
+    RETURN;
+  END_IF
+  
+  
+  // Check SequenceFlag valid ?
+  IF (( SequenceFlag <> SequenceFlagEnum.PRIMARY_SEQUENCE   ) AND
+      ( SequenceFlag <> SequenceFlagEnum.SECONDARY_SEQUENCE ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_SEQFLAG_NOT_ALLOWED, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter SequenceFlag = {1}',
+                            Para1       := SEQUENCE_FLAG_TO_STRING(SequenceFlag));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.Position.X valid ?
+  IF ( SysDepIsValidReal(ParCmd.Position.X) = FALSE )
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+  
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.Position.X = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.Position.X));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.Position.Y valid ?
+  IF ( SysDepIsValidReal(ParCmd.Position.Y) = FALSE )
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+  
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.Position.Y = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.Position.Y));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.Position.Z valid ?
+  IF ( SysDepIsValidReal(ParCmd.Position.Z) = FALSE )
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+  
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.Position.Z = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.Position.Z));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.Position.Rx valid ?
+  IF ( SysDepIsValidReal(ParCmd.Position.Rx) = FALSE )
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+  
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.Position.Rx = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.Position.Rx));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.Position.Ry valid ?
+  IF ( SysDepIsValidReal(ParCmd.Position.Ry) = FALSE )
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+  
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.Position.Ry = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.Position.Ry));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.Position.Rz valid ?
+  IF ( SysDepIsValidReal(ParCmd.Position.Rz) = FALSE )
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+  
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.Position.Rz = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.Position.Rz));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.Position.E1 valid ?
+  IF ( SysDepIsValidReal(ParCmd.Position.E1) = FALSE )
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+  
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.Position.E1 = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.Position.E1));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.Position.E2 valid ?
+  IF ( SysDepIsValidReal(ParCmd.Position.E2) = FALSE )
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+  
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.Position.E2 = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.Position.E2));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.Position.E3 valid ?
+  IF ( SysDepIsValidReal(ParCmd.Position.E3) = FALSE )
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+  
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.Position.E3 = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.Position.E3));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.Position.E4 valid ?
+  IF ( SysDepIsValidReal(ParCmd.Position.E4) = FALSE )
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+  
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.Position.E4 = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.Position.E4));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.Position.E5 valid ?
+  IF ( SysDepIsValidReal(ParCmd.Position.E5) = FALSE )
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+  
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.Position.E5 = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.Position.E5));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.Position.E6 valid ?
+  IF ( SysDepIsValidReal(ParCmd.Position.E6) = FALSE )
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+  
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.Position.E6 = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.Position.E6));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.Position.Config.Shoulder valid ?
+  IF (( ParCmd.Position.Config.Shoulder <> ArmConfigShoulder.USE_CONFIG ) AND
+      ( ParCmd.Position.Config.Shoulder <> ArmConfigShoulder.SAME       ) AND
+      ( ParCmd.Position.Config.Shoulder <> ArmConfigShoulder.FREE       ) AND
+      ( ParCmd.Position.Config.Shoulder <> ArmConfigShoulder.BACK       ) AND
+      ( ParCmd.Position.Config.Shoulder <> ArmConfigShoulder.FRONT      ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_CONFIGMODE_SHOULDER_INVALID, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.Position.Config.Shoulder = {1}',
+                            Para1       :=  ARM_CONFIG_SHOULDER_TO_STRING(ParCmd.Position.Config.Shoulder));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.Position.Config.Elbow valid ?
+  IF (( ParCmd.Position.Config.Elbow <> ArmConfigElbow.USE_CONFIG ) AND
+      ( ParCmd.Position.Config.Elbow <> ArmConfigElbow.SAME       ) AND
+      ( ParCmd.Position.Config.Elbow <> ArmConfigElbow.FREE       ) AND
+      ( ParCmd.Position.Config.Elbow <> ArmConfigElbow.DOWN       ) AND
+      ( ParCmd.Position.Config.Elbow <> ArmConfigElbow.UP         ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_CONFIGMODE_ELBOW_INVALID, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.Position.Config.Elbow = {1}',
+                            Para1       :=  ARM_CONFIG_ELBOW_TO_STRING(ParCmd.Position.Config.Elbow));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.Position.Config.Wrist valid ?
+  IF (( ParCmd.Position.Config.Wrist <> ArmConfigWrist.USE_CONFIG ) AND
+      ( ParCmd.Position.Config.Wrist <> ArmConfigWrist.SAME       ) AND
+      ( ParCmd.Position.Config.Wrist <> ArmConfigWrist.FREE       ) AND
+      ( ParCmd.Position.Config.Wrist <> ArmConfigWrist.FLIP       ) AND
+      ( ParCmd.Position.Config.Wrist <> ArmConfigWrist.NON_FLIP   ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_CONFIGMODE_WRIST_INVALID, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.Position.Config.Wrist = {1}',
+                            Para1       :=  ARM_CONFIG_WRIST_TO_STRING(ParCmd.Position.Config.Wrist));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.VelocityRate valid ?
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.VelocityRate) = FALSE )  OR_ELSE
+      (* every value < 0 is the default *)
+       (                   ParCmd.VelocityRate  >   100 ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_VELOCITY_INVALID, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.VelocityRate = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.VelocityRate));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.AccelerationRate valid ?
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.AccelerationRate) = FALSE )  OR_ELSE
+      (* every value < 0 is the default *)
+       (                   ParCmd.AccelerationRate  >   100 ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_ACCELERATION_INVALID, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.AccelerationRate = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.AccelerationRate));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.DecelerationRate valid ?
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.DecelerationRate) = FALSE )  OR_ELSE
+      (* every value < 0 is the default *)
+       (                   ParCmd.DecelerationRate  >   100 ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_DECELERATION_INVALID, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.DecelerationRate = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.DecelerationRate));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.JerkRate valid ?
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.JerkRate) = FALSE )  OR_ELSE
+      (* every value < 0 is the default *)
+       (                   ParCmd.JerkRate  >   100 ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_JERK_INVALID, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.JerkRate = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.JerkRate));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.ToolNo valid ?
+  IF (( ParCmd.ToolNo <   0                                                ) OR
+      ( ParCmd.ToolNo > 254                                                ) OR
+      ( ParCmd.ToolNo > AxesGroup.State.ConfigurationData.HighestToolIndex ) OR
+      ( ParCmd.ToolNo > AxesGroup.State.UnifiedToolIndex                   ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+  
+    // Check ToolNo available on RC ?
+    IF (( ParCmd.ToolNo > AxesGroup.State.ConfigurationData.HighestToolIndex ) AND ( ParCmd.ToolNo <= 254 )) // outside -1..254 is a range error
+    THEN
+      SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_TOOLNO_UNAVAILABLE, Overwrite := TRUE );
+    ELSE
+      SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_TOOLNO_RANGE, Overwrite := TRUE );
+    END_IF
+  
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.ToolNo = {1}',
+                            Para1       := USINT_TO_STRING(ParCmd.ToolNo));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.FrameNo valid ?
+  IF (( ParCmd.FrameNo <   0                                                 ) OR
+      ( ParCmd.FrameNo > 254                                                 ) OR
+      ( ParCmd.FrameNo > AxesGroup.State.ConfigurationData.HighestFrameIndex ) OR
+      ( ParCmd.FrameNo > AxesGroup.State.UnifiedFrameIndex                   ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+  
+    // Check FrameNo available on RC ?
+    IF (( ParCmd.FrameNo > AxesGroup.State.ConfigurationData.HighestFrameIndex ) AND ( ParCmd.FrameNo <= 254 )) // outside -1..254 is a range error
+    THEN
+      SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_FRAMENO_UNAVAILABLE, Overwrite := TRUE );
+    ELSE
+      SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_FRAMENO_RANGE, Overwrite := TRUE );
+    END_IF
+  
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.FrameNo = {1}',
+                            Para1       := USINT_TO_STRING(ParCmd.FrameNo));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.BlendingMode valid ?
+  IF (( ParCmd.BlendingMode <> BlendingMode.EXACT_STOP           ) AND
+      ( ParCmd.BlendingMode <> BlendingMode.DEFINED_VELOCITY     ) AND
+      ( ParCmd.BlendingMode <> BlendingMode.CORNER_DISTANCE      ) AND
+      ( ParCmd.BlendingMode <> BlendingMode.MAX_CORNER_DEVIATION ) AND
+      ( ParCmd.BlendingMode <> BlendingMode.CORNER_DISTANCE_2R   ) AND
+      ( ParCmd.BlendingMode <> BlendingMode.RAMP_OVERLAP         ) AND
+      ( ParCmd.BlendingMode <> BlendingMode.CORNER_DISTANCE_1R   ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.BlendingMode = {1}',
+                            Para1       := BLENDING_MODE_TO_STRING(ParCmd.BlendingMode));
+    RETURN;
+  END_IF
+  
+  
+  FOR _idx := 0 TO 1
+  DO
+    // Check ParCmd.BlendingParameter valid ?
+    IF  ( SysDepIsValidReal(ParCmd.BlendingParameter[_idx]) = FALSE )
+    THEN
+      // Parameter not valid
+      CheckParameterValid := FALSE;
+      // Set error
+      SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+      // Create log entry
+      CreateLogMessagePara2 ( Timestamp   := AxesGroup.State.SystemTime,
+                              MessageType := MessageType.CMD,
+                              Severity    := Severity.ERROR,
+                              MessageCode := ErrorID,
+                              MessageText := 'Invalid Parameter ParCmd.BlendingParameter[{2}] = {1}',
+                              Para1       := VALID_REAL_TO_STRING(ParCmd.BlendingParameter[_idx]),
+                              Para2       := DINT_TO_STRING(_idx));
+      RETURN;
+    END_IF
+  END_FOR
+  
+  
+  // Check ParCmd.MoveTime valid ?
+  IF  ( ParCmd.MoveTime < T#0S )
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.MoveTime = {1}',
+                            Para1       := TIME_TO_STRING(ParCmd.MoveTime));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.ConfigMode.Shoulder valid ?
+  IF (( ParCmd.ConfigMode.Shoulder <> ArmConfigShoulder.USE_CONFIG ) AND
+      ( ParCmd.ConfigMode.Shoulder <> ArmConfigShoulder.SAME       ) AND
+      ( ParCmd.ConfigMode.Shoulder <> ArmConfigShoulder.FREE       ) AND
+      ( ParCmd.ConfigMode.Shoulder <> ArmConfigShoulder.BACK       ) AND
+      ( ParCmd.ConfigMode.Shoulder <> ArmConfigShoulder.FRONT      ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    // ST-FIX F111: an undefined ConfigMode has its own ErrorID (table 7-1)
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_CONFIGMODE_SHOULDER_INVALID, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.ConfigMode.Shoulder = {1}',
+                            Para1       :=  ARM_CONFIG_SHOULDER_TO_STRING(ParCmd.ConfigMode.Shoulder));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.ConfigMode.Elbow valid ?
+  IF (( ParCmd.ConfigMode.Elbow <> ArmConfigElbow.USE_CONFIG ) AND
+      ( ParCmd.ConfigMode.Elbow <> ArmConfigElbow.SAME       ) AND
+      ( ParCmd.ConfigMode.Elbow <> ArmConfigElbow.FREE       ) AND
+      ( ParCmd.ConfigMode.Elbow <> ArmConfigElbow.DOWN       ) AND
+      ( ParCmd.ConfigMode.Elbow <> ArmConfigElbow.UP         ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    // ST-FIX F111: an undefined ConfigMode has its own ErrorID (table 7-1)
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_CONFIGMODE_ELBOW_INVALID, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.ConfigMode.Elbow = {1}',
+                            Para1       :=  ARM_CONFIG_ELBOW_TO_STRING(ParCmd.ConfigMode.Elbow));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.ConfigMode.Wrist valid ?
+  IF (( ParCmd.ConfigMode.Wrist <> ArmConfigWrist.USE_CONFIG ) AND
+      ( ParCmd.ConfigMode.Wrist <> ArmConfigWrist.SAME       ) AND
+      ( ParCmd.ConfigMode.Wrist <> ArmConfigWrist.FREE       ) AND
+      ( ParCmd.ConfigMode.Wrist <> ArmConfigWrist.FLIP       ) AND
+      ( ParCmd.ConfigMode.Wrist <> ArmConfigWrist.NON_FLIP   ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    // ST-FIX F111: an undefined ConfigMode has its own ErrorID (table 7-1)
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_CONFIGMODE_WRIST_INVALID, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.ConfigMode.Wrist = {1}',
+                            Para1       :=  ARM_CONFIG_WRIST_TO_STRING(ParCmd.ConfigMode.Wrist));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.TurnMode valid ?
+  IF (( ParCmd.TurnMode <> TurnMode.USE_TURN_NUMBER ) AND
+      ( ParCmd.TurnMode <> TurnMode.SAME            ) AND
+      ( ParCmd.TurnMode <> TurnMode.FREE            ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.TurnMode = {1}',
+                            Para1       :=  TURN_MODE_TO_STRING(ParCmd.TurnMode));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.Index valid ?
+  IF (( ParCmd.Index <   0 ) OR
+      ( ParCmd.Index > 255 ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.Index = {1}',
+                            Para1       := USINT_TO_STRING(ParCmd.Index));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.OutputBitmask valid ?
+  IF (( ParCmd.OutputBitmask <   0 ) OR
+      ( ParCmd.OutputBitmask > 255 ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.OutputBitmask = {1}',
+                            Para1       := BYTE_TO_STRING_BIN(ParCmd.OutputBitmask));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.Value valid ?
+  IF (( ParCmd.Value <   0 ) OR
+      ( ParCmd.Value > 255 ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.Value = {1}',
+                            Para1       := BYTE_TO_STRING_BIN(ParCmd.Value));
+    RETURN;
+  END_IF
+  
+  // Check ParCmd.RelativePosition
+  // -> no plausibility check for boolean
+  
+  
+  // Check ParCmd.TriggerDelay valid ?
+  IF (( ParCmd.TriggerDelay <   0 ) OR
+      ( ParCmd.TriggerDelay > 16#FFFF )) // UINT [ms] (was 255)
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.TriggerDelay = {1}',
+                            Para1       := UINT_TO_STRING(ParCmd.TriggerDelay));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.TriggerDistance valid ?
+  IF ( SysDepIsValidReal(ParCmd.TriggerDistance) = FALSE )
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.TriggerDistance = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.TriggerDistance));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.Manipulation
+  // -> no plausibility check for boolean
+
+END_METHOD
+
+METHOD INTERNAL CreateCommandPayload : RobotLibraryCommandDataFB
+VAR_IN_OUT
+  /// Robot assignment of function
+  AxesGroup : AxesGroup;
+END_VAR
+VAR
+  /// Parameter count
+ _parameterCnt : DINT;
+END_VAR
+// Table 6-554: Sent CMD payload (PLC to RC) of "MoveDirectCam"
+// --------------------------
+// Header
+// --------------------------
+// Byte 00 : UINT  - Type HB
+// Byte 01 :       - Type LB
+// Byte 02 : USINT - Reserve | ExecutionMode
+// Byte 03 : USINT - ParSeq  | Priority
+// --------------------------
+// Datablock
+// --------------------------
+// Byte 04 : UINT  - VelocityRate HW HB
+// Byte 05 :       - VelocityRate HW LB
+// Byte 06 : UINT  - AccelerationRate HW HB
+// Byte 07 :       - AccelerationRate HW LB
+// Byte 08 : UINT  - DecelerationRate HW HB
+// Byte 09 :       - DecelerationRate HW LB
+// Byte 10 : UINT  - JerkRate HW HB
+// Byte 11 :       - JerkRate HW LB
+// Byte 12 : USINT - ToolNo
+// Byte 13 : USINT - FrameNo
+// Byte 14 : USINT - BlendingMode
+// Byte 15 : BYTE  - Reserved
+// Byte 16 : REAL  - BlendingParameter[0] HW HB
+// Byte 17 :       - BlendingParameter[0] HW LB
+// Byte 18 :       - BlendingParameter[0] LW HB
+// Byte 19 :       - BlendingParameter[0] LW LB
+// Byte 20 : REAL  - BlendingParameter[1] HW HB
+// Byte 21 :       - BlendingParameter[1] HW LB
+// Byte 22 :       - BlendingParameter[1] LW HB
+// Byte 23 :       - BlendingParameter[1] LW LB
+// Byte 24 : REAL  - Position.X HW HB
+// Byte 25 :       - Position.X HW LB
+// Byte 26 :       - Position.X LW HB
+// Byte 27 :       - Position.X LW LB
+// Byte 28 : REAL  - Position.Y HW HB
+// Byte 29 :       - Position.Y HW LB
+// Byte 30 :       - Position.Y LW HB
+// Byte 31 :       - Position.Y LW LB
+// Byte 32 : REAL  - Position.Z HW HB
+// Byte 33 :       - Position.Z HW LB
+// Byte 34 :       - Position.Z LW HB
+// Byte 35 :       - Position.Z LW LB
+// Byte 36 : REAL  - Position.RX HW HB
+// Byte 37 :       - Position.RX HW LB
+// Byte 38 :       - Position.RX LW HB
+// Byte 39 :       - Position.RX LW LB
+// Byte 40 : REAL  - Position.RY HW HB
+// Byte 41 :       - Position.RY HW LB
+// Byte 42 :       - Position.RY LW HB
+// Byte 43 :       - Position.RY LW LB
+// Byte 44 : REAL  - Position.RZ HW HB
+// Byte 45 :       - Position.RZ HW LB
+// Byte 46 :       - Position.RZ LW HB
+// Byte 47 :       - Position.RZ LW LB
+// Byte 48 : BYTE  - Position.Config (Shoulder, Elbow, Wrist)
+// Byte 49 : BYTE  - Reserved
+// Byte 50 : BYTE  - Position.TurnNumber[0]
+// Byte 51 : BYTE  - Position.TurnNumber[1]
+// Byte 52 : BYTE  - Position.TurnNumber[2]
+// Byte 53 : BYTE  - Position.TurnNumber[3]
+// Byte 54 : REAL  - Position.E1 HW HB
+// Byte 55 :       - Position.E1 HW LB
+// Byte 56 :       - Position.E1 LW HB
+// Byte 57 :       - Position.E1 LW LB
+// Byte 58 : UINT  - TriggerDelay HW HB
+// Byte 59 :       - TriggerDelay HW LB
+// Byte 60 : REAL  - TriggerDistance HW HB
+// Byte 61 :       - TriggerDistance HW LB
+// Byte 62 :       - TriggerDistance LW HB
+// Byte 63 :       - TriggerDistance LW LB
+// Byte 64 : USINT - Index
+// Byte 65 : BOOL  - RelativePosition
+// Byte 66 : BYTE  - OutputBitmask
+// Byte 67 : BYTE  - Value
+// Byte 68 : BYTE  - ConfigMode[0]
+// Byte 69 : BYTE  - ConfigMode[1]
+// Byte 70 : BOOL  - Manipulation
+// Byte 71 : USINT - TurnMode
+// Byte 72 : UINT  - Time HW HB
+// Byte 73 :       - Time HW LB
+// Byte 74 : REAL  - Position.E2 HW HB
+// Byte 75 :       - Position.E2 HW LB
+// Byte 76 :       - Position.E2 LW HB
+// Byte 77 :       - Position.E2 LW LB
+// Byte 78 : REAL  - Position.E3 HW HB
+// Byte 79 :       - Position.E3 HW LB
+// Byte 80 :       - Position.E3 LW HB
+// Byte 81 :       - Position.E3 LW LB
+// Byte 82 : REAL  - Position.E4 HW HB
+// Byte 83 :       - Position.E4 HW LB
+// Byte 84 :       - Position.E4 LW HB
+// Byte 85 :       - Position.E4 LW LB
+// Byte 86 : REAL  - Position.E5 HW HB
+// Byte 87 :       - Position.E5 HW LB
+// Byte 88 :       - Position.E5 LW HB
+// Byte 89 :       - Position.E5 LW LB
+// Byte 90 : REAL  - Position.E6 HW HB
+// Byte 91 :       - Position.E6 HW LB
+// Byte 92 :       - Position.E6 LW HB
+// Byte 93 :       - Position.E6 LW LB
+// --------------------------
+
+  // set command parameter
+  _command.CmdTyp            :=  CmdType.MoveDirectCam;
+  // ExecutionMode from AbortingMode and SequenceFlag (spec table 5-77)
+  IF ( SequenceFlag = SequenceFlagEnum.SECONDARY_SEQUENCE )
+  THEN
+    IF ( AbortingMode = AbortingModeEnum.ABORT )
+    THEN
+      _command.ExecMode := ExecutionMode.SEQUENCE_ABORT_OTHERS_SECONDARY;
+    ELSE
+      _command.ExecMode := ExecutionMode.SEQUENCE_SECONDARY;
+    END_IF
+  ELSE
+    IF ( AbortingMode = AbortingModeEnum.ABORT )
+    THEN
+      _command.ExecMode := ExecutionMode.SEQUENCE_ABORT_OTHERS_PRIMARY;
+    ELSE
+      _command.ExecMode := ExecutionMode.SEQUENCE_PRIMARY;
+    END_IF
+  END_IF
+  _command.ParSeq            := _command.ParSeq;
+  _command.Priority          :=  Priority;
+  _command.VelocityRate      :=  REAL_TO_PERCENT_UINT(_parCmd.VelocityRate     , IsOptional := FALSE);
+  _command.AccelerationRate  :=  REAL_TO_PERCENT_UINT(_parCmd.AccelerationRate , IsOptional := FALSE);
+  _command.DecelerationRate  :=  REAL_TO_PERCENT_UINT(_parCmd.DecelerationRate , IsOptional := TRUE );
+  _command.JerkRate          :=  REAL_TO_PERCENT_UINT(_parCmd.JerkRate         , IsOptional := TRUE );
+  _command.ToolNo            := _parCmd.ToolNo;
+  _command.FrameNo           := _parCmd.FrameNo;
+  _command.BlendingMode      := _parCmd.BlendingMode;
+  _command.Reserve           :=  0;
+  _command.BlendingParameter := _parCmd.BlendingParameter;
+  _command.Position          := _parCmd.Position;
+  _command.TriggerDelay      := _parCmd.TriggerDelay;
+  _command.TriggerDistance   := _parCmd.TriggerDistance;
+  _command.Index             := _parCmd.Index;
+  _command.RelativePosition  := _parCmd.RelativePosition;
+  _command.OutputBitmask     := _parCmd.OutputBitmask;
+  _command.Value             := _parCmd.Value;
+  _command.ConfigMode        :=  ArmConfigParameterToBytes(_parCmd.ConfigMode);
+  _command.Manipulation      := _parCmd.Manipulation;
+  _command.TurnMode          := _parCmd.TurnMode;
+  _command.MoveTime          := TIME_TO_UINT(_parCmd.MoveTime);
+  
+  
+  // copy command data to header
+  _cmdHeader := _command;
+  // call base implementation to copy header to payload buffer
+  CreateCommandPayload := SUPER^.CreateCommandPayload(AxesGroup := AxesGroup);
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.VelocityRate
+    CreateCommandPayload.AddUint(_command.VelocityRate);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.AccelerationRate
+    CreateCommandPayload.AddUint(_command.AccelerationRate);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.DecelerationRate
+    CreateCommandPayload.AddUint(_command.DecelerationRate);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.JerkRate
+    CreateCommandPayload.AddUint(_command.JerkRate);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.ToolNo
+    CreateCommandPayload.AddUsint(_command.ToolNo);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.FrameNo
+    CreateCommandPayload.AddUsint(_command.FrameNo);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.BlendingMode
+    CreateCommandPayload.AddUsint(_command.BlendingMode);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.Reserve
+    CreateCommandPayload.AddByte(_command.Reserve);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Manipulation is sent at byte 70
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.BlendingParameter[0]
+    CreateCommandPayload.AddReal(_command.BlendingParameter[0]);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.BlendingParameter[1]
+    CreateCommandPayload.AddReal(_command.BlendingParameter[1]);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.Position.X
+    CreateCommandPayload.AddReal(_command.Position.X);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.Position.Y
+    CreateCommandPayload.AddReal(_command.Position.Y);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.Position.Z
+    CreateCommandPayload.AddReal(_command.Position.Z);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.Position.Rx
+    CreateCommandPayload.AddReal(_command.Position.Rx);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.Position.Ry
+    CreateCommandPayload.AddReal(_command.Position.Ry);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.Position.Rz
+    CreateCommandPayload.AddReal(_command.Position.Rz);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // add command.Position.Config (byte 48) and the reserved byte 49
+  CreateCommandPayload.AddArmConfig(_command.Position.Config);
+  _parameterCnt := _parameterCnt + 1;
+  // add command.Position.TurnNumber (bytes 50..53)
+  CreateCommandPayload.AddTurnNumber(_command.Position.TurnNumber);
+  _parameterCnt := _parameterCnt + 1;
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.Position.E1
+    CreateCommandPayload.AddReal(_command.Position.E1);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // add the trigger parameters, ConfigMode, Manipulation, TurnMode and Time (bytes 58..73)
+  CreateCommandPayload.AddUint(_command.TriggerDelay);
+  _parameterCnt := _parameterCnt + 1;
+  CreateCommandPayload.AddReal(_command.TriggerDistance);
+  _parameterCnt := _parameterCnt + 1;
+  CreateCommandPayload.AddUsint(_command.Index);
+  _parameterCnt := _parameterCnt + 1;
+  CreateCommandPayload.AddBool(_command.RelativePosition);
+  _parameterCnt := _parameterCnt + 1;
+  CreateCommandPayload.AddByte(_command.OutputBitmask);
+  _parameterCnt := _parameterCnt + 1;
+  CreateCommandPayload.AddByte(_command.Value);
+  _parameterCnt := _parameterCnt + 1;
+  CreateCommandPayload.AddByte(_command.ConfigMode[0]);
+  _parameterCnt := _parameterCnt + 1;
+  CreateCommandPayload.AddByte(_command.ConfigMode[1]);
+  _parameterCnt := _parameterCnt + 1;
+  CreateCommandPayload.AddBool(_command.Manipulation);
+  _parameterCnt := _parameterCnt + 1;
+  CreateCommandPayload.AddUsint(_command.TurnMode);
+  _parameterCnt := _parameterCnt + 1;
+  CreateCommandPayload.AddUint(_command.MoveTime);
+  _parameterCnt := _parameterCnt + 1;
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.Position.E2
+    CreateCommandPayload.AddReal(_command.Position.E2);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.Position.E3
+    CreateCommandPayload.AddReal(_command.Position.E3);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.Position.E4
+    CreateCommandPayload.AddReal(_command.Position.E4);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.Position.E5
+    CreateCommandPayload.AddReal(_command.Position.E5);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.Position.E6
+    CreateCommandPayload.AddReal(_command.Position.E6);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Create logging
+  CreateCommandPayloadLog(AxesGroup := AxesGroup, ParameterCnt := _parameterCnt);
+
+END_METHOD
+
+METHOD INTERNAL CreateCommandPayloadLog
+VAR_IN_OUT
+  /// Robot assignment of function
+  AxesGroup : AxesGroup;
+END_VAR
+VAR_INPUT
+  /// Parameter count
+  ParameterCnt : DINT;
+END_VAR
+
+  // Create log entry for Parameter start
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Create command payload with {1} parameter(s) :',
+                          Para1       := DINT_TO_STRING(ParameterCnt));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for VelocityRate
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.VelocityRate = {1}',
+                          Para1       :=  UINT_TO_STRING(_command.VelocityRate));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for AccelerationRate
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.AccelerationRate = {1}',
+                          Para1       :=  UINT_TO_STRING(_command.AccelerationRate));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for DecelerationRate
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.DecelerationRate = {1}',
+                          Para1       :=  UINT_TO_STRING(_command.DecelerationRate));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for JerkRate
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.JerkRate = {1}',
+                          Para1       :=  UINT_TO_STRING(_command.JerkRate));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for ToolNo
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.ToolNo = {1}',
+                          Para1       :=  USINT_TO_STRING(_command.ToolNo));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for FrameNo
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.FrameNo = {1}',
+                          Para1       :=  USINT_TO_STRING(_command.FrameNo));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for BlendingMode
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.BlendingMode = {1}',
+                          Para1       :=  BLENDING_MODE_TO_STRING(_command.BlendingMode));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Reserve
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Reserve = {1}',
+                          Para1       :=  BYTE_TO_STRING(_command.Reserve));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for BlendingParameter[0]
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.BlendingParameter[0] = {1}',
+                          Para1       :=  REAL_TO_STRING(_command.BlendingParameter[0]));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for BlendingParameter[1]
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.BlendingParameter[1] = {1}',
+                          Para1       :=  REAL_TO_STRING(_command.BlendingParameter[1]));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Position.X
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Position.X = {1}',
+                          Para1       :=  REAL_TO_STRING(_command.Position.X));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Position.Y
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Position.Y = {1}',
+                          Para1       :=  REAL_TO_STRING(_command.Position.Y));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Position.Z
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Position.Z = {1}',
+                          Para1       :=  REAL_TO_STRING(_command.Position.Z));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Position.Rx
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Position.Rx = {1}',
+                          Para1       :=  REAL_TO_STRING(_command.Position.Rx));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Position.Ry
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Position.Ry = {1}',
+                          Para1       :=  REAL_TO_STRING(_command.Position.Ry));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Position.Rz
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Position.Rz = {1}',
+                          Para1       :=  REAL_TO_STRING(_command.Position.Rz));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Position.Config
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Position.Config = {1}',
+                          Para1       :=  ARM_CONFIG_TO_STRING(_command.Position.Config));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Position.TurnNumber
+  CreateLogMessagePara4 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Position.TurnNumber = [{1}, {2}, {3}, {4}]',
+                          Para1       :=  BYTE_TO_STRING(CombineHalfSints(HalfSintHi := _command.Position.TurnNumber.J2Turns,
+                                                                          HalfSintLo := _command.Position.TurnNumber.J1Turns)),
+                          Para2       :=  BYTE_TO_STRING(CombineHalfSints(HalfSintHi := _command.Position.TurnNumber.J4Turns,
+                                                                          HalfSintLo := _command.Position.TurnNumber.J3Turns)),
+                          Para3       :=  BYTE_TO_STRING(CombineHalfSints(HalfSintHi := _command.Position.TurnNumber.J6Turns,
+                                                                          HalfSintLo := _command.Position.TurnNumber.J5Turns)),
+                          Para4       :=  SINT_TO_STRING(_command.Position.TurnNumber.E1Turns));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for TriggerDelay
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.TriggerDelay = {1}',
+                          Para1       :=  UINT_TO_STRING(_command.TriggerDelay));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for TriggerDistance
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.TriggerDistance = {1}',
+                          Para1       :=  REAL_TO_STRING(_command.TriggerDistance));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Index
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Index = {1}',
+                          Para1       :=  USINT_TO_STRING(_command.Index));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for RelativePosition
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.RelativePosition = {1}',
+                          Para1       :=  BOOL_TO_STRING(_command.RelativePosition));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for OutputBitmask
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.OutputBitmask = {1}',
+                          Para1       :=  BYTE_TO_STRING_BIN(_command.OutputBitmask));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Value
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Value = {1}',
+                          Para1       :=  BYTE_TO_STRING_BIN(_command.Value));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for ConfigMode[0]
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.ConfigMode[0] = {1}',
+                          Para1       :=  BYTE_TO_STRING_BIN(_command.ConfigMode[0]));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for ConfigMode[1]
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.ConfigMode[1] = {1}',
+                          Para1       :=  BYTE_TO_STRING_BIN(_command.ConfigMode[1]));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Manipulation
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Manipulation = {1}',
+                          Para1       :=  BOOL_TO_STRING(_command.Manipulation));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for TurnMode
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.TurnMode = {1}',
+                          Para1       :=  TURN_MODE_TO_STRING(_command.TurnMode));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for MoveTime
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.MoveTime = {1}',
+                          Para1       :=  UINT_TO_STRING(_command.MoveTime));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Position.E2
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Position.E2 = {1}',
+                          Para1       :=  REAL_TO_STRING(_command.Position.E2));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Position.E3
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Position.E3 = {1}',
+                          Para1       :=  REAL_TO_STRING(_command.Position.E3));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Position.E4
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Position.E4 = {1}',
+                          Para1       :=  REAL_TO_STRING(_command.Position.E4));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Position.E5
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Position.E5 = {1}',
+                          Para1       :=  REAL_TO_STRING(_command.Position.E5));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Position.E6
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Position.E6 = {1}',
+                          Para1       :=  REAL_TO_STRING(_command.Position.E6));
+
+END_METHOD
+
+METHOD FB_init : BOOL
+VAR_INPUT
+  /// if TRUE, the retain variables are initialized (warm start / cold start)
+  bInitRetains : BOOL;
+  /// if TRUE, the instance afterwards gets moved into the copy code (online change)
+  bInCopyCode  : BOOL;
+END_VAR
+
+  MyType := 'MC_MoveDirectCamFB';
+  
+  ExecMode     := ExecutionMode.SEQUENCE_PRIMARY;
+  Priority     := PriorityLevel.NORMAL;
+  AbortingMode := AbortingModeEnum.BUFFER;
+  SequenceFlag := SequenceFlagEnum.PRIMARY_SEQUENCE;
+
+END_METHOD
+
+METHOD PROTECTED OnApplyOutCmd
+VAR_INPUT
+  /// Command message state
+  State : CmdMessageState;
+END_VAR
+
+  IF ( State = CmdMessageState.EMPTY )
+  THEN
+    // Reset command outputs
+    SysDepMemSet(pDest := ADR(OutCmd), Value := 0, DataLen := SIZEOF(OutCmd));
+  END_IF
+  
+  IF (( State = CmdMessageState.ACTIVE ) OR
+      ( State = CmdMessageState.DONE   ))
+  THEN
+    // Update results
+    OutCmd.Progress          :=  PERCENT_UINT_TO_REAL( Value := _response.Progress, IsOptional := TRUE);
+    OutCmd.RemainingDistance := _response.RemainingDistance;
+  END_IF
+
+END_METHOD
+
+METHOD PROTECTED OnExecRun : DINT
+VAR_IN_OUT
+  /// Robot assignment of function
+  AxesGroup : AxesGroup;
+END_VAR
+
+  // call base implementation
+  SUPER^.OnExecRun(AxesGroup := AxesGroup);
+  
+  CASE _stepCmd OF
+  
+    00:  IF ( _execute_R.Q ) AND ( NOT Error)
+         THEN
+           // Check function is supported and parameter are valid ?
+           IF (( CheckFunctionSupported( AxesGroup := AxesGroup )) AND
+               ( CheckParameterValid   ( AxesGroup := AxesGroup )))
+           THEN
+             // set busy flag
+             Busy := TRUE;
+             // Reset command outputs
+             SysDepMemSet(pDest := ADR(OutCmd), Value := 0, DataLen := SIZEOF(OutCmd));
+             // apply command parameter
+            _parCmd := ParCmd;
+             // init parameter sequence
+            _command.ParSeq := 1;
+             // create command data
+             CommandData := CreateCommandPayload(AxesGroup := AxesGroup);
+             // Add command to active command register
+            _uniqueID := AxesGroup.Acyclic.ActiveCommandRegister.AddCmd( pCommandFB := ADR(THIS^ ));
+             // set timeout
+             SetTimeout(PT := _timeoutCmd, rTimer := _timerCmd);
+             // inc step counter
+            _stepCmd := _stepCmd + 1;
+           END_IF
+         END_IF
+  
+  
+    01:  // Wait for responce received
+         IF ( _responseReceived )
+         THEN
+           // reset response received flag
+          _responseReceived := FALSE;
+           // update state flags
+           OnUpdateStateFlags(_response.State);
+           // update state flags
+           OnApplyOutCmd(_response.State);
+  
+           // Done, Aborted or Error ?
+           IF (_response.State >= CmdMessageState.DONE )
+           THEN
+             // set timeout
+             SetTimeout(PT := _timeoutCmd, rTimer := _timerCmd);
+             // inc step counter
+            _stepCmd := _stepCmd + 1;
+           END_IF
+         END_IF
+  
+  
+    02: IF ( NOT Execute)
+        THEN
+          Reset();
+        END_IF
+  ELSE
+    // invalid step
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_STEP, Overwrite := TRUE );
+  END_CASE
+  
+  
+  // Reset FB
+  IF ( NOT Execute )
+  THEN
+    Reset();
+  END_IF
+
+END_METHOD
+
+METHOD PROTECTED OnUpdateStateFlags
+VAR_INPUT
+  /// Command message state
+  State : CmdMessageState;
+END_VAR
+
+  // Reset State flags
+  Active             := FALSE;
+  CommandAborted     := FALSE;
+  CommandInterrupted := FALSE;
+  Done               := FALSE;
+  
+  CASE State OF
+  
+    // No operation or process is active
+    CmdMessageState.EMPTY               :;
+    // Created but not yet started
+    CmdMessageState.CREATED             :;
+    // Buffered and awaiting execution
+    CmdMessageState.BUFFERED            : CommandBuffered    := TRUE;
+    // Buffered in planner for future execution
+    CmdMessageState.BUFFERED_IN_PLANNER : CommandBuffered    := TRUE;
+    // Currently active and in progress
+    CmdMessageState.ACTIVE              : Active             := TRUE;
+    // Interrupted and awaiting continuation
+    CmdMessageState.INTERRUPTED         : CommandInterrupted := TRUE;
+    // Requested for abort
+    CmdMessageState.ABORT_REQUEST       :;
+    // Successfully completed
+    CmdMessageState.DONE                : Done               := TRUE;
+                                          Busy               := FALSE;
+    // Aborted before completion
+    CmdMessageState.ABORTED             : CommandAborted     := TRUE;
+                                          Busy               := FALSE;
+    // Encountered an error during execution
+    CmdMessageState.ERROR               : Error              := TRUE;
+                                          Busy               := FALSE;
+  END_CASE
+
+END_METHOD
+
+METHOD INTERNAL ParseResponsePayload : DINT
+VAR_INPUT
+  /// Response data
+  ResponseData : RobotLibraryResponseDataFB;
+  /// Timestamp
+  Timestamp    : SystemTime;
+END_VAR
+VAR
+  /// Parameter count
+ _parameterCnt : DINT;
+END_VAR
+// Table 6-555: Received CMD payload (RC to PLC) of "MoveDirectCam"
+// --------------------------
+// Header
+// --------------------------
+// Byte 00 : USINT   - ParSeq | State
+// Byte 01 : SINT    - AlarmMessageSeverity
+// Byte 02 : UINT    - AlarmMessageCode HB
+// Byte 03 :         - AlarmMessageCode LB
+// --------------------------
+// Datablock
+// --------------------------
+// Byte 04 : UINT    - Progress HW HB
+// Byte 05 :         - Progress HW LB
+// Byte 06 : REAL    - RemainingDistance HW HB
+// Byte 07 :         - RemainingDistance HW LB
+// Byte 08 :         - RemainingDistance LW HB
+// Byte 09 :         - RemainingDistance LW LB
+
+  // call base implementation to parse the header from payload buffer
+  ResponseData.PayloadPtr := SUPER^.ParseResponsePayload(ResponseData := ResponseData, Timestamp := Timestamp);
+  
+  // missing (trailing zero) bytes of the payload are 0, no values of the previous response
+  SysDepMemSet( pDest := ADR(_response), Value := 0, DataLen := SIZEOF(_response));
+  
+  // copy parsed header to response
+  _response.ParSeq               := _rspHeader.ParSeq;
+  _response.State                := _rspHeader.State;
+  _response.AlarmMessageSeverity := _rspHeader.AlarmMessageSeverity;
+  _response.AlarmMessageCode     := _rspHeader.AlarmMessageCode;
+  
+  
+  // Check payload remaining ?
+  IF ( ResponseData.IsPayloadRemaining)
+  THEN
+    // Get Response.Progress
+   _response.Progress := ResponseData.GetUint();
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check payload remaining ?
+  IF ( ResponseData.IsPayloadRemaining)
+  THEN
+  // Get Response.RemainingDistance
+  _response.RemainingDistance := ResponseData.GetReal();
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Create logging
+  ParseResponsePayloadLog(ResponseData := ResponseData, Timestamp := Timestamp, ParameterCnt := _parameterCnt);
+
+END_METHOD
+
+METHOD INTERNAL ParseResponsePayloadLog
+VAR_INPUT
+  /// Response data
+  ResponseData : RobotLibraryResponseDataFB;
+  /// Timestamp
+  Timestamp    : SystemTime;
+  /// Parameter count
+  ParameterCnt : DINT;
+END_VAR
+
+  // Create log entry for Parameter start
+  CreateLogMessagePara1 ( Timestamp   := Timestamp,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := '{1} parameter(s) to parse from the response data:',
+                          Para1       := DINT_TO_STRING(ParameterCnt));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Progress
+  CreateLogMessagePara1 ( Timestamp   := Timestamp,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Response.Progress = {1}',
+                          Para1       :=  UINT_TO_STRING(_response.Progress));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for RemainingDistance
+  CreateLogMessagePara1 ( Timestamp   := Timestamp,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Response.RemainingDistance = {1}',
+                          Para1       :=  REAL_TO_STRING(_response.RemainingDistance));
+
+END_METHOD
+
+METHOD PROTECTED Reset : DINT
+VAR_INPUT
+END_VAR
+
+  Reset := SUPER^.Reset();
+  
+  Done               := FALSE;
+  Busy               := FALSE;
+  Active             := FALSE;
+  CommandBuffered    := FALSE;
+  CommandAborted     := FALSE;
+  CommandInterrupted := FALSE;
+
+END_METHOD
+

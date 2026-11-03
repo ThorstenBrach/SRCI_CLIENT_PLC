@@ -152,8 +152,10 @@ END_VAR
   CheckParameterValid := TRUE;
   
   // Check ParCmd.ProcessingMode defined ? 
+  // ST-FIX F122: the values between CONTINUOUS and DEACTIVATE are not defined either
   IF (( ProcessingMode < ProcessingModeEnum.BUFFERED         ) OR // ST-FIX F26
-      ( ProcessingMode > ProcessingModeEnum.TRIGGER_MULTIPLE ))
+      ( ProcessingMode > ProcessingModeEnum.TRIGGER_MULTIPLE ) OR
+      (( ProcessingMode > ProcessingModeEnum.CONTINUOUS ) AND ( ProcessingMode < ProcessingModeEnum.DEACTIVATE )))
   THEN
     // Parameter not valid
     CheckParameterValid := FALSE;
@@ -685,7 +687,8 @@ END_VAR
       ( State = CmdMessageState.DONE   ))
   THEN
     // Update results
-    OutCmd.FollowID          := 0; {warning 'ToDo'}
+    // ST-FIX F133: FollowID is the ID of the command in the ACR (spec 5.5.12.4), not the OriginID of the response
+    OutCmd.FollowID          := UDINT_TO_DINT(_uniqueID);
     OutCmd.InvocationCounter := _response.InvocationCounter;
     OutCmd.OriginID          := _response.OriginID;
   END_IF

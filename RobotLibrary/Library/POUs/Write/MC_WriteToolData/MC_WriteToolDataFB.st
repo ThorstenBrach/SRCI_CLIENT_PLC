@@ -154,8 +154,10 @@ END_VAR
   CheckParameterValid := TRUE;
   
   // Check ParCmd.ProcessingMode defined ? 
+  // ST-FIX F122: the values between CONTINUOUS and DEACTIVATE are not defined either
   IF (( ProcessingMode < ProcessingModeEnum.BUFFERED         ) OR // ST-FIX F26
-      ( ProcessingMode > ProcessingModeEnum.TRIGGER_MULTIPLE ))
+      ( ProcessingMode > ProcessingModeEnum.TRIGGER_MULTIPLE ) OR
+      (( ProcessingMode > ProcessingModeEnum.CONTINUOUS ) AND ( ProcessingMode < ProcessingModeEnum.DEACTIVATE )))
   THEN
     // Parameter not valid
     CheckParameterValid := FALSE;
@@ -944,11 +946,15 @@ END_VAR
            // Done, Aborted or Error ?
            IF (_response.State >= CmdMessageState.DONE )
            THEN
-             // Update the ToolData in user defined system datas 
-             AxesGroup.SystemData.UpdateToolData( Caller     :=  THIS^,
-                                                  SystemTime :=  AxesGroup.State.SystemTime,
-                                                  ToolNo     := _parCmd.ToolNo, 
-                                                  ToolData   := _parCmd.ToolData);                     
+             // ST-FIX F115: the user data are updated only when the RC has accepted the data (DONE)
+             IF ( _response.State = CmdMessageState.DONE )
+             THEN
+               // Update the ToolData in user defined system datas 
+               AxesGroup.SystemData.UpdateToolData( Caller     :=  THIS^,
+                                                    SystemTime :=  AxesGroup.State.SystemTime,
+                                                    ToolNo     := _parCmd.ToolNo, 
+                                                    ToolData   := _parCmd.ToolData);                     
+             END_IF
              // set timeout
              SetTimeout(PT := _timeoutCmd, rTimer := _timerCmd);
              // inc step counter

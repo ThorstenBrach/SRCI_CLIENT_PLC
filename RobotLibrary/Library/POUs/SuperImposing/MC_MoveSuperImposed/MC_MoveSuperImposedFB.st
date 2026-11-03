@@ -157,8 +157,10 @@ END_VAR
   CheckParameterValid := TRUE;
   
   // Check ParCmd.ProcessingMode defined ? 
+  // ST-FIX F122: the values between CONTINUOUS and DEACTIVATE are not defined either
   IF (( ProcessingMode < ProcessingModeEnum.BUFFERED         ) OR // ST-FIX F26
-      ( ProcessingMode > ProcessingModeEnum.TRIGGER_MULTIPLE ))
+      ( ProcessingMode > ProcessingModeEnum.TRIGGER_MULTIPLE ) OR
+      (( ProcessingMode > ProcessingModeEnum.CONTINUOUS ) AND ( ProcessingMode < ProcessingModeEnum.DEACTIVATE )))
   THEN
     // Parameter not valid
     CheckParameterValid := FALSE;
@@ -511,7 +513,8 @@ END_VAR
   
   
   // Check ParCmd.VelocityDiffRate valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.VelocityDiffRate) = FALSE )  OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.VelocityDiffRate) = FALSE )  OR_ELSE
       (* ST-FIX F96: every value < 0 is the default *)
        (                   ParCmd.VelocityDiffRate  >   100 ))      
   THEN
@@ -531,7 +534,8 @@ END_VAR
   
   
   // Check ParCmd.AccelerationDiffRate valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.AccelerationDiffRate) = FALSE )  OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.AccelerationDiffRate) = FALSE )  OR_ELSE
       (* ST-FIX F96: every value < 0 is the default *)
        (                   ParCmd.AccelerationDiffRate  >   100 ))      
   THEN
@@ -551,7 +555,8 @@ END_VAR
   
   
   // Check ParCmd.DecelerationDiffRate valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.DecelerationDiffRate) = FALSE )  OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.DecelerationDiffRate) = FALSE )  OR_ELSE
       (* ST-FIX F96: every value < 0 is the default *)
        (                   ParCmd.DecelerationDiffRate  >   100 ))      
   THEN
@@ -571,7 +576,8 @@ END_VAR
   
   
   // Check ParCmd.JerkDiffRate valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.JerkDiffRate) = FALSE )  OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.JerkDiffRate) = FALSE )  OR_ELSE
       (* ST-FIX F96: every value < 0 is the default *)
        (                   ParCmd.JerkDiffRate  >   100 ))      
   THEN

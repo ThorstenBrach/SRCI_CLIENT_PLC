@@ -1035,6 +1035,14 @@ END_VAR
                                           // ST-FIX F106: error response without payload
                                           Enabled            := FALSE;
   END_CASE
+  
+  // ST-FIX F147: parameters acknowledged by the RC also while the function is ACTIVE
+  // (response ParSeq = command ParSeq, ParSeq is 4 bit in the telegram)
+  IF (( State = CmdMessageState.ACTIVE                   ) AND
+      (( _response.ParSeq MOD 16 ) = ( _command.ParSeq MOD 16 )))
+  THEN
+    ParameterAccepted := TRUE;
+  END_IF
 
 END_METHOD
 

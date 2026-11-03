@@ -709,6 +709,235 @@ END_VAR
                             Para1       := VALID_REAL_TO_STRING(ParCmd.WorkAreaData.J6Limit.UpperLimit));
     RETURN;                          
   END_IF
+  
+  
+  // ST-FIX F145: limits of the external axes E1..E6 were not checked (J1..J6 are)
+  // Check ParCmd.WorkAreaData.E1Limit.LowerLimit ? 
+  IF ( SysDepIsValidReal(ParCmd.WorkAreaData.E1Limit.LowerLimit) = FALSE ) 
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.E1Limit.LowerLimit = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.WorkAreaData.E1Limit.LowerLimit));
+    RETURN;                          
+  END_IF
+  
+  
+  // Check ParCmd.WorkAreaData.E1Limit.UpperLimit ? 
+  IF ( SysDepIsValidReal(ParCmd.WorkAreaData.E1Limit.UpperLimit) = FALSE ) 
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.E1Limit.UpperLimit = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.WorkAreaData.E1Limit.UpperLimit));
+    RETURN;                          
+  END_IF
+  
+  
+  // Check ParCmd.WorkAreaData.E2Limit.LowerLimit ? 
+  IF ( SysDepIsValidReal(ParCmd.WorkAreaData.E2Limit.LowerLimit) = FALSE ) 
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.E2Limit.LowerLimit = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.WorkAreaData.E2Limit.LowerLimit));
+    RETURN;                          
+  END_IF
+  
+  
+  // Check ParCmd.WorkAreaData.E2Limit.UpperLimit ? 
+  IF ( SysDepIsValidReal(ParCmd.WorkAreaData.E2Limit.UpperLimit) = FALSE ) 
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.E2Limit.UpperLimit = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.WorkAreaData.E2Limit.UpperLimit));
+    RETURN;                          
+  END_IF
+  
+  
+  // Check ParCmd.WorkAreaData.E3Limit.LowerLimit ? 
+  IF ( SysDepIsValidReal(ParCmd.WorkAreaData.E3Limit.LowerLimit) = FALSE ) 
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.E3Limit.LowerLimit = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.WorkAreaData.E3Limit.LowerLimit));
+    RETURN;                          
+  END_IF
+  
+  
+  // Check ParCmd.WorkAreaData.E3Limit.UpperLimit ? 
+  IF ( SysDepIsValidReal(ParCmd.WorkAreaData.E3Limit.UpperLimit) = FALSE ) 
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.E3Limit.UpperLimit = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.WorkAreaData.E3Limit.UpperLimit));
+    RETURN;                          
+  END_IF
+  
+  
+  // Check ParCmd.WorkAreaData.E4Limit.LowerLimit ? 
+  IF ( SysDepIsValidReal(ParCmd.WorkAreaData.E4Limit.LowerLimit) = FALSE ) 
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.E4Limit.LowerLimit = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.WorkAreaData.E4Limit.LowerLimit));
+    RETURN;                          
+  END_IF
+  
+  
+  // Check ParCmd.WorkAreaData.E4Limit.UpperLimit ? 
+  IF ( SysDepIsValidReal(ParCmd.WorkAreaData.E4Limit.UpperLimit) = FALSE ) 
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.E4Limit.UpperLimit = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.WorkAreaData.E4Limit.UpperLimit));
+    RETURN;                          
+  END_IF
+  
+  
+  // Check ParCmd.WorkAreaData.E5Limit.LowerLimit ? 
+  IF ( SysDepIsValidReal(ParCmd.WorkAreaData.E5Limit.LowerLimit) = FALSE ) 
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.E5Limit.LowerLimit = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.WorkAreaData.E5Limit.LowerLimit));
+    RETURN;                          
+  END_IF
+  
+  
+  // Check ParCmd.WorkAreaData.E5Limit.UpperLimit ? 
+  IF ( SysDepIsValidReal(ParCmd.WorkAreaData.E5Limit.UpperLimit) = FALSE ) 
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.E5Limit.UpperLimit = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.WorkAreaData.E5Limit.UpperLimit));
+    RETURN;                          
+  END_IF
+  
+  
+  // Check ParCmd.WorkAreaData.E6Limit.LowerLimit ? 
+  IF ( SysDepIsValidReal(ParCmd.WorkAreaData.E6Limit.LowerLimit) = FALSE ) 
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.E6Limit.LowerLimit = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.WorkAreaData.E6Limit.LowerLimit));
+    RETURN;                          
+  END_IF
+  
+  
+  // Check ParCmd.WorkAreaData.E6Limit.UpperLimit ? 
+  IF ( SysDepIsValidReal(ParCmd.WorkAreaData.E6Limit.UpperLimit) = FALSE ) 
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.E6Limit.UpperLimit = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.WorkAreaData.E6Limit.UpperLimit));
+    RETURN;                          
+  END_IF
 
 END_METHOD
 

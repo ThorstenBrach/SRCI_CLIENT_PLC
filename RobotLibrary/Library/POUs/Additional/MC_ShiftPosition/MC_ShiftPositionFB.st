@@ -634,6 +634,26 @@ END_VAR
                             Para1       := REFERENCE_ELEMENT_TO_STRING(ParCmd.TransformationParameter_2));
     RETURN;                          
   END_IF
+  
+  
+  // ST-FIX F144: RotationAngle was not checked
+  // Check ParCmd.RotationAngle valid ? 
+  IF ( SysDepIsValidReal(ParCmd.RotationAngle) = FALSE ) 
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.RotationAngle = {1}',
+                            Para1       := VALID_REAL_TO_STRING(ParCmd.RotationAngle));
+    RETURN;                          
+  END_IF
 
 END_METHOD
 

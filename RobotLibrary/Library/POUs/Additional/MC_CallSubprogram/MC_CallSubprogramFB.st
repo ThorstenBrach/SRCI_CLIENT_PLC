@@ -165,8 +165,10 @@ END_VAR
   CheckParameterValid := TRUE;
   
   // Check ParCmd.ProcessingMode defined ? 
+  // ST-FIX F122: the values between CONTINUOUS and DEACTIVATE are not defined either
   IF (( ProcessingMode < ProcessingModeEnum.BUFFERED         ) OR // ST-FIX F26
-      ( ProcessingMode > ProcessingModeEnum.TRIGGER_MULTIPLE ))
+      ( ProcessingMode > ProcessingModeEnum.TRIGGER_MULTIPLE ) OR
+      (( ProcessingMode > ProcessingModeEnum.CONTINUOUS ) AND ( ProcessingMode < ProcessingModeEnum.DEACTIVATE )))
   THEN
     // Parameter not valid
     CheckParameterValid := FALSE;
@@ -816,10 +818,16 @@ END_VAR
     SysDepMemSet(pDest := ADR(OutCmd), Value := 0, DataLen := SIZEOF(OutCmd));         
   END_IF
   
+  // ST-FIX F134: InstanceID is the ID of the command in the ACR (unique per instance of CallSubprogram),
+  // available while the subprogram runs so that StopSubprogram can stop this instance (StopMode 1)
+  IF ( State <> CmdMessageState.EMPTY )
+  THEN
+    OutCmd.InstanceID := UDINT_TO_DINT(_uniqueID);
+  END_IF
+  
   IF ( State = CmdMessageState.DONE )
   THEN
     // Update results
-    OutCmd.InstanceID        := 0; {warning 'ToDo'}
     OutCmd.OriginID          := _response.OriginID;
     OutCmd.InvocationCounter := _response.InvocationCounter;
     OutCmd.ReturnData        := _response.ReturnData;
@@ -941,10 +949,15 @@ END_VAR
     CmdMessageState.CREATED             :;
     // Buffered and awaiting execution
     CmdMessageState.BUFFERED            : CommandBuffered    := TRUE;
+                                          // ST-FIX F120: parameters acknowledged by the RC
+                                          ParameterAccepted  := TRUE;
     // Buffered in planner for future execution
     CmdMessageState.BUFFERED_IN_PLANNER : CommandBuffered    := TRUE;
+                                          // ST-FIX F120: parameters acknowledged by the RC
+                                          ParameterAccepted  := TRUE;
     // Currently active and in progress
-    CmdMessageState.ACTIVE              :;
+    CmdMessageState.ACTIVE              : // ST-FIX F120: parameters acknowledged by the RC (the RC may start the call at once)
+                                          ParameterAccepted  := TRUE;
     // Interrupted and awaiting continuation
     CmdMessageState.INTERRUPTED         : CommandInterrupted := TRUE;
     // Requested for abort

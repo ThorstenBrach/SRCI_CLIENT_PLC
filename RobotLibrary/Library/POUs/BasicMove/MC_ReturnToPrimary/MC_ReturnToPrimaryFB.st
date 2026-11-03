@@ -179,7 +179,8 @@ END_VAR
   
   
   // Check ParCmd.VelocityRate valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.VelocityRate) = FALSE )  OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.VelocityRate) = FALSE )  OR_ELSE
       (* ST-FIX F96: every value < 0 is the default *)
        (                   ParCmd.VelocityRate  >   100 ))      
   THEN
@@ -199,7 +200,8 @@ END_VAR
   
   
   // Check ParCmd.AccelerationRate valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.AccelerationRate) = FALSE )  OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.AccelerationRate) = FALSE )  OR_ELSE
       (* ST-FIX F96: every value < 0 is the default *)
        (                   ParCmd.AccelerationRate  >   100 ))      
   THEN
@@ -219,7 +221,8 @@ END_VAR
   
   
   // Check ParCmd.DecelerationRate valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.DecelerationRate) = FALSE )  OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.DecelerationRate) = FALSE )  OR_ELSE
       (* ST-FIX F96: every value < 0 is the default *)
        (                   ParCmd.DecelerationRate  >   100 ))      
   THEN
@@ -239,7 +242,8 @@ END_VAR
   
   
   // Check ParCmd.JerkRate valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.JerkRate) = FALSE )  OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.JerkRate) = FALSE )  OR_ELSE
       (* ST-FIX F96: every value < 0 is the default *)
        (                   ParCmd.JerkRate  >   100 ))      
   THEN
@@ -383,7 +387,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-310: Sent CMD payload (PLC to RC) of "ReturnToPrimary"
+// Table 6-332: Sent CMD payload (PLC to RC) of "ReturnToPrimary" (spec V1.5.9)
 // --------------------------
 // Header
 // --------------------------
@@ -445,7 +449,7 @@ END_VAR
   // call base implementation to copy header to payload buffer
   CreateCommandPayload := SUPER^.CreateCommandPayload(AxesGroup := AxesGroup);
   
-  {warning 'ToDo: Changes in Spec V1.5, which are different to Spec V1.3'}
+  // payload as table 6-332 of spec V1.5.9
   
   // Check parameter must be added ? 
   IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
@@ -729,8 +733,9 @@ END_VAR
     // Update results
     OutCmd.Progress          :=  PERCENT_UINT_TO_REAL( Value := _response.Progress, IsOptional := TRUE);
     OutCmd.RemainingDistance := _response.RemainingDistance;
-    OutCmd.PrimaryPosToolNo  := UINT_TO_USINT(_response.PrimaryPosToolNo);  {warning 'ToDo'}
-    OutCmd.PrimaryPosFrameNo := UINT_TO_USINT(_response.PrimaryPosFrameNo); {warning 'ToDo'}
+    // ST-FIX F139: PrimaryPosToolNo / PrimaryPosFrameNo are USINT in the response (table 6-333)
+    OutCmd.PrimaryPosToolNo  := _response.PrimaryPosToolNo;
+    OutCmd.PrimaryPosFrameNo := _response.PrimaryPosFrameNo;
   END_IF
 
 END_METHOD
@@ -812,11 +817,69 @@ END_VAR
            END_IF
          END_IF
   
+         // ST-FIX F118: falling edge of Enable while the command runs -> send the Enable bit FALSE
+         // (parameter update with the next ParSeq) and wait for the end state of the RC instead of a reset
+         IF (( _enable_F.Q ) AND ( _stepCmd = 1 ))
+         THEN
+           // reset the falling edge, so that the block is not reset below
+          _enable_F();
+           // trigger parameter update with Enable = FALSE
+          _parameterUpdateInternal := TRUE;
+           // set timeout
+           SetTimeout(PT := _timeoutCmd, rTimer := _timerCmd);
+           // wait for the end state of the RC
+          _stepCmd := 10;
+         END_IF
+  
   
     02: IF (NOT Enable)
         THEN
           Reset();
         END_IF  
+  
+  
+    // ST-FIX F118: Enable FALSE was sent, wait until the RC has ended the command
+    10:  IF ( _responseReceived )
+         THEN
+           // reset response received flag
+          _responseReceived := FALSE;
+           // update state flags (CommandAborted / Done / Error for one cycle)
+           OnUpdateStateFlags(_response.State);
+           // update command outputs
+           OnApplyOutCmd(_response.State);
+  
+           // Done, Aborted or Error ?
+           IF (_response.State >= CmdMessageState.DONE )
+           THEN
+             // reset the block in the next cycle
+            _stepCmd := 11;
+           // ST-FIX F141: the RC confirmed the parameter update with Enable FALSE (ParSeq of the response) but
+           // did not end the command -> reset the block like before F118 (the RC keeps the command).
+           // ToDo: SDK 1.1.2 does not evaluate the Enable bit of ReturnToPrimary (spec V1.5.9 figure 6-100 (6):
+           // Enable FALSE aborts the movement); remove this branch when the SDK aborts the command.
+           ELSIF (( _response.ParSeq MOD 16 ) = ( _command.ParSeq MOD 16 ))
+           THEN
+             // Create log entry
+             CreateLogMessage ( Timestamp   := AxesGroup.State.SystemTime,
+                                MessageType := MessageType.CMD,
+                                Severity    := Severity.WARNING,
+                                MessageCode := 0,
+                                MessageText := 'Enable FALSE confirmed by the RC, but the command was not ended -> block reset');
+             Reset();
+           END_IF
+         END_IF
+  
+         // no end state within the timeout or RobotTask not initialized -> reset
+         IF (( _stepCmd = 10                                       )  AND
+            (( CheckTimeout(_timerCmd) = RobotLibraryConstants.OK  )  OR
+             ( NOT AxesGroup.State.Initialized                     )))
+         THEN
+           Reset();
+         END_IF
+  
+  
+    // ST-FIX F118: the end state was shown for one cycle
+    11:  Reset();
   
   ELSE
     // invalid step
@@ -904,7 +967,7 @@ END_VAR
 // Byte 08 :       - RemainingDistance LW HB
 // Byte 09 :       - RemainingDistance LW LB
 // Byte 10 : USINT - PrimaryPosToolNo 
-// Byte 11 : USINT - PrimaryPosToolNo 
+// Byte 11 : USINT - PrimaryPosFrameNo 
 // --------------------------
 
   // call base implementation to parse the header from payload buffer
@@ -1020,7 +1083,7 @@ END_VAR
                           Severity    := Severity.DEBUG,
                           MessageCode := 0,
                           MessageText := 'Response.PrimaryPosToolNo = {1}',
-                          Para1       :=  UINT_TO_STRING(_response.PrimaryPosToolNo));
+                          Para1       :=  USINT_TO_STRING(_response.PrimaryPosToolNo));
   
   
   // Return if no parameter is remaining...
@@ -1033,7 +1096,7 @@ END_VAR
                           Severity    := Severity.DEBUG,
                           MessageCode := 0,
                           MessageText := 'Response.PrimaryPosFrameNo = {1}',
-                          Para1       :=  UINT_TO_STRING(_response.PrimaryPosFrameNo));
+                          Para1       :=  USINT_TO_STRING(_response.PrimaryPosFrameNo));
 
 END_METHOD
 

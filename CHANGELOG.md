@@ -4,6 +4,58 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [V1.5.4.0] - 2026-11-03
+
+Target specification: SRCI V1.5.9 (2024-12-04). Known error of the specification (confirmed by PI):
+the AxesGroupID starts at 0, not at 1.
+
+### Added
+ - ST-FIX F109: four command types of the specification had no function block: `MC_MoveDirectCamFB` (2401, mandatory, Profile Extended; template MoveLinearCam, byte 15 reserved instead of OriMode), `MC_ReadAnalogOutputFB` (6108, optional; like ReadAnalogInput), `MC_ReadSafeReferencePositionFB` (7009) and `MC_SafeReferencingFB` (7010, additional features); `CmdType.ReadSafeReferencePosition` / `SafeReferencing` and their names in `CMD_TYPE_TO_STRING`. Telegrams as in the spec tables (table 6-832 of ReadSafeReferencePosition is a copy of ReadActualPosition; the SRCI SDK puts MaximumDistance of SafeReferencing one byte later than table 6-838). Tested with SRCI_PY and the TcUnit project SRCI_PLC_TEST_SUITE against the modified SDK by Thorsten (complete run 1857 tests, 0 failed)
+
+### Fixed
+Fixes of the findings F110 … F152, found with validation tests against the SRCI SDK and
+tested in the TcUnit project SRCI_PLC_TEST_SUITE (3749 tests; the failures of the complete run of 2026-11-02 fixed and retested green).
+Every change is marked in the code with `// ST-FIX Fnn`.
+ - ST-FIX F110: `MC_WriteIntegersFB.CheckParameterValid` – `ParCmd.Values[_idx] < 0 OR ParCmd.Values[_idx] > 4294967295` rejects every negative value with `ERR_INVALID_PAR_CMD` (16#0008), although `Values` is `ARRAY[0..6] OF INT`; the upper bound (UDINT range) can never be reached with INT - copy of an unsigned range check. Fix: range check removed
+ - ST-FIX F111: `CheckParameterValid` of the motion blocks with `ConfigMode` (seen in `MC_MoveLinearAbsoluteFB`, `MC_MoveDirectAbsoluteFB`) – an undefined `ParCmd.ConfigMode.Shoulder/Elbow/Wrist` is rejected with the generic `ERR_INVALID_PAR_CMD` (16#0008); the codes 16#8405..16#8407 are used for `ParCmd.Position.Config` instead
+ - ST-FIX F112: `CheckParameterValid` of the motion blocks (`MC_MoveAxesAbsoluteFB`, `MC_MoveLinearAbsoluteFB`, `MC_MoveDirectAbsoluteFB`, probably all with `BlendingParameter`) – an invalid `BlendingParameter` sets `ERR_JERK_INVALID` and logs `JerkRate` (copy of the jerk check); the `RETURN` after `EXIT` is never reached, so later checks may overwrite the ErrorID
+ - ST-FIX F114: `ActiveCommandRegisterFB._set_NotifyParameterChanged`, called by `CheckParameterChanged` of the generated blocks – a `ParCmd` change in the first `Busy` cycle, before the command is sent, turns the `CREATED` entry into `UPDATE_AVAILABLE`; the command is never sent and ends with `ERR_TIMEOUT_CMD` after 5 s
+ - ST-FIX F115: `MC_WriteFrameDataFB` (~588), `MC_WriteToolDataFB` (~648), `MC_WriteLoadDataFB` (~657) – the user data array is updated for every final state (`State >= DONE`, also ERROR / ABORTED): a write refused by the RC (16#8C13, 16#8D17, 16#8D49) still marks the data as available with the refused values
+ - ST-FIX F118: `MC_ReturnToPrimaryFB.OnExecRun` – the falling edge of `Enable` resets the block without sending the Enable bit FALSE to the RC: the robot keeps returning and `CommandAborted` is never shown
+ - ST-FIX F119: `MC_CreateServerLogFB.CheckParameterValid` (~227) – `NOT ProcessingMode >= TRIGGER_BUFFERED` is a bitwise NOT of the INT (operator precedence): TRUE for every mode, so every trigger mode with `ListenerID > 0` is rejected with 16#8605
+ - ST-FIX F120: `MC_CallSubprogramFB.OnUpdateStateFlags` – `ParameterAccepted` is never set (other blocks set it on BUFFERED)
+ - ST-FIX F121: `MC_CallSubprogramFB.OnApplyOutCmd` – `OutCmd.InstanceID := 0` (ToDo): StopSubprogram with StopMode 1 (by InstanceID) cannot work. Fix: InstanceID = ID of the command in the ACR
+ - ST-FIX F122: `MC_ReadActualPositionFB.CheckParameterValid` – ProcessingMode 4..8 (not defined) gives 16#8603 'not allowed' instead of 16#8602 'not defined'; only values outside 0..14 give 16#8602. Fix: ProcessingMode 4..8 gives 16#8602 also in CallSubprogram
+ - ST-FIX F123: `MC_ReadActualPositionCyclicFB.OnExecRun` step 1 – only J1..J6 of the cyclic joint position are copied, E1 stays 0
+ - ST-FIX F127: `MC_GroupJogFB.Reset` (~758) – `Active` is not cleared, it stays TRUE after Enable FALSE; unreachable code after `RETURN` in OnExecRun (~653-658)
+ - ST-FIX F128: `MC_GroupJogFB` – an invalid `ToolNo` while jogging sets Error at once, but the jog on the RC keeps moving until Enable FALSE (safety relevant)
+ - ST-FIX F129: `MC_EnableRobotFB.CheckSynchronizationValid` – runs in every cycle while Enable is TRUE and sets `ERR_SYNC_STATE_PROHIBITS_COMMAND` as soon as Synchronized is FALSE, independent of `SyncReaction`: the block drops Enabled although the RC keeps the robot enabled
+ - ST-FIX F130: `MC_RobotTaskFB.CheckParameterValid` – an invalid SyncMode also sets the own error `ERR_SYNC_MODE_INVALID` and stops the initialization; the spec defines only the warning WARN_*_SYNC_MODE_INVALID
+ - ST-FIX F131: `MC_RobotTaskFB.CheckParameterChanged` – returns when `Initialized` is FALSE, and `Initialized := NOT Synchronized` (ToDo): a mode change while synchronized is reported only after the synchronization is lost
+ - ST-FIX F132: `MC_RobotTaskFB` – `ERR_AXESGROUP_INVALID` (16#8007) and `ERR_PERIPHERY_INVALID` (16#8008) are defined but never set: a second RobotTask on the same AxesGroup / telegram buffers is not rejected
+ - ST-FIX F133: `OnApplyOutCmd` of the motion blocks, `MC_ForceLimitFB`, `MC_SetTrigger*FB` (21 blocks) – `OutCmd.FollowID` is the `OriginID` of the response or 0; the triggered action reports another ID. Fix: `_uniqueID`
+ - ST-FIX F134: `MC_CallSubprogramFB.OnApplyOutCmd` – `OutCmd.InstanceID := 0` (ToDo, see F121). Fix: ID of the command in the ACR
+ - ST-FIX F135: `RobotLibraryBaseEnableFB` (all Enable blocks) – `Enabled` stays TRUE after the falling edge of `Enable` until the RC answers
+ - ST-FIX F136: `MC_WriteCallSubprogramCyclicFB.OnExecRun` – no check of the supported function, `Enabled` follows `Enable` directly, data written while not enabled. Fix: step chain like ReadCallSubprogramCyclic
+ - ST-FIX F137: `MC_RobotTaskFB.CheckParameterValid` – `Use*PositionExt` without `Use*Position` was rejected (cartesian) or not checked (`AND FALSE`, joints). Fix: supersedes F124
+ - ST-FIX F138: `MC_RobotTaskFB.OnCall` – an invalid `AxesGroupID` sets the internal error 3. Fix: default 0 kept
+ - ST-FIX F139: `MC_ReturnToPrimaryFB.OnApplyOutCmd` – `PrimaryPosToolNo` / `PrimaryPosFrameNo` converted with `UINT_TO_USINT`. Fix: type change only, no runtime test
+ - ST-FIX F140: `MC_RobotTaskFB.ParseRecvPayload` – the SEQ_ACK check covers only the first sequence
+ - ST-FIX F141: `MC_ReturnToPrimaryFB.OnExecRun` step 10 (after F118) – with the SDK the block waits for an end state after Enable FALSE that never comes (Busy/Active stay TRUE, robot keeps moving). Workaround: ParSeq) without ending the command; **ToDo: remove when the SDK aborts** (TcUnit SDK_RTP_006/010
+ - ST-FIX F142: `MC_CalculateToolFB.CheckParameterValid` – the check "PositionsArray[x].E2 valid" tests E1 (copy error): NaN / infinity in E2 is sent to the RC
+ - ST-FIX F143: `MC_MovePickPlaceDirectFB`, `MC_MovePickPlaceLinearFB` `.CheckParameterValid` – BlendingParameter[0..1] is not checked: NaN / infinity is sent to the RC
+ - ST-FIX F144: `MC_ShiftPositionFB.CheckParameterValid` – RotationAngle is not checked: NaN / infinity is sent to the RC
+ - ST-FIX F145: `MC_WriteWorkAreaFB.CheckParameterValid` – the limits of the external axes E1Limit..E6Limit (Lower/UpperLimit) are not checked, J1..J6 are: NaN / infinity is sent to the RC
+ - ST-FIX F146: `MC_FreeDriveFB`, `MC_PathAccuracyModeFB` `.CheckParameterChanged` – the method returns at once when ParCmd is empty (`SIZEOF(ParCmd) = 0`), before the internal update `_parameterUpdateInternal` is handled: the update with Enable FALSE is never sent, the block stays Enabled / Busy and the RC keeps the function enabled. Fix: RETURN only without active step, MemCmp only for a non-empty ParCmd
+ - ST-FIX F147: `OnUpdateStateFlags` of the "Enable" blocks (ForceControl, ForceLimit, ActivateConveyorTracking, SyncToConveyor, DynamicSpline, MonitorWorkArea, UnitMeasurement, AvoidSingularity, ExchangeConfiguration, OpenBrake, ...) – `ParameterAccepted` is set only for BUFFERED / BUFFERED_IN_PLANNER; a function the RC answers ACTIVE at once and every acknowledged parameter update (response ParSeq = command ParSeq) never show it
+ - ST-FIX F148: `MC_LoadMeasurementSequentialFB.CheckParameterValid` – a ProcessingMode other than Buffered / Aborting / Parallel sets ERR_ABORTINGMODE_INVALID (16#8411)
+ - ST-FIX F149: `MC_ActivateNextCommandFB`, `MC_RedefineTrackingPosFB` `.OnApplyOutCmd` – InvocationCounter / OriginID are copied only in state DONE: in Trigger Multiple the command stays ACTIVE and OutCmd.InvocationCounter stays 0 although the RC counts every trigger. Fix: copied in ACTIVE and DONE
+ - ST-FIX F150: `MC_MoveSuperImposedDynamicFB.OnExecRun` – the falling edge of Enable only calls `Reset()` (Busy, Active, CommandBuffered, ParameterAccepted FALSE): `Enabled` stays TRUE, no telegram is sent and the superimposed function stays ACTIVE on the RC. Fix: falling edge of Enable sends the disable update with STOP_PARALLEL_CONTINUOUS_TRIGGER and waits for the response; the SDK answers ABORTED
+ - ST-FIX F151: `MC_RobotTaskFB.HandleAxesGroupParameter` – until the RC configuration is exchanged, `AxesGroup.Parameter` is copied from the input `ParCfg` in every cycle; the corrections of `CheckParameterValid` (e.g. F137: base position switched on for an extended position) are lost because the caller writes `ParCfg` again: the telegram number changes during the start-up, the RC answers ERROR_169 and the RobotTask never initializes. Fix: `_parCfg` while `_stepCmd > 0`
+ - ST-FIX F152: `CheckParameterValid` of 33 blocks (dynamics rates of all motion blocks, Override, GroupJog, CollisionDetection, SoftSwitchTcp, SafeReferencing, splines, superimposed motions, WriteRobotDefaultDynamics; 124 conditions) – `IF (SysDepIsValidReal(x) = FALSE) OR (x < 0) OR ...`: ST evaluates `OR` completely, so `x < 0` is also evaluated when x is NaN; in TwinCAT an ordered comparison with NaN raises an FPU exception (0xC0000090, SSE invalid operation) and the PLC stops. Python does not show it: the transpiled `or` short-circuits. Fix: `OR_ELSE` in these conditions, TcUnit ValPar green
+ - `MC_RobotTaskFB.ParseRecvPayloadCyclicOptional`: the loop over `SubProgramData.Data` ends at
+   `SIZEOF(...Data) - 1` instead of the literal 25 (`UPPER_BOUND` on a fixed array is refused by older compilers)
+
 ## [V1.5.3.0]
 
 ### Added
@@ -870,4 +922,4 @@ code with `// ST-FIX Fnn`. Details and the diffs: SRCI_PY `docs/ST_FINDINGS.md` 
 ## [V0.0.0.2] - 2024-06-04
 
 ### Changed
-- No detailed change information provided – early development phase.
+- No detailed change information provided – early development phase.

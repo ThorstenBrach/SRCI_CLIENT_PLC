@@ -94,14 +94,18 @@ VAR_IN_OUT
   AxesGroup    : AxesGroup; 
 END_VAR
 
-  // Check ParCmd Size is > 0, because MemCmp does not work correctly with size = 0
-  IF (SIZEOF(ParCmd) = 0) OR (_stepCmd = 0)
+  // ST-FIX F146: an empty ParCmd must not skip the internal update (falling edge of Enable)
+  IF ( _stepCmd = 0 )
   THEN 
     RETURN;
   END_IF
   
-  // compare memory 
-  _parameterChanged := ( SysDepMemCmp(pData1 := ADR(ParCmd), pData2 := ADR(_parCmd), DataLen := SIZEOF(ParCmd)) <> RobotLibraryConstants.OK );
+  // Check ParCmd Size is > 0, because MemCmp does not work correctly with size = 0
+  IF ( SIZEOF(ParCmd) > 0 )
+  THEN
+    // compare memory 
+    _parameterChanged := ( SysDepMemCmp(pData1 := ADR(ParCmd), pData2 := ADR(_parCmd), DataLen := SIZEOF(ParCmd)) <> RobotLibraryConstants.OK );
+  END_IF
   
   // check parameter valid ?
   _parameterValid   := CheckParameterValid( AxesGroup := AxesGroup );
@@ -508,6 +512,14 @@ END_VAR
                                           // ST-FIX F106: error response without payload
                                           Enabled            := FALSE;
   END_CASE
+  
+  // ST-FIX F147: parameters acknowledged by the RC also while the function is ACTIVE
+  // (response ParSeq = command ParSeq, ParSeq is 4 bit in the telegram)
+  IF (( State = CmdMessageState.ACTIVE                   ) AND
+      (( _response.ParSeq MOD 16 ) = ( _command.ParSeq MOD 16 )))
+  THEN
+    ParameterAccepted := TRUE;
+  END_IF
 
 END_METHOD
 

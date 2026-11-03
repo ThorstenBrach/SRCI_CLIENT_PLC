@@ -255,6 +255,11 @@ END_VAR
   
     CmdType.UnitMeasurement             : CMD_TYPE_TO_STRING := StrReplace('UnitMeasurement ({0})','{0}'            , UINT_TO_STRING(CmdType.UnitMeasurement));
   
+    // ST-FIX F109: names of the new command types 7009 / 7010
+    CmdType.ReadSafeReferencePosition   : CMD_TYPE_TO_STRING := StrReplace('ReadSafeReferencePosition ({0})','{0}'  , UINT_TO_STRING(CmdType.ReadSafeReferencePosition));
+  
+    CmdType.SafeReferencing             : CMD_TYPE_TO_STRING := StrReplace('SafeReferencing ({0})','{0}'            , UINT_TO_STRING(CmdType.SafeReferencing));
+  
   ELSE
     CMD_TYPE_TO_STRING := CONCAT('CMD_TYPE_TO_STRING Function: Error -> no parsing for value',UINT_TO_STRING(Value));
   END_CASE

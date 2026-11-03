@@ -42,6 +42,13 @@ VAR
 END_VAR
 
   SUPER^(AxesGroup := AxesGroup);
+  
+  // ST-FIX F135: "Enabled" is reset with the falling edge of "Enable" as soon as possible
+  // (spec 5.5.10 output status), also while the FB still sends the deactivation to the RC
+  IF ( NOT Enable )
+  THEN
+    Enabled := FALSE;
+  END_IF
 
 END_FUNCTION_BLOCK
 

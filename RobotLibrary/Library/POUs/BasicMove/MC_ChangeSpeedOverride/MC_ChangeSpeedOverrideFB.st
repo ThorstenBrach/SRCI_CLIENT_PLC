@@ -139,8 +139,9 @@ END_VAR
   CheckParameterValid := TRUE;
   
   // Check ParCmd.Override valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.Override) = FALSE )  OR
-       (                   ParCmd.Override  <     0 )  OR 
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.Override) = FALSE )  OR_ELSE
+       (                   ParCmd.Override  <     0 )  OR_ELSE 
        (                   ParCmd.Override  >   100 ))      
   THEN
     // Parameter not valid

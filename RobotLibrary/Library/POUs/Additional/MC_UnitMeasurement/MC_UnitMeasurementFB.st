@@ -737,7 +737,8 @@ END_VAR
     CmdMessageState.BUFFERED_IN_PLANNER : CommandBuffered    := TRUE;
                                           ParameterAccepted  := TRUE;
     // Currently active and in progress
-    CmdMessageState.ACTIVE              : Enabled            := TRUE;  {warning 'ToDo: Indicator for Enabled'}  
+    // the response has no Enabled flag (table 6-826): enabled while the command is active
+    CmdMessageState.ACTIVE              : Enabled            := TRUE;
     // Interrupted and awaiting continuation
     CmdMessageState.INTERRUPTED         :;
     // Requested for abort
@@ -750,6 +751,14 @@ END_VAR
     CmdMessageState.ERROR               : Error              := TRUE;
                                           Busy               := FALSE;
   END_CASE
+  
+  // ST-FIX F147: parameters acknowledged by the RC also while the function is ACTIVE
+  // (response ParSeq = command ParSeq, ParSeq is 4 bit in the telegram)
+  IF (( State = CmdMessageState.ACTIVE                   ) AND
+      (( _response.ParSeq MOD 16 ) = ( _command.ParSeq MOD 16 )))
+  THEN
+    ParameterAccepted := TRUE;
+  END_IF
 
 END_METHOD
 

@@ -158,8 +158,10 @@ END_VAR
   CheckParameterValid := TRUE;
   
   // Check ParCmd.ProcessingMode defined ? 
+  // ST-FIX F122: the values between CONTINUOUS and DEACTIVATE are not defined either
   IF (( ProcessingMode < ProcessingModeEnum.BUFFERED         ) OR // ST-FIX F26
-      ( ProcessingMode > ProcessingModeEnum.TRIGGER_MULTIPLE ))
+      ( ProcessingMode > ProcessingModeEnum.TRIGGER_MULTIPLE ) OR
+      (( ProcessingMode > ProcessingModeEnum.CONTINUOUS ) AND ( ProcessingMode < ProcessingModeEnum.DEACTIVATE )))
   THEN
     // Parameter not valid
     CheckParameterValid := FALSE;
@@ -244,28 +246,7 @@ END_VAR
   END_FOR
   
   
-  FOR _idx := 0 TO 6
-  DO
-    // Check ParCmd.Values[_idx] valid ? 
-    IF (( ParCmd.Values[_idx] < 0            ) OR
-        ( ParCmd.Values[_idx] > 16#FFFF_FFFF ))        
-    THEN
-      // Parameter not valid
-      CheckParameterValid := FALSE;
-      // Set error
-      SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
-      // Create log entry
-      CreateLogMessagePara2 ( Timestamp   := AxesGroup.State.SystemTime,
-                              MessageType := MessageType.CMD,
-                              Severity    := Severity.ERROR,
-                              MessageCode := ErrorID,
-                              MessageText := 'Invalid Parameter ParCmd.Values[{2}] = {1}',
-                              Para1       := INT_TO_STRING(ParCmd.Values[_idx]),
-                              Para2       := DINT_TO_STRING(_idx));
-      EXIT;                            
-      RETURN;
-    END_IF
-  END_FOR
+  // ST-FIX F110: no range check of ParCmd.Values, the INT type limits the range (the unsigned check rejected negative values)
   
   
   // Check ParCmd.HighPriority valid ? 

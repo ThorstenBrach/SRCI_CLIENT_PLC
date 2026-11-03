@@ -148,7 +148,8 @@ END_VAR
   
   
   // Check ParCmd.DynamicValues.VelocityRate ? 
-  IF (( SysDepIsValidReal(ParCmd.DynamicValues.VelocityRate) = FALSE ) OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF (( SysDepIsValidReal(ParCmd.DynamicValues.VelocityRate) = FALSE ) OR_ELSE
       ( ParCmd.DynamicValues.VelocityRate > 655.35 )) // ST-FIX F97: UINT with factor 100 in the telegram 
   THEN
     // Parameter not valid
@@ -169,7 +170,8 @@ END_VAR
   
   
   // Check ParCmd.DynamicValues.AccelerationRate ? 
-  IF (( SysDepIsValidReal(ParCmd.DynamicValues.AccelerationRate) = FALSE ) OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF (( SysDepIsValidReal(ParCmd.DynamicValues.AccelerationRate) = FALSE ) OR_ELSE
       ( ParCmd.DynamicValues.AccelerationRate > 655.35 )) // ST-FIX F97: UINT with factor 100 in the telegram 
   THEN
     // Parameter not valid
@@ -190,7 +192,8 @@ END_VAR
   
   
   // Check ParCmd.DynamicValues.DecelerationRate ? 
-  IF (( SysDepIsValidReal(ParCmd.DynamicValues.DecelerationRate) = FALSE ) OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF (( SysDepIsValidReal(ParCmd.DynamicValues.DecelerationRate) = FALSE ) OR_ELSE
       ( ParCmd.DynamicValues.DecelerationRate > 655.35 )) // ST-FIX F97: UINT with factor 100 in the telegram 
   THEN
     // Parameter not valid
@@ -211,7 +214,8 @@ END_VAR
   
   
   // Check ParCmd.DynamicValues.JerkRate ? 
-  IF (( SysDepIsValidReal(ParCmd.DynamicValues.JerkRate) = FALSE ) OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF (( SysDepIsValidReal(ParCmd.DynamicValues.JerkRate) = FALSE ) OR_ELSE
       ( ParCmd.DynamicValues.JerkRate > 655.35 )) // ST-FIX F97: UINT with factor 100 in the telegram 
   THEN
     // Parameter not valid

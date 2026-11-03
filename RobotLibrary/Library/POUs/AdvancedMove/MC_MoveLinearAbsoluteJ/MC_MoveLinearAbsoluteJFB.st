@@ -422,7 +422,8 @@ END_VAR
   END_IF
   
   // Check ParCmd.VelocityRate valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.VelocityRate) = FALSE )  OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.VelocityRate) = FALSE )  OR_ELSE
       (* ST-FIX F96: every value < 0 is the default *)
        (                   ParCmd.VelocityRate  >   100 ))      
   THEN
@@ -442,7 +443,8 @@ END_VAR
   
   
   // Check ParCmd.AccelerationRate valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.AccelerationRate) = FALSE )  OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.AccelerationRate) = FALSE )  OR_ELSE
       (* ST-FIX F96: every value < 0 is the default *)
        (                   ParCmd.AccelerationRate  >   100 ))      
   THEN
@@ -462,7 +464,8 @@ END_VAR
   
   
   // Check ParCmd.DecelerationRate valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.DecelerationRate) = FALSE )  OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.DecelerationRate) = FALSE )  OR_ELSE
       (* ST-FIX F96: every value < 0 is the default *)
        (                   ParCmd.DecelerationRate  >   100 ))      
   THEN
@@ -482,7 +485,8 @@ END_VAR
   
   
   // Check ParCmd.JerkRate valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.JerkRate) = FALSE )  OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.JerkRate) = FALSE )  OR_ELSE
       (* ST-FIX F96: every value < 0 is the default *)
        (                   ParCmd.JerkRate  >   100 ))      
   THEN
@@ -561,16 +565,16 @@ END_VAR
       // Parameter not valid
       CheckParameterValid := FALSE;
       // Set error
-      SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_JERK_INVALID, Overwrite := TRUE );
+      // ST-FIX F112: blending parameter error instead of the jerk error, log the blending parameter, leave the method
+      SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
       // Create log entry
       CreateLogMessagePara2 ( Timestamp   := AxesGroup.State.SystemTime,
                               MessageType := MessageType.CMD,
                               Severity    := Severity.ERROR,
                               MessageCode := ErrorID,
                               MessageText := 'Invalid Parameter ParCmd.BlendingParameter[{2}] = {1}',
-                              Para1       := VALID_REAL_TO_STRING(ParCmd.JerkRate),
+                              Para1       := VALID_REAL_TO_STRING(ParCmd.BlendingParameter[_idx]),
                               Para2       := DINT_TO_STRING(_idx));       
-      EXIT;                     
       RETURN;
     END_IF
   END_FOR
@@ -1456,7 +1460,8 @@ END_VAR
   THEN
     // Update results
     OutCmd.Progress          :=  PERCENT_UINT_TO_REAL( Value := _response.Progress, IsOptional := TRUE);
-    OutCmd.FollowID          := _response.OriginID;
+    // ST-FIX F133: FollowID is the ID of the command in the ACR (spec 5.5.12.4), not the OriginID of the response
+    OutCmd.FollowID          := UDINT_TO_DINT(_uniqueID);
     OutCmd.RemainingDistance := _response.RemainingDistance;
   END_IF
 

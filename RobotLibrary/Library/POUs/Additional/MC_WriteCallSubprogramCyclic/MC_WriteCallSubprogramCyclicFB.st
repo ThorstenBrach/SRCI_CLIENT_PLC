@@ -86,14 +86,62 @@ END_VAR
   // call base implementation
   SUPER^.OnExecRun(AxesGroup := AxesGroup);
   
+  // configures the optional cyclic data area of the message frame (applied with the next initialization)
   AxesGroup.Parameter.Plc.OptionalCyclic.UseCallSubprogram := Enable;
   
-  {warning 'ToDo: modify like MC_ReadActualPositionCyclic'}
+  // ST-FIX F136: step chain like MC_ReadCallSubprogramCyclicFB (spec 6.5.19): the function must be
+  // supported, "Enabled" while the cyclic area is active and "Data" is written only while enabled
+  CASE _stepCmd OF
+    
+    00:  IF ( _enable_R.Q ) AND ( NOT Error )
+         THEN
+           // reset the rising edge
+          _enable_R();
+           // Check function is supported ?
+           IF ( CheckFunctionSupported( AxesGroup := AxesGroup ))
+           THEN
+             // Reset all internal flags
+             Reset();
+             // set busy flag
+             Busy := TRUE;
+             // inc step counter
+            _stepCmd := _stepCmd + 1;
+           END_IF
+         END_IF
   
-  Enabled := AxesGroup.CyclicOptional.PlcToRob.SubProgramData.Active;
-  Busy    := (Enabled <> Enable); 
+    01:  // Wait for the cyclic area of the message frame
+         IF ( AxesGroup.CyclicOptional.PlcToRob.SubProgramData.Active )
+         THEN
+           Busy    := FALSE;
+           Enabled := TRUE;
+           // write the data to the RC
+           AxesGroup.CyclicOptional.PlcToRob.SubProgramData.Data := ParCmd.Data;
+         END_IF
+         
+         IF ( _enable_F.Q )
+         THEN
+           // reset the falling edge
+          _enable_F();
+           // inc step counter
+          _stepCmd := _stepCmd + 1;
+         END_IF
   
-  AxesGroup.CyclicOptional.PlcToRob.SubProgramData.Data := ParCmd.Data;
+    02:  IF ( NOT Enable )
+         THEN
+           Reset();
+         END_IF
+  
+  ELSE
+    // invalid step
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_STEP, Overwrite := TRUE );
+  END_CASE
+  
+  // Reset FB
+  IF (( _enable_R.Q ) OR
+      ( _enable_F.Q ))
+  THEN
+    Reset();
+  END_IF
 
 END_METHOD
 

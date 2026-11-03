@@ -34,9 +34,10 @@ VAR_INPUT
   OnlineChange      : BOOL;
   /// Axes Group ID -> is used to uniquely identify each RA on a per RC basis.
   ///
-  /// For convenience, an RC with only one RA must assign ID 1 to this RA. 
-  /// An RC with multiple RAs must assign numeric values 1-15 to those RAs.
-  AxesGroupID       : BYTE := 0; // ToDo: Mistake in specification : ID should start with 1, but must start with 0 !  
+  /// The IDs start with 0: an RC with only one RA uses ID 0.
+  /// ST-FIX F138: spec V1.5.9 says 1 (one RA) and 1-15 (several RAs); this is an error of the spec
+  /// (confirmed by PI), the SDK uses 0 too.
+  AxesGroupID       : BYTE := 0;
   /// Configuration parameter
   ParCfg            : RobotTaskParCfg;
 END_VAR
@@ -349,6 +350,27 @@ VAR
   _restartReset : BOOL; // ST-FIX F23: interface reset on the RC requested by a restart
 END_VAR
 
+VAR
+  /// ST-FIX F132: identification of this instance (1..n, assigned in FB_init, kept by an online change)
+ _instanceId : UDINT;
+END_VAR
+
+VAR_STAT
+  /// ST-FIX F132: number of RobotTask instances created (source of _instanceId)
+ _instanceCount   : UDINT;
+  /// ST-FIX F132: instance that uses the telegram buffers of the entry (0 = free entry)
+ _peripheryOwner  : ARRAY[1..PERIPHERY_ENTRIES] OF UDINT;
+  /// ST-FIX F132: address of RobotInData of the entry
+ _peripheryInAdr  : ARRAY[1..PERIPHERY_ENTRIES] OF PVOID;
+  /// ST-FIX F132: address of RobotOutData of the entry
+ _peripheryOutAdr : ARRAY[1..PERIPHERY_ENTRIES] OF PVOID;
+END_VAR
+
+VAR CONSTANT
+  /// ST-FIX F132: number of RobotTask instances whose telegram buffers are checked
+  PERIPHERY_ENTRIES : DINT := 16;
+END_VAR
+
   // Get array dimension of RobotInData
   ROBOT_IN_DATA_MIN  := LOWER_BOUND  ( RobotInData,1);
   ROBOT_IN_DATA_MAX  := UPPER_BOUND  ( RobotInData,1);
@@ -359,6 +381,16 @@ END_VAR
   ROBOT_OUT_DATA_MAX  := UPPER_BOUND  ( RobotOutData,1);
   ROBOT_OUT_DATA_SIZE := DINT_TO_UDINT( ROBOT_OUT_DATA_MAX - ROBOT_OUT_DATA_MIN + 1);
   
+  // ST-FIX F132: an AxesGroup and the telegram buffers belong to one RobotTask only (table 7-1:
+  // 16#8007 / 16#8008); a second instance does nothing else, so it cannot disturb the first one
+  IF ( NOT CheckAssignmentValid( AxesGroup    := AxesGroup,
+                                 RobotInData  := RobotInData,
+                                 RobotOutData := RobotOutData ) )
+  THEN
+    Error       := HasError;
+    ErrorIdEnum := ErrorID;
+    RETURN;
+  END_IF
   
   HandleAxesGroup              ( AxesGroup         := AxesGroup,
   	                             ToolData          := ToolData, 
@@ -1173,7 +1205,7 @@ END_VAR
   THEN
     // Add Header size 
     CalculateCyclicDataLength := CalculateCyclicDataLength + ROB_TO_PLC_HEADER_SIZE; 
-    {warning 'ToDo: Used a constant because SizeOf(Telegram.RobToPlc.Header) return a wrong value,  because of VersionStruct instead of Byte'}
+    // a constant, because SIZEOF(Telegram.RobToPlc.Header) counts the VersionStruct instead of one byte
     
     // Check SubProgramData active ? 
     IF ( AxesGroup.CyclicOptional.RobToPlc.SubProgramData.Active )
@@ -1361,6 +1393,101 @@ END_VAR
                                       +       (Telegram.PlcToRob.Sequence[PRIMARY_SEQUENCE].Header.PayloadLength)
                                       + SIZEOF(Telegram.PlcToRob.Footer);
   END_IF
+
+END_METHOD
+
+/// ST-FIX F132: checks that the AxesGroup and the telegram buffers are not used by another RobotTask
+/// (table 7-1: 16#8007 ERR_AXESGROUP_INVALID, 16#8008 ERR_PERIPHERY_INVALID) and registers them
+METHOD PRIVATE CheckAssignmentValid : BOOL
+VAR_IN_OUT
+  /// Robot assignment of function
+  AxesGroup    : AxesGroup;
+  /// Inputs of PLC for communication from RC
+  RobotInData  : ARRAY[*] OF BYTE;
+  /// Outputs of PLC for communication to RC
+  RobotOutData : ARRAY[*] OF BYTE;
+END_VAR
+VAR
+  /// Loop index over the entries
+ _idx     : DINT;
+  /// Entry of this instance
+ _own     : DINT;
+  /// First free entry
+ _free    : DINT;
+  /// Address of RobotInData
+ _inAdr   : PVOID;
+  /// Address of RobotOutData
+ _outAdr  : PVOID;
+END_VAR
+
+  CheckAssignmentValid := FALSE;
+  
+  // AxesGroup used by another RobotTask ?
+  IF (( AxesGroup.State.RobotTaskId <> 0           ) AND
+      ( AxesGroup.State.RobotTaskId <> _instanceId ))
+  THEN
+    IF ( ErrorID <> RobotLibraryErrorIdEnum.ERR_AXESGROUP_INVALID )
+    THEN
+      SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_AXESGROUP_INVALID, Overwrite := TRUE );
+      // Create log entry
+      CreateLogMessagePara1 ( Timestamp   := SystemTime,
+                              MessageType := MessageType.CMD,
+                              Severity    := Severity.ERROR,
+                              MessageCode := ErrorID,
+                              MessageText := 'AxesGroup is already used by RobotTask {1}',
+                              Para1       := UDINT_TO_STRING(AxesGroup.State.RobotTaskId));
+    END_IF
+    RETURN;
+  END_IF
+  
+  // telegram buffers used by another RobotTask ?
+  _inAdr  := ADR(RobotInData [ROBOT_IN_DATA_MIN ]);
+  _outAdr := ADR(RobotOutData[ROBOT_OUT_DATA_MIN]);
+  _own    := 0;
+  _free   := 0;
+  FOR _idx := 1 TO PERIPHERY_ENTRIES
+  DO
+    IF ( _peripheryOwner[_idx] = _instanceId )
+    THEN
+     _own := _idx;
+    ELSIF ( _peripheryOwner[_idx] = 0 )
+    THEN
+      IF ( _free = 0 )
+      THEN
+       _free := _idx;
+      END_IF
+    ELSIF (( _peripheryInAdr [_idx] = _inAdr  ) OR
+           ( _peripheryOutAdr[_idx] = _outAdr ))
+    THEN
+      IF ( ErrorID <> RobotLibraryErrorIdEnum.ERR_PERIPHERY_INVALID )
+      THEN
+        SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_PERIPHERY_INVALID, Overwrite := TRUE );
+        // Create log entry
+        CreateLogMessagePara1 ( Timestamp   := SystemTime,
+                                MessageType := MessageType.CMD,
+                                Severity    := Severity.ERROR,
+                                MessageCode := ErrorID,
+                                MessageText := 'Telegram buffers are already used by RobotTask {1}',
+                                Para1       := UDINT_TO_STRING(_peripheryOwner[_idx]));
+      END_IF
+      RETURN;
+    END_IF
+  END_FOR
+  
+  // register this instance (the addresses can change after an online change)
+  IF ( _own = 0 )
+  THEN
+   _own := _free;
+  END_IF
+  IF ( _own > 0 )
+  THEN
+   _peripheryOwner [_own] := _instanceId;
+   _peripheryInAdr [_own] := _inAdr;
+   _peripheryOutAdr[_own] := _outAdr;
+  END_IF
+  AxesGroup.State.RobotTaskId := _instanceId;
+  
+  CheckAssignmentValid := TRUE;
 
 END_METHOD
 
@@ -1655,11 +1782,13 @@ END_VAR
   // Region ParCfg.Rob.OptionalCyclic {{{
   
   // Check configuration if optional cyclic CartesianPosition valid ?
-  IF ( ParCfg.Rob.OptionalCyclic.UseCartesianPosition AND ParCfg.Rob.OptionalCyclic.UseCartesianPositionExt )
+  // ST-FIX F137: the extended cartesian position cannot be used without the cartesian position ->
+  // the cartesian position is activated automatically (spec 6.4.2 and InfoID 16#6002, table 7-6);
+  // before: both together were rejected and the extended position was switched off
+  IF ( ParCfg.Rob.OptionalCyclic.UseCartesianPositionExt AND NOT ParCfg.Rob.OptionalCyclic.UseCartesianPosition )
   THEN
     // set to valid configuration
     ParCfg.Rob.OptionalCyclic.UseCartesianPosition    := TRUE;
-    ParCfg.Rob.OptionalCyclic.UseCartesianPositionExt := FALSE;
    
     // Set info
     SetInfo( InfoID := RobotLibraryInfoIdEnum.INFO_RECV_EXT_CART_POS_NOT_USABLE_WITH_RECV_CART_POS, Overwrite := TRUE);
@@ -1669,16 +1798,18 @@ END_VAR
                       MessageType := MessageType.CMD,
                       Severity    := Severity.INFO,
                       MessageCode := 0,
-                      MessageText := 'UseCartesianPosition and UseCartesianPositionExt cannot be configured together -> UseCartesianPosition is automatically activated');
+                      MessageText := 'UseCartesianPositionExt cannot be used without UseCartesianPosition -> UseCartesianPosition is automatically activated');
   END_IF
   
   
   // Check configuration if optional cyclic JointPosition valid ?
-  IF ( ParCfg.Rob.OptionalCyclic.UseJointPosition AND ParCfg.Rob.OptionalCyclic.UseJointPositionExt ) AND FALSE  {warning 'ToDo: Yaskawa need this combination for debugging via JointPosExt '}
+  // ST-FIX F137: the extended joint position cannot be used without the joint position -> the joint
+  // position is activated automatically (spec 6.4.2 and InfoID 16#6003, table 7-6); before: the check
+  // (both together rejected) was switched off with AND FALSE
+  IF ( ParCfg.Rob.OptionalCyclic.UseJointPositionExt AND NOT ParCfg.Rob.OptionalCyclic.UseJointPosition )
   THEN
     // set to valid configuration
     ParCfg.Rob.OptionalCyclic.UseJointPosition    := TRUE;
-    ParCfg.Rob.OptionalCyclic.UseJointPositionExt := FALSE;
    
     // Set info
     SetInfo( InfoID := RobotLibraryInfoIdEnum.INFO_RECV_EXT_JOINT_POS_NOT_USABLE_WITH_RECV_JOINT_POS, Overwrite := TRUE);
@@ -1688,7 +1819,7 @@ END_VAR
                       MessageType := MessageType.CMD,
                       Severity    := Severity.INFO,
                       MessageCode := 0,
-                      MessageText := 'UseJointPosition and UseJointPositionExt cannot be configured together -> UseJointPosition is automatically activated');
+                      MessageText := 'UseJointPositionExt cannot be used without UseJointPosition -> UseJointPosition is automatically activated');
   END_IF
   // EndRegion }}}
   
@@ -1698,12 +1829,8 @@ END_VAR
   IF (( ParCfg.Plc.Parameter.SynchronizationModes.Tool[SyncTime.DURING_START_UP] <  SyncMode.NO_SYNCHRONIZATION ) OR
       ( ParCfg.Plc.Parameter.SynchronizationModes.Tool[SyncTime.DURING_START_UP] >= SyncMode.AUTOMATIC          )) // Automatic is not allowed during startup
   THEN
-    // parameter(s) not valid
-    CheckParameterValid := FALSE;
-   
-    // Set error
-    SetError  ( ErrorID   := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID             , Overwrite := TRUE ); // own defined error - not in specification
-    // Set warning
+    // ST-FIX F130: only the warning of the data set (spec: no error); the RobotTask is initialized,
+    // the data set is not synchronized (SyncModesValid in the HandleSync... methods)
     SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_TOOL_DATA_SYNC_MODE_INVALID, Overwrite := TRUE );
      
     // Create log entry
@@ -1713,20 +1840,14 @@ END_VAR
                             MessageCode := 0,
                             MessageText :=                    'ParCfg.Plc.Parameter.SynchronizationModes.Tool[SyncTime.DURING_START_UP] invalid SyncMode {1}',
                             Para1       := SYNC_MODE_TO_STRING(ParCfg.Plc.Parameter.SynchronizationModes.Tool[SyncTime.DURING_START_UP]));
-    // no further validation                          
-    RETURN;                                                    
   END_IF
   
   // Check ToolData synchronisation mode after startup
   IF (( ParCfg.Plc.Parameter.SynchronizationModes.Tool[SyncTime.AFTER_START_UP] < SyncMode.NO_SYNCHRONIZATION ) OR
       ( ParCfg.Plc.Parameter.SynchronizationModes.Tool[SyncTime.AFTER_START_UP] > SyncMode.AUTOMATIC          ))
   THEN
-    // parameter(s) not valid
-    CheckParameterValid := FALSE;
-   
-    // Set error
-    SetError  ( ErrorID   := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID             , Overwrite := TRUE); // own defined error - not in specification
-    // Set warning
+    // ST-FIX F130: only the warning of the data set (spec: no error); the RobotTask is initialized,
+    // the data set is not synchronized (SyncModesValid in the HandleSync... methods)
     SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_TOOL_DATA_SYNC_MODE_INVALID, Overwrite := TRUE);
      
     // Create log entry
@@ -1736,8 +1857,6 @@ END_VAR
                             MessageCode := 0,
                             MessageText :=                    'ParCfg.Plc.Parameter.SynchronizationModes.Tool[SyncTime.AFTER_START_UP] invalid SyncMode {1}',
                             Para1       := SYNC_MODE_TO_STRING(ParCfg.Plc.Parameter.SynchronizationModes.Tool[SyncTime.AFTER_START_UP]));
-    // no further validation                          
-    RETURN;                                                    
   END_IF
   
   
@@ -1745,12 +1864,8 @@ END_VAR
   IF (( ParCfg.Plc.Parameter.SynchronizationModes.Frame[SyncTime.DURING_START_UP] <  SyncMode.NO_SYNCHRONIZATION ) OR
       ( ParCfg.Plc.Parameter.SynchronizationModes.Frame[SyncTime.DURING_START_UP] >= SyncMode.AUTOMATIC          )) // Automatic is not allowed during startup
   THEN
-    // parameter(s) not valid
-    CheckParameterValid := FALSE;
-   
-    // Set error
-    SetError  ( ErrorID   := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID              , Overwrite := TRUE);// own defined error - not in specification
-    // Set warning
+    // ST-FIX F130: only the warning of the data set (spec: no error); the RobotTask is initialized,
+    // the data set is not synchronized (SyncModesValid in the HandleSync... methods)
     SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_FRAME_DATA_SYNC_MODE_INVALID, Overwrite := FALSE);
      
     // Create log entry
@@ -1760,8 +1875,6 @@ END_VAR
                             MessageCode := 0,
                             MessageText :=                    'ParCfg.Plc.Parameter.SynchronizationModes.Frame[SyncTime.DURING_START_UP] invalid SyncMode {1}',
                             Para1       := SYNC_MODE_TO_STRING(ParCfg.Plc.Parameter.SynchronizationModes.Frame[SyncTime.DURING_START_UP]));
-    // no further validation                          
-    RETURN;                                                   
   END_IF
   
   
@@ -1769,12 +1882,8 @@ END_VAR
   IF (( ParCfg.Plc.Parameter.SynchronizationModes.Frame[SyncTime.AFTER_START_UP] < SyncMode.NO_SYNCHRONIZATION ) OR
       ( ParCfg.Plc.Parameter.SynchronizationModes.Frame[SyncTime.AFTER_START_UP] > SyncMode.AUTOMATIC          ))
   THEN
-    // parameter(s) not valid
-    CheckParameterValid := FALSE;
-   
-    // Set error
-    SetError  ( ErrorID   := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID              , Overwrite := TRUE);// own defined error - not in specification
-    // Set warning
+    // ST-FIX F130: only the warning of the data set (spec: no error); the RobotTask is initialized,
+    // the data set is not synchronized (SyncModesValid in the HandleSync... methods)
     SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_FRAME_DATA_SYNC_MODE_INVALID, Overwrite := TRUE);
      
     // Create log entry
@@ -1784,8 +1893,6 @@ END_VAR
                             MessageCode := 0,
                             MessageText :=                    'ParCfg.Plc.Parameter.SynchronizationModes.Frame[SyncTime.AFTER_START_UP] invalid SyncMode {1}',
                             Para1       := SYNC_MODE_TO_STRING(ParCfg.Plc.Parameter.SynchronizationModes.Frame[SyncTime.AFTER_START_UP]));
-    // no further validation                          
-    RETURN;                                                    
   END_IF
   
   
@@ -1793,12 +1900,8 @@ END_VAR
   IF (( ParCfg.Plc.Parameter.SynchronizationModes.Load[SyncTime.DURING_START_UP] <  SyncMode.NO_SYNCHRONIZATION ) OR
       ( ParCfg.Plc.Parameter.SynchronizationModes.Load[SyncTime.DURING_START_UP] >= SyncMode.AUTOMATIC          )) // Automatic is not allowed during startup
   THEN
-    // parameter(s) not valid
-    CheckParameterValid := FALSE;
-   
-    // Set error
-    SetError   ( ErrorID   := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID             , Overwrite := TRUE);// own defined error - not in specification
-    // Set warning
+    // ST-FIX F130: only the warning of the data set (spec: no error); the RobotTask is initialized,
+    // the data set is not synchronized (SyncModesValid in the HandleSync... methods)
     SetWarning ( WarningID := RobotLibraryWarningIdEnum.WARN_LOAD_DATA_SYNC_MODE_INVALID, Overwrite := TRUE);
      
     // Create log entry
@@ -1808,8 +1911,6 @@ END_VAR
                             MessageCode := 0,
                             MessageText :=                    'ParCfg.Plc.Parameter.SynchronizationModes.Load[SyncTime.DURING_START_UP] invalid SyncMode {1}',
                             Para1       := SYNC_MODE_TO_STRING(ParCfg.Plc.Parameter.SynchronizationModes.Load[SyncTime.DURING_START_UP]));
-    // no further validation                          
-    RETURN;                          
   END_IF
   
   
@@ -1817,12 +1918,8 @@ END_VAR
   IF (( ParCfg.Plc.Parameter.SynchronizationModes.Load[SyncTime.AFTER_START_UP] < SyncMode.NO_SYNCHRONIZATION ) OR
       ( ParCfg.Plc.Parameter.SynchronizationModes.Load[SyncTime.AFTER_START_UP] > SyncMode.AUTOMATIC          ))
   THEN
-    // parameter(s) not valid
-    CheckParameterValid := FALSE;
-   
-    // Set error
-    SetError  ( ErrorID   := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID,              Overwrite := TRUE);// own defined error - not in specification
-    // Set warning
+    // ST-FIX F130: only the warning of the data set (spec: no error); the RobotTask is initialized,
+    // the data set is not synchronized (SyncModesValid in the HandleSync... methods)
     SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_LOAD_DATA_SYNC_MODE_INVALID, Overwrite := TRUE);
      
     // Create log entry
@@ -1832,8 +1929,6 @@ END_VAR
                             MessageCode := 0,
                             MessageText :=                    'ParCfg.Plc.Parameter.SynchronizationModes.Load[SyncTime.AFTER_START_UP] invalid SyncMode {1}',
                             Para1       := SYNC_MODE_TO_STRING(ParCfg.Plc.Parameter.SynchronizationModes.Load[SyncTime.AFTER_START_UP]));
-    // no further validation                          
-    RETURN;                          
   END_IF
   
   
@@ -1841,12 +1936,8 @@ END_VAR
   IF (( ParCfg.Plc.Parameter.SynchronizationModes.WorkAreas[SyncTime.DURING_START_UP] <  SyncMode.NO_SYNCHRONIZATION ) OR
       ( ParCfg.Plc.Parameter.SynchronizationModes.WorkAreas[SyncTime.DURING_START_UP] >= SyncMode.AUTOMATIC          )) // Automatic is not allowed during startup
   THEN
-    // parameter(s) not valid
-    CheckParameterValid := FALSE;
-   
-    // Set error
-    SetError  ( ErrorID   := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID,              Overwrite := TRUE);// own defined error - not in specification
-    // Set warning
+    // ST-FIX F130: only the warning of the data set (spec: no error); the RobotTask is initialized,
+    // the data set is not synchronized (SyncModesValid in the HandleSync... methods)
     SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_WORK_AREA_SYNC_MODE_INVALID, Overwrite := TRUE);
      
     // Create log entry
@@ -1856,8 +1947,6 @@ END_VAR
                             MessageCode := 0,
                             MessageText :=                    'ParCfg.Plc.Parameter.SynchronizationModes.WorkAreas[SyncTime.DURING_START_UP] invalid SyncMode {1}',
                             Para1       := SYNC_MODE_TO_STRING(ParCfg.Plc.Parameter.SynchronizationModes.WorkAreas[SyncTime.DURING_START_UP]));
-    // no further validation                          
-    RETURN;                          
   END_IF
   
   
@@ -1865,12 +1954,8 @@ END_VAR
   IF (( ParCfg.Plc.Parameter.SynchronizationModes.WorkAreas[SyncTime.AFTER_START_UP] < SyncMode.NO_SYNCHRONIZATION ) OR
       ( ParCfg.Plc.Parameter.SynchronizationModes.WorkAreas[SyncTime.AFTER_START_UP] > SyncMode.AUTOMATIC          ))
   THEN
-    // parameter(s) not valid
-    CheckParameterValid := FALSE;
-   
-    // Set error
-    SetError  ( ErrorID   := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID,              Overwrite := TRUE);// own defined error - not in specification
-    // Set warning
+    // ST-FIX F130: only the warning of the data set (spec: no error); the RobotTask is initialized,
+    // the data set is not synchronized (SyncModesValid in the HandleSync... methods)
     SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_WORK_AREA_SYNC_MODE_INVALID, Overwrite := TRUE);
      
     // Create log entry
@@ -1880,8 +1965,6 @@ END_VAR
                             MessageCode := 0,
                             MessageText :=                    'ParCfg.Plc.Parameter.SynchronizationModes.WorkAreas[SyncTime.AFTER_START_UP] invalid SyncMode {1}',
                             Para1       := SYNC_MODE_TO_STRING(ParCfg.Plc.Parameter.SynchronizationModes.WorkAreas[SyncTime.AFTER_START_UP]));
-    // no further validation                          
-    RETURN;                          
   END_IF
   
   
@@ -1889,12 +1972,8 @@ END_VAR
   IF (( ParCfg.Plc.Parameter.SynchronizationModes.SWLimits[SyncTime.DURING_START_UP] <  SyncMode.NO_SYNCHRONIZATION ) OR
       ( ParCfg.Plc.Parameter.SynchronizationModes.SWLimits[SyncTime.DURING_START_UP] >= SyncMode.AUTOMATIC          )) // Automatic is not allowed during startup
   THEN
-    // parameter(s) not valid
-    CheckParameterValid := FALSE;
-   
-    // Set error
-    SetError  ( ErrorID   := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID,              Overwrite := TRUE);// own defined error - not in specification
-    // Set warning
+    // ST-FIX F130: only the warning of the data set (spec: no error); the RobotTask is initialized,
+    // the data set is not synchronized (SyncModesValid in the HandleSync... methods)
     SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_SW_LIMITS_SYNC_MODE_INVALID, Overwrite := TRUE);
      
     // Create log entry
@@ -1904,8 +1983,6 @@ END_VAR
                             MessageCode := 0,
                             MessageText :=                    'ParCfg.Plc.Parameter.SynchronizationModes.SWLimits[SyncTime.DURING_START_UP] invalid SyncMode {1}',
                             Para1       := SYNC_MODE_TO_STRING(ParCfg.Plc.Parameter.SynchronizationModes.SWLimits[SyncTime.DURING_START_UP]));
-    // no further validation                          
-    RETURN;                          
   END_IF
   
   
@@ -1913,12 +1990,8 @@ END_VAR
   IF (( ParCfg.Plc.Parameter.SynchronizationModes.SWLimits[SyncTime.AFTER_START_UP] < SyncMode.NO_SYNCHRONIZATION ) OR
       ( ParCfg.Plc.Parameter.SynchronizationModes.SWLimits[SyncTime.AFTER_START_UP] > SyncMode.AUTOMATIC          ))
   THEN
-    // parameter(s) not valid
-    CheckParameterValid := FALSE;
-   
-    // Set error
-    SetError  ( ErrorID   := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID,              Overwrite := TRUE);// own defined error - not in specification
-    // Set warning
+    // ST-FIX F130: only the warning of the data set (spec: no error); the RobotTask is initialized,
+    // the data set is not synchronized (SyncModesValid in the HandleSync... methods)
     SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_SW_LIMITS_SYNC_MODE_INVALID, Overwrite := TRUE);
      
     // Create log entry
@@ -1928,8 +2001,6 @@ END_VAR
                             MessageCode := 0,
                             MessageText :=                    'ParCfg.Plc.Parameter.SynchronizationModes.SWLimits[SyncTime.AFTER_START_UP] invalid SyncMode {1}',
                             Para1       := SYNC_MODE_TO_STRING(ParCfg.Plc.Parameter.SynchronizationModes.SWLimits[SyncTime.AFTER_START_UP]));
-    // no further validation                          
-    RETURN;                          
   END_IF
   
   
@@ -1937,12 +2008,8 @@ END_VAR
   IF (( ParCfg.Plc.Parameter.SynchronizationModes.DefaultDynamics[SyncTime.DURING_START_UP] <  SyncMode.NO_SYNCHRONIZATION ) OR
       ( ParCfg.Plc.Parameter.SynchronizationModes.DefaultDynamics[SyncTime.DURING_START_UP] >= SyncMode.AUTOMATIC          )) // Automatic is not allowed during startup
   THEN
-    // parameter(s) not valid
-    CheckParameterValid := FALSE;
-   
-    // Set error
-    SetError  ( ErrorID   := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID,                     Overwrite := TRUE);// own defined error - not in specification
-    // Set warning
+    // ST-FIX F130: only the warning of the data set (spec: no error); the RobotTask is initialized,
+    // the data set is not synchronized (SyncModesValid in the HandleSync... methods)
     SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_DEFAULT_DYNAMICS_SYNC_MODE_INVALID, Overwrite := TRUE);
      
     // Create log entry
@@ -1952,8 +2019,6 @@ END_VAR
                             MessageCode := 0,
                             MessageText :=                    'ParCfg.Plc.Parameter.SynchronizationModes.DefaultDynamics[SyncTime.DURING_START_UP] invalid SyncMode {1}',
                             Para1       := SYNC_MODE_TO_STRING(ParCfg.Plc.Parameter.SynchronizationModes.DefaultDynamics[SyncTime.DURING_START_UP]));
-    // no further validation                          
-    RETURN;                          
   END_IF
   
   
@@ -1961,12 +2026,8 @@ END_VAR
   IF (( ParCfg.Plc.Parameter.SynchronizationModes.DefaultDynamics[SyncTime.AFTER_START_UP] < SyncMode.NO_SYNCHRONIZATION ) OR
       ( ParCfg.Plc.Parameter.SynchronizationModes.DefaultDynamics[SyncTime.AFTER_START_UP] > SyncMode.AUTOMATIC          ))
   THEN
-    // parameter(s) not valid
-    CheckParameterValid := FALSE;
-   
-    // Set error
-    SetError  ( ErrorID   := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID,                     Overwrite := TRUE);// own defined error - not in specification
-    // Set warning
+    // ST-FIX F130: only the warning of the data set (spec: no error); the RobotTask is initialized,
+    // the data set is not synchronized (SyncModesValid in the HandleSync... methods)
     SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_DEFAULT_DYNAMICS_SYNC_MODE_INVALID, Overwrite := TRUE);
      
     // Create log entry
@@ -1976,8 +2037,6 @@ END_VAR
                             MessageCode := 0,
                             MessageText :=                    'ParCfg.Plc.Parameter.SynchronizationModes.DefaultDynamics[SyncTime.AFTER_START_UP] invalid SyncMode {1}',
                             Para1       := SYNC_MODE_TO_STRING(ParCfg.Plc.Parameter.SynchronizationModes.DefaultDynamics[SyncTime.AFTER_START_UP]));
-    // no further validation                          
-    RETURN;                          
   END_IF
   
   
@@ -1985,12 +2044,8 @@ END_VAR
   IF (( ParCfg.Plc.Parameter.SynchronizationModes.ReferenceDynamics[SyncTime.DURING_START_UP] <  SyncMode.NO_SYNCHRONIZATION ) OR
       ( ParCfg.Plc.Parameter.SynchronizationModes.ReferenceDynamics[SyncTime.DURING_START_UP] >= SyncMode.AUTOMATIC          )) // Automatic is not allowed during startup
   THEN
-    // parameter(s) not valid
-    CheckParameterValid := FALSE;
-   
-    // Set error
-    SetError  ( ErrorID   := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID,                       Overwrite := TRUE);// own defined error - not in specification
-    // Set warning
+    // ST-FIX F130: only the warning of the data set (spec: no error); the RobotTask is initialized,
+    // the data set is not synchronized (SyncModesValid in the HandleSync... methods)
     SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_REFERENCE_DYNAMICS_SYNC_MODE_INVALID, Overwrite := TRUE);
      
     // Create log entry
@@ -2000,8 +2055,6 @@ END_VAR
                             MessageCode := 0,
                             MessageText :=                    'ParCfg.Plc.Parameter.SynchronizationModes.ReferenceDynamics[SyncTime.DURING_START_UP] invalid SyncMode {1}',
                             Para1       := SYNC_MODE_TO_STRING(ParCfg.Plc.Parameter.SynchronizationModes.ReferenceDynamics[SyncTime.DURING_START_UP]));
-    // no further validation                          
-    RETURN;                          
   END_IF
   
   
@@ -2009,12 +2062,8 @@ END_VAR
   IF (( ParCfg.Plc.Parameter.SynchronizationModes.ReferenceDynamics[SyncTime.AFTER_START_UP] < SyncMode.NO_SYNCHRONIZATION ) OR
       ( ParCfg.Plc.Parameter.SynchronizationModes.ReferenceDynamics[SyncTime.AFTER_START_UP] > SyncMode.AUTOMATIC          ))
   THEN
-    // parameter(s) not valid
-    CheckParameterValid := FALSE;
-   
-    // Set error
-    SetError  ( ErrorID   := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID,                       Overwrite := TRUE);// own defined error - not in specification
-    // Set warning
+    // ST-FIX F130: only the warning of the data set (spec: no error); the RobotTask is initialized,
+    // the data set is not synchronized (SyncModesValid in the HandleSync... methods)
     SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_REFERENCE_DYNAMICS_SYNC_MODE_INVALID, Overwrite := TRUE);
      
     // Create log entry
@@ -2024,8 +2073,6 @@ END_VAR
                             MessageCode := 0,
                             MessageText :=                    'ParCfg.Plc.Parameter.SynchronizationModes.ReferenceDynamics[SyncTime.AFTER_START_UP] invalid SyncMode {1}',
                             Para1       := SYNC_MODE_TO_STRING(ParCfg.Plc.Parameter.SynchronizationModes.ReferenceDynamics[SyncTime.AFTER_START_UP]));
-    // no further validation                          
-    RETURN;                          
   END_IF
   // EndRegion }}}
 
@@ -2055,7 +2102,7 @@ END_VAR
   CreateSendPayloadLogging       ( AxesGroup := AxesGroup );
   
   // reset NewSEQ flag
-  AxesGroup.State.NewSEQ[0] := FALSE; {warning 'Test'}
+  AxesGroup.State.NewSEQ[0] := FALSE;
   AxesGroup.State.NewSEQ[1] := FALSE; // ST-FIX F63: 2nd sequence was rebuilt in every cycle
 
 END_METHOD
@@ -2319,6 +2366,13 @@ END_VAR
 
   MyType := 'MC_RobotTaskFB';
   
+  // ST-FIX F132: identification of this instance (an online change keeps the old value)
+  IF ( NOT bInCopyCode )
+  THEN
+   _instanceCount := _instanceCount + 1;
+   _instanceId    := _instanceCount;
+  END_IF
+  
   // Create log entry
   CreateLogMessage ( Timestamp   := SystemTime,
                      MessageType := MessageType.CMD,
@@ -2539,6 +2593,14 @@ END_VAR
     AxesGroup.Parameter.Rob.Parameter.DecceleratingSupported    := _exchangeConfiguration.OutCmd.DecceleratingSupported;
     AxesGroup.Parameter.Rob.Parameter.ConstantVelocitySupported := _exchangeConfiguration.OutCmd.ConstantVelocitySupported;
     AxesGroup.Parameter.Rob.Parameter.RCWorkingHours            := _exchangeConfiguration.OutCmd.RCWorkingHours;
+  ELSIF ( _stepCmd > 0 )
+  THEN
+    // ST-FIX F151: while the RobotTask initializes, use the configuration taken at the enable
+    // (_parCfg, including the corrections of CheckParameterValid, e.g. F137); the input ParCfg is
+    // written again by the caller in every cycle and would change the telegram number during the start-up
+    AxesGroup.Parameter.Plc.Parameter                           := _parCfg.Plc.Parameter;
+    AxesGroup.Parameter.Plc.OptionalCyclic                      := _parCfg.Plc.OptionalCyclic;
+    AxesGroup.Parameter.Rob.OptionalCyclic                      := _parCfg.Rob.OptionalCyclic;
   ELSE
     AxesGroup.Parameter.Plc.Parameter                           := ParCfg.Plc.Parameter;      
     AxesGroup.Parameter.Plc.OptionalCyclic                      := ParCfg.Plc.OptionalCyclic;
@@ -3082,8 +3144,11 @@ END_VAR
   CASE _rStep
   OF    
     0: // Check initialisation configured ?
-       IF (( _parCfg.PLC.Parameter.SynchronizationModes.Frame[SyncTime.DURING_START_UP] = SyncMode.NO_SYNCHRONIZATION ) AND
-           ( _parCfg.PLC.Parameter.SynchronizationModes.Frame[SyncTime. AFTER_START_UP] = SyncMode.NO_SYNCHRONIZATION ))
+       // ST-FIX F130: an invalid sync mode (warning of CheckParameterValid) -> no synchronization of the data set
+       IF ((( _parCfg.PLC.Parameter.SynchronizationModes.Frame[SyncTime.DURING_START_UP] = SyncMode.NO_SYNCHRONIZATION ) AND
+            ( _parCfg.PLC.Parameter.SynchronizationModes.Frame[SyncTime. AFTER_START_UP] = SyncMode.NO_SYNCHRONIZATION )) OR
+           ( NOT SyncModesValid( During := _parCfg.PLC.Parameter.SynchronizationModes.Frame[SyncTime.DURING_START_UP],
+                                 After  := _parCfg.PLC.Parameter.SynchronizationModes.Frame[SyncTime. AFTER_START_UP] ) ))
        THEN
          RETURN;
        END_IF
@@ -3346,7 +3411,7 @@ END_VAR
   				     END_IF
            ELSE
              // invalid sync mode for startup
-             SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID, Overwrite := TRUE );
+             SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_FRAME_DATA_SYNC_MODE_INVALID, Overwrite := TRUE ); // ST-FIX F130: warning instead of the own error
    	       END_CASE
          ELSE
            // ST-FIX F94: the user resolves the conflict with the write / read functions - read the RC data again
@@ -3878,8 +3943,11 @@ END_VAR
   CASE _rStep
   OF    
     0: // Check initialisation configured ?
-       IF (( _parCfg.PLC.Parameter.SynchronizationModes.Load[SyncTime.DURING_START_UP] = SyncMode.NO_SYNCHRONIZATION ) AND
-           ( _parCfg.PLC.Parameter.SynchronizationModes.Load[SyncTime. AFTER_START_UP] = SyncMode.NO_SYNCHRONIZATION ))
+       // ST-FIX F130: an invalid sync mode (warning of CheckParameterValid) -> no synchronization of the data set
+       IF ((( _parCfg.PLC.Parameter.SynchronizationModes.Load[SyncTime.DURING_START_UP] = SyncMode.NO_SYNCHRONIZATION ) AND
+            ( _parCfg.PLC.Parameter.SynchronizationModes.Load[SyncTime. AFTER_START_UP] = SyncMode.NO_SYNCHRONIZATION )) OR
+           ( NOT SyncModesValid( During := _parCfg.PLC.Parameter.SynchronizationModes.Load[SyncTime.DURING_START_UP],
+                                 After  := _parCfg.PLC.Parameter.SynchronizationModes.Load[SyncTime. AFTER_START_UP] ) ))
        THEN
          RETURN;
        END_IF
@@ -4146,7 +4214,7 @@ END_VAR
   				     END_IF
            ELSE
              // invalid sync mode for startup
-             SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID, Overwrite := TRUE );
+             SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_LOAD_DATA_SYNC_MODE_INVALID, Overwrite := TRUE ); // ST-FIX F130: warning instead of the own error
    	       END_CASE
          ELSE
            // ST-FIX F94: the user resolves the conflict with the write / read functions - read the RC data again
@@ -4684,8 +4752,11 @@ END_VAR
   CASE _rStep
   OF    
     0: // Check initialisation configured ?
-       IF (( _parCfg.PLC.Parameter.SynchronizationModes.DefaultDynamics[SyncTime.DURING_START_UP] = SyncMode.NO_SYNCHRONIZATION ) AND
-           ( _parCfg.PLC.Parameter.SynchronizationModes.DefaultDynamics[SyncTime. AFTER_START_UP] = SyncMode.NO_SYNCHRONIZATION ))
+       // ST-FIX F130: an invalid sync mode (warning of CheckParameterValid) -> no synchronization of the data set
+       IF ((( _parCfg.PLC.Parameter.SynchronizationModes.DefaultDynamics[SyncTime.DURING_START_UP] = SyncMode.NO_SYNCHRONIZATION ) AND
+            ( _parCfg.PLC.Parameter.SynchronizationModes.DefaultDynamics[SyncTime. AFTER_START_UP] = SyncMode.NO_SYNCHRONIZATION )) OR
+           ( NOT SyncModesValid( During := _parCfg.PLC.Parameter.SynchronizationModes.DefaultDynamics[SyncTime.DURING_START_UP],
+                                 After  := _parCfg.PLC.Parameter.SynchronizationModes.DefaultDynamics[SyncTime. AFTER_START_UP] ) ))
        THEN
          RETURN;
        END_IF
@@ -4889,7 +4960,7 @@ END_VAR
   				     END_IF
            ELSE
              // invalid sync mode for startup
-             SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID, Overwrite := TRUE );
+             SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_DEFAULT_DYNAMICS_SYNC_MODE_INVALID, Overwrite := TRUE ); // ST-FIX F130: warning instead of the own error
    	       END_CASE
          ELSE
            // ST-FIX F94: the user resolves the conflict with the write / read functions - read the RC data again
@@ -5350,8 +5421,11 @@ END_VAR
   CASE _rStep
   OF    
     0: // Check initialisation configured ?
-       IF (( _parCfg.PLC.Parameter.SynchronizationModes.ReferenceDynamics[SyncTime.DURING_START_UP] = SyncMode.NO_SYNCHRONIZATION ) AND
-           ( _parCfg.PLC.Parameter.SynchronizationModes.ReferenceDynamics[SyncTime. AFTER_START_UP] = SyncMode.NO_SYNCHRONIZATION ))
+       // ST-FIX F130: an invalid sync mode (warning of CheckParameterValid) -> no synchronization of the data set
+       IF ((( _parCfg.PLC.Parameter.SynchronizationModes.ReferenceDynamics[SyncTime.DURING_START_UP] = SyncMode.NO_SYNCHRONIZATION ) AND
+            ( _parCfg.PLC.Parameter.SynchronizationModes.ReferenceDynamics[SyncTime. AFTER_START_UP] = SyncMode.NO_SYNCHRONIZATION )) OR
+           ( NOT SyncModesValid( During := _parCfg.PLC.Parameter.SynchronizationModes.ReferenceDynamics[SyncTime.DURING_START_UP],
+                                 After  := _parCfg.PLC.Parameter.SynchronizationModes.ReferenceDynamics[SyncTime. AFTER_START_UP] ) ))
        THEN
          RETURN;
        END_IF
@@ -5555,7 +5629,7 @@ END_VAR
   				     END_IF
            ELSE
              // invalid sync mode for startup
-             SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID, Overwrite := TRUE );
+             SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_REFERENCE_DYNAMICS_SYNC_MODE_INVALID, Overwrite := TRUE ); // ST-FIX F130: warning instead of the own error
    	       END_CASE
          ELSE
            // ST-FIX F94: the user resolves the conflict with the write / read functions - read the RC data again
@@ -6012,8 +6086,11 @@ END_VAR
   CASE _rStep
   OF    
     0: // Check initialisation configured ?
-       IF (( _parCfg.PLC.Parameter.SynchronizationModes.SWLimits[SyncTime.DURING_START_UP] = SyncMode.NO_SYNCHRONIZATION ) AND
-           ( _parCfg.PLC.Parameter.SynchronizationModes.SWLimits[SyncTime. AFTER_START_UP] = SyncMode.NO_SYNCHRONIZATION ))
+       // ST-FIX F130: an invalid sync mode (warning of CheckParameterValid) -> no synchronization of the data set
+       IF ((( _parCfg.PLC.Parameter.SynchronizationModes.SWLimits[SyncTime.DURING_START_UP] = SyncMode.NO_SYNCHRONIZATION ) AND
+            ( _parCfg.PLC.Parameter.SynchronizationModes.SWLimits[SyncTime. AFTER_START_UP] = SyncMode.NO_SYNCHRONIZATION )) OR
+           ( NOT SyncModesValid( During := _parCfg.PLC.Parameter.SynchronizationModes.SWLimits[SyncTime.DURING_START_UP],
+                                 After  := _parCfg.PLC.Parameter.SynchronizationModes.SWLimits[SyncTime. AFTER_START_UP] ) ))
        THEN
          RETURN;
        END_IF
@@ -6025,7 +6102,7 @@ END_VAR
             ( _parCfg.PLC.Parameter.SynchronizationModes.SWLimits[SyncTime. AFTER_START_UP] = SyncMode.CLIENT_TO_SERVER ) OR
             ( _parCfg.PLC.Parameter.SynchronizationModes.SWLimits[SyncTime. AFTER_START_UP] = SyncMode.AUTOMATIC        )))
        THEN
-         SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID, Overwrite := FALSE);
+         SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_SW_LIMITS_SYNC_MODE_INVALID, Overwrite := FALSE ); // ST-FIX F130: warning instead of the own error
          // Create log entry
          CreateLogMessagePara1 ( Timestamp   := SystemTime,
                                  MessageType := MessageType.CMD,
@@ -6235,7 +6312,7 @@ END_VAR
   				     END_IF
            ELSE
              // invalid sync mode for startup
-             SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID, Overwrite := TRUE );
+             SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_SW_LIMITS_SYNC_MODE_INVALID, Overwrite := TRUE ); // ST-FIX F130: warning instead of the own error
    	       END_CASE
          ELSE
            // ST-FIX F94: the user resolves the conflict with the write / read functions - read the RC data again
@@ -6702,8 +6779,11 @@ END_VAR
   CASE _rStep
   OF    
     0: // Check initialisation configured ?
-       IF (( _parCfg.PLC.Parameter.SynchronizationModes.Tool[SyncTime.DURING_START_UP] = SyncMode.NO_SYNCHRONIZATION ) AND
-           ( _parCfg.PLC.Parameter.SynchronizationModes.Tool[SyncTime. AFTER_START_UP] = SyncMode.NO_SYNCHRONIZATION ))
+       // ST-FIX F130: an invalid sync mode (warning of CheckParameterValid) -> no synchronization of the data set
+       IF ((( _parCfg.PLC.Parameter.SynchronizationModes.Tool[SyncTime.DURING_START_UP] = SyncMode.NO_SYNCHRONIZATION ) AND
+            ( _parCfg.PLC.Parameter.SynchronizationModes.Tool[SyncTime. AFTER_START_UP] = SyncMode.NO_SYNCHRONIZATION )) OR
+           ( NOT SyncModesValid( During := _parCfg.PLC.Parameter.SynchronizationModes.Tool[SyncTime.DURING_START_UP],
+                                 After  := _parCfg.PLC.Parameter.SynchronizationModes.Tool[SyncTime. AFTER_START_UP] ) ))
        THEN
          RETURN;
        END_IF
@@ -6966,7 +7046,7 @@ END_VAR
   				     END_IF
            ELSE
              // invalid sync mode for startup
-             SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID, Overwrite := TRUE );
+             SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_TOOL_DATA_SYNC_MODE_INVALID, Overwrite := TRUE ); // ST-FIX F130: warning instead of the own error
    	       END_CASE
          ELSE
            // ST-FIX F94: the user resolves the conflict with the write / read functions - read the RC data again
@@ -7496,8 +7576,11 @@ END_VAR
   CASE _rStep
   OF    
     0: // Check initialisation configured ?
-       IF (( _parCfg.PLC.Parameter.SynchronizationModes.WorkAreas[SyncTime.DURING_START_UP] = SyncMode.NO_SYNCHRONIZATION ) AND
-           ( _parCfg.PLC.Parameter.SynchronizationModes.WorkAreas[SyncTime. AFTER_START_UP] = SyncMode.NO_SYNCHRONIZATION ))
+       // ST-FIX F130: an invalid sync mode (warning of CheckParameterValid) -> no synchronization of the data set
+       IF ((( _parCfg.PLC.Parameter.SynchronizationModes.WorkAreas[SyncTime.DURING_START_UP] = SyncMode.NO_SYNCHRONIZATION ) AND
+            ( _parCfg.PLC.Parameter.SynchronizationModes.WorkAreas[SyncTime. AFTER_START_UP] = SyncMode.NO_SYNCHRONIZATION )) OR
+           ( NOT SyncModesValid( During := _parCfg.PLC.Parameter.SynchronizationModes.WorkAreas[SyncTime.DURING_START_UP],
+                                 After  := _parCfg.PLC.Parameter.SynchronizationModes.WorkAreas[SyncTime. AFTER_START_UP] ) ))
        THEN
          RETURN;
        END_IF
@@ -7761,7 +7844,7 @@ END_VAR
   				     END_IF
            ELSE
              // invalid sync mode for startup
-             SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_SYNC_MODE_INVALID, Overwrite := TRUE );
+             SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_WORK_AREA_SYNC_MODE_INVALID, Overwrite := TRUE ); // ST-FIX F130: warning instead of the own error
    	       END_CASE
          ELSE
            // ST-FIX F94: the user resolves the conflict with the write / read functions - read the RC data again
@@ -8292,8 +8375,7 @@ END_VAR
        ((  Telegram.RobToPlc.Header.TelegramState = TelegramState.READY_FOR_INITIALIZATION ) OR
         (  Telegram.RobToPlc.Header.TelegramState = TelegramState.READY_TO_RESUME          )))
     THEN
-      {warning 'ToDo'}
-      //SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INTERFACE_WAS_RESET_AFTER_INIT_0x80A7  , Overwrite := TRUE );
+      // the error 16#80A7 (interface reset after the initialization) is set in OnCall (ST-FIX F65)
       ;
   	END_IF
   
@@ -8472,7 +8554,8 @@ END_VAR
   IF (( AxesGroupID < RobotLibraryConstants.AXES_GROUP_ID_MIN ) OR
       ( AxesGroupID > RobotLibraryConstants.AXES_GROUP_ID_MAX ))
   THEN
-    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_AXES_GROUP_ID, Overwrite := TRUE );
+    // ST-FIX F138: client error of the specification (16#80AA, table 7-2) instead of the internal ID 3
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_AXESGROUP_ID_INVALID_0x80AA, Overwrite := TRUE );
     RETURN;
   END_IF
   
@@ -8889,7 +8972,9 @@ END_VAR
   
          
     08:  // Update Initialized state
-         Initialized := NOT ERROR AND NOT Synchronized; {warning 'ToDo'}
+         // ST-FIX F131: Initialized stays TRUE while Synchronized (RI state "Synchronized" includes the
+         // initialization); otherwise CheckParameterChanged did not run while synchronized
+         Initialized := NOT Error;
          // ST-FIX F29: the next line overwrote the error check above
          // Initialized := NOT Synchronized;
   
@@ -8929,7 +9014,9 @@ END_VAR
   RecvData(Payload := RobotInData, PayloadSize := ROBOT_IN_DATA_SIZE);
   
   // check new data to receive ? 
-  IF ( Telegram.RobToPlc.Sequence[0].Header.SEQ_ACK <> AxesGroup.State.LastACK[0]) {warning 'ToDo: handle 2nd sequence'} 
+  // ST-FIX F140: also new data of the 2nd sequence
+  IF ( Telegram.RobToPlc.Sequence[0].Header.SEQ_ACK <> AxesGroup.State.LastACK[0] ) OR
+     ( Telegram.RobToPlc.Sequence[1].Header.SEQ_ACK <> AxesGroup.State.LastACK[1] )
   THEN
     // delete old telegram data 
     SysDepMemSet(pDest := ADR(Telegram.RobToPlc), Value := 0 , DataLen := SIZEOF(Telegram.RobToPlc));
@@ -8972,7 +9059,7 @@ END_VAR
   // AxesGroup.OptionalCyclic.RobToPlc.SubProgramData {{{
   IF ( AxesGroup.CyclicOptional.RobToPlc.SubProgramData.Active )
   THEN
-    FOR _idx := 0 TO 25 {warning 'Add contant for DataMax'}
+    FOR _idx := 0 TO SIZEOF(Telegram.RobToPlc.CyclicOptional.SubProgramData.Data) - 1
     DO
       Telegram.RobToPlc.CyclicOptional.SubProgramData.Data[_idx] := RecvData.GetByte(); 
     END_FOR
@@ -9163,7 +9250,7 @@ END_VAR
                                     Severity    := Severity.DEBUG,
                                     MessageCode := 0,
                                     MessageText := 'RecvData: received Fragment [{1}] with PayloadLength = {2}, CmdID <{3}> , CmdState: {4}, Fragment-Action Bits: {5}',
-                                    Para1       :=  DINT_TO_STRING(0), {warning 'Add seqIdx'}
+                                    Para1       :=  DINT_TO_STRING(_fragIdx),
                                     Para2       :=  UINT_TO_STRING              (Telegram.RobToPlc.Sequence[_seqIdx].Fragment[_fragIdx].Header.PayloadLength),
                                     Para3       :=  DINT_TO_STRING              (Telegram.RobToPlc.Sequence[_seqIdx].Fragment[_fragIdx].Header.CmdID),
                                     Para4       :=  CMD_MESSAGE_STATE_TO_STRING (Telegram.RobToPlc.Sequence[_seqIdx].Fragment[_fragIdx].Command.Header.State),
@@ -9510,6 +9597,23 @@ END_VAR
   THEN
     THIS^.WarningID := WarningID;
   END_IF
+
+END_METHOD
+
+/// ST-FIX F130: TRUE when the synchronization modes of a data set are defined
+/// (during the start-up NO_SYNCHRONIZATION .. SERVER_TO_CLIENT, after the start-up also AUTOMATIC)
+METHOD PRIVATE SyncModesValid : BOOL
+VAR_INPUT
+  /// Synchronization mode during the start-up
+  During : SyncMode;
+  /// Synchronization mode after the start-up
+  After  : SyncMode;
+END_VAR
+
+  SyncModesValid := ( During >= SyncMode.NO_SYNCHRONIZATION ) AND
+                    ( During <  SyncMode.AUTOMATIC          ) AND
+                    ( After  >= SyncMode.NO_SYNCHRONIZATION ) AND
+                    ( After  <= SyncMode.AUTOMATIC          );
 
 END_METHOD
 

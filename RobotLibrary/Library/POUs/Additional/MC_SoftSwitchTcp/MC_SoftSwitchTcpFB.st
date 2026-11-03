@@ -284,8 +284,9 @@ END_VAR
   
   
   // Check ParCmd.ResistanceForceTCP valid ? 
-  IF (( SysDepIsValidReal(ParCmd.ResistanceForceTCP) = FALSE ) OR
-      (                   ParCmd.ResistanceForceTCP  <     0 ) OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF (( SysDepIsValidReal(ParCmd.ResistanceForceTCP) = FALSE ) OR_ELSE
+      (                   ParCmd.ResistanceForceTCP  <     0 ) OR_ELSE
       (                   ParCmd.ResistanceForceTCP  >   200 ))
   THEN
     // Parameter not valid
@@ -307,8 +308,9 @@ END_VAR
   FOR _idx := 0 TO 5
   DO
     // Check ParCmd.ResistanceForceAxis[x] valid ? 
-    IF (( SysDepIsValidReal(ParCmd.ResistanceForceAxis[_idx]) = FALSE ) OR
-        (                   ParCmd.ResistanceForceAxis[_idx]  <     0 ) OR
+    // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+    IF (( SysDepIsValidReal(ParCmd.ResistanceForceAxis[_idx]) = FALSE ) OR_ELSE
+        (                   ParCmd.ResistanceForceAxis[_idx]  <     0 ) OR_ELSE
         (                   ParCmd.ResistanceForceAxis[_idx]  >   200 ))
     THEN
       // Parameter not valid

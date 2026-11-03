@@ -148,8 +148,10 @@ END_VAR
   CheckParameterValid := TRUE;
   
   // Check ProcessingMode defined ?
+  // ST-FIX F122: the values between CONTINUOUS and DEACTIVATE are not defined either
   IF (( ProcessingMode < ProcessingModeEnum.BUFFERED         ) OR
-      ( ProcessingMode > ProcessingModeEnum.TRIGGER_MULTIPLE ))
+      ( ProcessingMode > ProcessingModeEnum.TRIGGER_MULTIPLE ) OR
+      (( ProcessingMode > ProcessingModeEnum.CONTINUOUS ) AND ( ProcessingMode < ProcessingModeEnum.DEACTIVATE )))
   THEN
     // Parameter not valid
     CheckParameterValid := FALSE;
@@ -243,9 +245,10 @@ END_VAR
   END_IF
   
   // a ListenerID > 0 only with a trigger based ProcessingMode
-  IF ((     ProcessingMode <> ProcessingModeEnum.DEACTIVATE       ) AND
-      ( NOT ProcessingMode >= ProcessingModeEnum.TRIGGER_BUFFERED ) AND
-      (     ParCmd.ListenerID > 0                               ))
+  // ST-FIX F119: brackets - NOT binds stronger than >= (bitwise NOT of the INT, TRUE for every mode)
+  IF ((     ProcessingMode <> ProcessingModeEnum.DEACTIVATE          ) AND
+      ( NOT ( ProcessingMode >= ProcessingModeEnum.TRIGGER_BUFFERED )) AND
+      (     ParCmd.ListenerID > 0                                  ))
   THEN
     // Parameter not valid
     CheckParameterValid := FALSE;

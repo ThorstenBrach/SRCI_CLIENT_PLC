@@ -445,6 +445,8 @@ END_VAR
               OutCmd.JointPosition.J4             := OutCmd.JointPositionShort.J4             := AxesGroup.CyclicOptional.RobToPlc.JointPosition.J4;
               OutCmd.JointPosition.J5             := OutCmd.JointPositionShort.J5             := AxesGroup.CyclicOptional.RobToPlc.JointPosition.J5;
               OutCmd.JointPosition.J6             := OutCmd.JointPositionShort.J6             := AxesGroup.CyclicOptional.RobToPlc.JointPosition.J6;    
+              // ST-FIX F123: the first external axis is part of the joint position (like E1 of the cartesian position)
+              OutCmd.JointPosition.E1             := OutCmd.JointPositionShort.E1             := AxesGroup.CyclicOptional.RobToPlc.JointPosition.E1;
            END_IF    
     
            // Set extended joint position

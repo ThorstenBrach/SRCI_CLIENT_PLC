@@ -326,7 +326,8 @@ END_VAR
   Active := ( State = CmdMessageState.ACTIVE );
   
   // ST-FIX F32: output AbortedSequence
-  AbortedSequence := _response.AbortedSequence;
+  // ST-FIX W01: explicit conversion, the response carries a SINT and SequenceFlag is based on USINT
+  AbortedSequence := SINT_TO_USINT(_response.AbortedSequence);
 
 END_METHOD
 

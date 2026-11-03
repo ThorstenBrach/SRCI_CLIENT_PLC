@@ -479,9 +479,9 @@ END_VAR
 // Byte 33 :         - FrameData.RZ HW LB;
 // Byte 34 :         - FrameData.RZ LW HB;
 // Byte 35 :         - FrameData.RZ LW LB;
-{warning 'ToDo: value are swapped in comparation to Specification V1.3'}
-// Byte 36 : BOOL    - DataChanged; 
-// Byte 37 : USINT   - FrameNo;
+// order as table 6-184 of spec V1.5.9 (ST-FIX F27)
+// Byte 36 : USINT   - FrameNo;
+// Byte 37 : BOOL    - DataChanged;
 
   // call base implementation to parse the header from payload buffer
   ResponseData.PayloadPtr := SUPER^.ParseResponsePayload(ResponseData := ResponseData, Timestamp := Timestamp);
@@ -596,7 +596,7 @@ END_VAR
   END_IF
   
   
-  {warning 'ToDo: value are swapped in comparation to Specification V1.3'}
+  // ST-FIX F27: FrameNo first, then DataChanged (table 6-184 of spec V1.5.9)
   
   // Check payload remaining ? 
   IF ( ResponseData.IsPayloadRemaining)

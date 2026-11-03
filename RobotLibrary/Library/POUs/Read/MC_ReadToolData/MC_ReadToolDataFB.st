@@ -482,9 +482,9 @@ END_VAR
 // Byte 36 : BOOL       ToolData.ExternalTCP;
 // Byte 37 : BYTE       Reserved;
 
-{warning 'ToDo: value are swapped in comparation to Specification V1.3'}
-// Byte 38 : BOOL       DataChanged;
-// Byte 39 : USINT      ToolNo;
+// order as table 6-190 of spec V1.5.9 (ST-FIX F27)
+// Byte 38 : USINT      ToolNo;
+// Byte 39 : BOOL       DataChanged;
 // --------------------------
 
   // call base implementation to parse the header from payload buffer
@@ -620,7 +620,7 @@ END_VAR
   END_IF
   
    
-  {warning 'ToDo: value are swapped in comparation to Specification V1.3'}
+  // ST-FIX F27: ToolNo first, then DataChanged (table 6-190 of spec V1.5.9)
   // Check payload remaining ? 
   IF ( ResponseData.IsPayloadRemaining)
   THEN  

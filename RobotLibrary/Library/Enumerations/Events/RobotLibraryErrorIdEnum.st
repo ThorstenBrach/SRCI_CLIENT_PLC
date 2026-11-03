@@ -45,8 +45,7 @@ TYPE RobotLibraryErrorIdEnum :
   ERR_INVALID_PAR_CMD := 8,             
   /// Synchronisation state prohibits command execution
   ERR_SYNC_STATE_PROHIBITS_COMMAND := 9,
-  /// Synchronisation mode is invalid
-  ERR_SYNC_MODE_INVALID := 10,     
+  // ST-FIX F130: ERR_SYNC_MODE_INVALID (10) removed - an invalid SyncMode is only a warning (WARN_*_SYNC_MODE_INVALID)
   /// Client Invalid parameter value - LoadNo not
   /// available on RC
   /// Commands using the parameter "LoadNo"

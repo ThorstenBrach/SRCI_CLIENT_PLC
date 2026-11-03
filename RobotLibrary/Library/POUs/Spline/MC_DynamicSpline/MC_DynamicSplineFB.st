@@ -234,7 +234,8 @@ END_VAR
       // Parameter not valid
       CheckParameterValid := FALSE;
       // Set error
-      SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_JERK_INVALID, Overwrite := TRUE );
+      // ST-FIX F112: blending parameter error instead of the jerk error, log the blending parameter, leave the method
+      SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
       // Create log entry
       CreateLogMessagePara2 ( Timestamp   := AxesGroup.State.SystemTime,
                               MessageType := MessageType.CMD,
@@ -243,7 +244,6 @@ END_VAR
                               MessageText := 'Invalid Parameter ParCmd.BlendingParameter[{2}] = {1}',
                               Para1       := VALID_REAL_TO_STRING(ParCmd.BlendingParameter[_idx]),
                               Para2       := DINT_TO_STRING(_idx));       
-      EXIT;                     
       RETURN;
     END_IF
   END_FOR
@@ -595,7 +595,8 @@ END_VAR
   
     
     // Check ParCmd.SplineData[x].VelocityRate valid ? 
-    IF  (( SysDepIsValidReal(ParCmd.SplineData[_idx].VelocityRate) = FALSE )  OR
+    // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+    IF  (( SysDepIsValidReal(ParCmd.SplineData[_idx].VelocityRate) = FALSE )  OR_ELSE
         (* ST-FIX F96: every value < 0 is the default *)
          (                   ParCmd.SplineData[_idx].VelocityRate  >   100 ))      
     THEN
@@ -617,7 +618,8 @@ END_VAR
     
     
     // Check ParCmd.SplineData[x].AccelerationRate valid ? 
-    IF  (( SysDepIsValidReal(ParCmd.SplineData[_idx].AccelerationRate) = FALSE )  OR
+    // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+    IF  (( SysDepIsValidReal(ParCmd.SplineData[_idx].AccelerationRate) = FALSE )  OR_ELSE
         (* ST-FIX F96: every value < 0 is the default *)
          (                   ParCmd.SplineData[_idx].AccelerationRate  >   100 ))      
     THEN
@@ -639,7 +641,8 @@ END_VAR
     
     
     // Check ParCmd.SplineData[x].DecelerationRate valid ? 
-    IF  (( SysDepIsValidReal(ParCmd.SplineData[_idx].DecelerationRate) = FALSE )  OR
+    // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+    IF  (( SysDepIsValidReal(ParCmd.SplineData[_idx].DecelerationRate) = FALSE )  OR_ELSE
         (* ST-FIX F96: every value < 0 is the default *)
          (                   ParCmd.SplineData[_idx].DecelerationRate  >   100 ))      
     THEN
@@ -661,7 +664,8 @@ END_VAR
     
     
     // Check ParCmd.SplineData[x].JerkRate valid ? 
-    IF  (( SysDepIsValidReal(ParCmd.SplineData[_idx].JerkRate) = FALSE )  OR
+    // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+    IF  (( SysDepIsValidReal(ParCmd.SplineData[_idx].JerkRate) = FALSE )  OR_ELSE
         (* ST-FIX F96: every value < 0 is the default *)
          (                   ParCmd.SplineData[_idx].JerkRate  >   100 ))      
     THEN
@@ -1982,6 +1986,14 @@ END_VAR
     CmdMessageState.ERROR               : Error := TRUE;
                                           Busy  := FALSE;
   END_CASE
+  
+  // ST-FIX F147: parameters acknowledged by the RC also while the function is ACTIVE
+  // (response ParSeq = command ParSeq, ParSeq is 4 bit in the telegram)
+  IF (( State = CmdMessageState.ACTIVE                   ) AND
+      (( _response.ParSeq MOD 16 ) = ( _command.ParSeq MOD 16 )))
+  THEN
+    ParameterAccepted := TRUE;
+  END_IF
 
 END_METHOD
 

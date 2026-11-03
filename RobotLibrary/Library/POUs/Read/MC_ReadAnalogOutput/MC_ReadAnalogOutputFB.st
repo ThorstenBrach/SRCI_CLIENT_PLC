@@ -1,0 +1,905 @@
+/// Read analog output of RC
+/// F109: new function block (SRCI command 6108 ReadAnalogOutput, spec 6.4.12)
+FUNCTION_BLOCK MC_ReadAnalogOutputFB EXTENDS RobotLibraryBaseExecuteFB
+// -------------------------------------------------------------------------
+//  SRCI Robot Library
+// -------------------------------------------------------------------------
+//
+//  Object:      MC_ReadAnalogOutputFB
+//  Author:      Thorsten Brach
+//  Date:        2026-10-25
+//
+//  Description:
+//    ReadAnalogOutput (spec 6.4.12, type 6108): reads the analog output 1..32 (ParCmd.Index) of the
+//    RC once or continuously (ProcessingMode); OutCmd.Value / OutCmd.Unit return the value.
+//    Same payload as ReadAnalogInput (type 6107).
+//    F109: new function block (SRCI command 6108 ReadAnalogOutput, spec 6.4.12)
+//
+//  Copyright:
+//    (C) 2026 Thorsten Brach. All rights reserved
+//             Licensed under the MIT License.
+//
+//  Disclaimer:
+//    This project is provided without any guarantee and can be used for
+//    private and commercial purposes. Any use is at the user's
+//    own risk and responsibility.
+//
+// -------------------------------------------------------------------------
+VAR_INPUT
+  /// Processing Mode
+  ProcessingMode     : ProcessingMode;
+  /// Defines the target sequence in which the command will be executed
+  SequenceFlag       : SequenceFlag;
+  /// command parameter
+  ParCmd             : ReadAnalogOutputParCmd;
+END_VAR
+VAR_OUTPUT
+  /// TRUE, while the following outputs return valid values:
+  /// • Values
+  Valid              : BOOL;
+  /// Command is transferred and confirmed by the RC
+  CommandBuffered    : BOOL;
+  /// The command was aborted by another command.
+  CommandAborted     : BOOL;
+  /// TRUE, while command is interrupted during execution and can be continued
+  CommandInterrupted : BOOL;
+  /// Receiving of input parameter values has been acknowledged by RC
+  ParameterAccepted  : BOOL;
+  /// command outputs
+  OutCmd             : ReadAnalogOutputOutCmd;
+END_VAR
+
+VAR
+  /// internal copy of command parameter
+ _parCmd             : ReadAnalogOutputParCmd;
+  /// command data to send
+ _command            : ReadAnalogOutputSendData;
+  /// response data received
+ _response           : ReadAnalogOutputRecvData;
+END_VAR
+
+  SUPER^(AxesGroup := AxesGroup);
+
+END_FUNCTION_BLOCK
+
+METHOD INTERNAL CheckAddParameter : BOOL
+VAR_INPUT
+  /// Payload pointer
+  PayloadPtr : UDINT;
+END_VAR
+VAR
+  /// Payload as byte array
+  Payload    : ARRAY [1..SIZEOF(_command)] OF BYTE;
+  /// Null Byte array
+  Null       : ARRAY [1..SIZEOF(_command)] OF BYTE;
+  /// Data length to compare
+  DataLen    : UDINT;
+END_VAR
+
+  // Payload pointer must be decreased by one byte, because ADR(Payload) is already one byte !
+  PayloadPtr := LIMIT (0, PayloadPtr - 1, SIZEOF(Payload) -1);
+  // Convert command struct to payload array
+  SysDepMemCpy( pDest := ADR(Payload), pSrc := ADR(_command), DataLen := SIZEOF(_command));
+  // Calculate the data length to compare - at least one byte must be compared !
+  DataLen := LIMIT(1, SIZEOF(Payload) - PayloadPtr, SIZEOF(Payload));
+  // Compare Payload-Array with Null-Byte-Array
+  CheckAddParameter := SysDepMemCmp( pData1 := ADR(Payload) + PayloadPtr , pData2 := ADR(Null), DataLen := DataLen) <>  RobotLibraryConstants.OK ;
+
+END_METHOD
+
+METHOD PROTECTED CheckFunctionSupported : BOOL
+VAR_IN_OUT
+  /// Robot assignment of function
+  AxesGroup : AxesGroup;
+END_VAR
+
+  CheckFunctionSupported := AxesGroup.State.RobotData.RCSupportedFunctions.ReadAnalogOutput;
+  
+  IF ( NOT CheckFunctionSupported )
+  THEN
+    // call base implementation for set error and create log entry
+    SUPER^.CheckFunctionSupported(AxesGroup := AxesGroup);
+  END_IF
+
+END_METHOD
+
+METHOD PROTECTED CheckParameterChanged : BOOL
+VAR_IN_OUT
+  /// Robot assignment of function
+  AxesGroup    : AxesGroup;
+END_VAR
+
+  // Check ParCmd Size is > 0, because MemCmp does not work correctly with size = 0
+  IF (SIZEOF(ParCmd) = 0) OR (_stepCmd = 0)
+  THEN
+    RETURN;
+  END_IF
+  
+  // compare memory
+  _parameterChanged := ( SysDepMemCmp(pData1 := ADR(ParCmd), pData2 := ADR(_parCmd), DataLen := SIZEOF(ParCmd)) <> RobotLibraryConstants.OK );
+  
+  // check parameter valid ?
+  _parameterValid   := CheckParameterValid( AxesGroup := AxesGroup );
+  
+  IF ((  _parameterChanged        )  AND
+      (  _parameterValid          )) OR
+      (  _parameterUpdateInternal )
+  THEN
+    // Create log entry for parameter changed event
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.DEBUG,
+                            MessageCode := 0,
+                            MessageText := 'NotifyParameterChanged Event {1}',
+                            Para1       :=  '' );
+  
+    // reset internal flag for send parameter update
+   _parameterUpdateInternal := FALSE;
+    // update internal copy of parameters
+   _parCmd := ParCmd;
+    // inc parameter sequence
+   _command.ParSeq := _command.ParSeq + 1;
+    // update command data
+    CommandData := CreateCommandPayload(AxesGroup := AxesGroup); // ( Access via reference to rCommandFB in ACR )
+    // notify active command register
+    AxesGroup.Acyclic.ActiveCommandRegister.NotifyParameterChanged := _uniqueID;
+    // Reset Valid output of the FB
+    Valid := FALSE;
+    // Reset parameter accepted flag
+    ParameterAccepted := FALSE;
+  END_IF
+
+END_METHOD
+
+METHOD PROTECTED CheckParameterValid : BOOL
+VAR_IN_OUT
+  /// Robot assignment of function
+  AxesGroup : AxesGroup;
+END_VAR
+VAR
+  /// internal index for loops
+ _idx : DINT;
+END_VAR
+
+  CheckParameterValid := TRUE;
+  
+  // Check ParCmd.ProcessingMode defined ?
+  // ST-FIX F122: the values between CONTINUOUS and DEACTIVATE are not defined either
+  IF (( ProcessingMode < ProcessingModeEnum.BUFFERED         ) OR
+      ( ProcessingMode > ProcessingModeEnum.TRIGGER_MULTIPLE ) OR
+      (( ProcessingMode > ProcessingModeEnum.CONTINUOUS ) AND ( ProcessingMode < ProcessingModeEnum.DEACTIVATE )))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_PROCESSINGMODE_NOT_DEFINED, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.ProcessingMode = {1}',
+                            Para1       := PROCESSING_MODE_TO_STRING(ProcessingMode));
+    RETURN;
+  END_IF
+  
+  // Check ProcessingMode valid ?
+  IF (( ProcessingMode <> ProcessingModeEnum.BUFFERED           ) AND
+      ( ProcessingMode <> ProcessingModeEnum.ABORTING           ) AND
+      ( ProcessingMode <> ProcessingModeEnum.PARALLEL           ) AND
+      ( ProcessingMode <> ProcessingModeEnum.CONTINUOUS         ) AND
+      ( ProcessingMode <> ProcessingModeEnum.DEACTIVATE         ) AND
+      ( ProcessingMode <> ProcessingModeEnum.TRIGGER_ONCE       ) AND
+      ( ProcessingMode <> ProcessingModeEnum.TRIGGER_CONTINUOUS ) AND
+      ( ProcessingMode <> ProcessingModeEnum.TRIGGER_MULTIPLE   ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_PROCESSINGMODE_NOT_ALLOWED, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ProcessingMode = {1}',
+                            Para1       :=  PROCESSING_MODE_TO_STRING(ProcessingMode));
+    RETURN;
+  END_IF
+  
+  
+  // Check SequenceFlag valid ?
+  IF (( SequenceFlag <> SequenceFlagEnum.       NO_SEQUENCE ) AND
+      ( SequenceFlag <> SequenceFlagEnum.  PRIMARY_SEQUENCE ) AND
+      ( SequenceFlag <> SequenceFlagEnum.SECONDARY_SEQUENCE ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_SEQFLAG_NOT_ALLOWED, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter SequenceFlag = {1}',
+                            Para1       :=  SEQUENCE_FLAG_TO_STRING(SequenceFlag));
+    RETURN;
+  END_IF
+  
+  
+  
+  // Check ParCmd.Index valid ?
+  IF (( ParCmd.Index <  1 ) OR
+      ( ParCmd.Index > 32 ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.Index = {1}',
+                            Para1       :=  USINT_TO_STRING(ParCmd.Index));
+    RETURN;
+  END_IF
+  
+  
+  // Check ParCmd.ListenerID valid ?
+  IF (( ParCmd.ListenerID <   0 ) OR
+      ( ParCmd.ListenerID > 127 ))
+  THEN
+    // Parameter not valid
+    CheckParameterValid := FALSE;
+    // Set error
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_LISTENERID_MUST_BE_POSITIVE, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.ListenerID = {1}',
+                            Para1       :=  SINT_TO_STRING(ParCmd.ListenerID));
+    RETURN;
+  END_IF
+  
+  // trigger IDs and SequenceFlag (table 7-1, 5.5.12.4, e.g. table 6-496)
+  IF ( CheckParameterValid ) AND ( ProcessingMode >= ProcessingModeEnum.TRIGGER_BUFFERED ) AND ( ParCmd.ListenerID = 0 )
+  THEN
+    CheckParameterValid := FALSE;
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_LISTENERID_MUST_BE_GREATER_THAN_ZERO, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.ListenerID = 0 with ProcessingMode = {1}',
+                            Para1       := PROCESSING_MODE_TO_STRING(ProcessingMode));
+    RETURN;
+  END_IF
+  IF ( CheckParameterValid ) AND ( ProcessingMode <> ProcessingModeEnum.DEACTIVATE ) AND NOT ( ProcessingMode >= ProcessingModeEnum.TRIGGER_BUFFERED ) AND ( ParCmd.ListenerID > 0 )
+  THEN
+    CheckParameterValid := FALSE;
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_LISTENERID_NOT_ALLOWED, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ParCmd.ListenerID <> 0 with ProcessingMode = {1}',
+                            Para1       := PROCESSING_MODE_TO_STRING(ProcessingMode));
+    RETURN;
+  END_IF
+  // not for DEACTIVATE (it is sent with the SequenceFlag of the command it ends)
+  IF ( CheckParameterValid ) AND ( ProcessingMode <> ProcessingModeEnum.DEACTIVATE ) AND ( ( (( ProcessingMode = ProcessingModeEnum.BUFFERED ) OR ( ProcessingMode = ProcessingModeEnum.ABORTING ) OR ( ProcessingMode = ProcessingModeEnum.TRIGGER_BUFFERED ) OR ( ProcessingMode = ProcessingModeEnum.TRIGGER_ABORTING )) ) = ( SequenceFlag = SequenceFlagEnum.NO_SEQUENCE ) )
+  THEN
+    CheckParameterValid := FALSE;
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_SEQFLAG_INVALID_IN_PROC_MODE, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara2 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter SequenceFlag = {1} with ProcessingMode = {2}',
+                            Para1       := SEQUENCE_FLAG_TO_STRING(SequenceFlag),
+                            Para2       := PROCESSING_MODE_TO_STRING(ProcessingMode));
+    RETURN;
+  END_IF
+
+END_METHOD
+
+METHOD INTERNAL CreateCommandPayload : RobotLibraryCommandDataFB
+VAR_IN_OUT
+  /// Robot assignment of function
+  AxesGroup : AxesGroup;
+END_VAR
+VAR
+  /// internal index for loops
+ _idx          : DINT;
+  /// Parameter count
+ _parameterCnt : DINT;
+END_VAR
+// Table 6-575: Sent CMD payload (PLC to RC) of "ReadAnalogOutput"
+// --------------------------
+// Header
+// --------------------------
+// Byte 00 : UINT  - Type HB
+// Byte 01 :       - Type LB
+// Byte 02 : USINT - Reserve | ExecutionMode
+// Byte 03 : USINT - ParSeq  | Priority
+// --------------------------
+// Datablock
+// --------------------------
+// Byte 04 : SINT  - EmitterID[0];
+// Byte 05 : SINT  - EmitterID[1];
+// Byte 06 : SINT  - EmitterID[2];
+// Byte 07 : SINT  - EmitterID[3];
+// Byte 08 : SINT  - ListenerID;
+// Byte 09 : BYTE  - Reserved;
+// Byte 10 : USINT - Index;
+// --------------------------
+
+  // set command parameter
+  _command.CmdTyp       :=  CmdType.ReadAnalogOutput;
+  // ExecutionMode from ProcessingMode (and SequenceFlag), spec table 5-77
+  CASE ProcessingMode OF
+    ProcessingModeEnum.BUFFERED, ProcessingModeEnum.TRIGGER_BUFFERED:
+      IF ( SequenceFlag = SequenceFlagEnum.SECONDARY_SEQUENCE )
+      THEN
+        _command.ExecMode := ExecutionMode.SEQUENCE_SECONDARY;
+      ELSE
+        _command.ExecMode := ExecutionMode.SEQUENCE_PRIMARY;
+      END_IF
+    ProcessingModeEnum.ABORTING, ProcessingModeEnum.TRIGGER_ABORTING:
+      IF ( SequenceFlag = SequenceFlagEnum.SECONDARY_SEQUENCE )
+      THEN
+        _command.ExecMode := ExecutionMode.SEQUENCE_ABORT_OTHERS_SECONDARY;
+      ELSE
+        _command.ExecMode := ExecutionMode.SEQUENCE_ABORT_OTHERS_PRIMARY;
+      END_IF
+    ProcessingModeEnum.PARALLEL, ProcessingModeEnum.TRIGGER_ONCE:
+      _command.ExecMode := ExecutionMode.PARALLEL;
+    ProcessingModeEnum.CONTINUOUS, ProcessingModeEnum.TRIGGER_CONTINUOUS:
+      _command.ExecMode := ExecutionMode.CONTINUOUS;
+    ProcessingModeEnum.TRIGGER_MULTIPLE:
+      _command.ExecMode := ExecutionMode.TRIGGER_MULTIPLE;
+    ProcessingModeEnum.DEACTIVATE:
+      _command.ExecMode := ExecutionMode.STOP_PARALLEL_CONTINUOUS_TRIGGER;
+  ELSE
+    // undefined ProcessingMode -> error, not sent
+    _command.ExecMode := ExecMode;
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_PROCESSINGMODE_NOT_DEFINED, Overwrite := TRUE );
+    // Create log entry
+    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.ERROR,
+                            MessageCode := ErrorID,
+                            MessageText := 'Invalid Parameter ProcessingMode = {1}',
+                            Para1       := PROCESSING_MODE_TO_STRING(ProcessingMode));
+    OnUpdateStateFlags( State := CmdMessageState.ERROR );
+  END_CASE
+  _command.ParSeq       := _command.ParSeq;
+  _command.Priority     :=  Priority;
+  _command.EmitterID[0] := 0;
+  _command.EmitterID[1] := 0;
+  _command.EmitterID[2] := 0;
+  _command.EmitterID[3] := 0;
+  _command.ListenerID   := _parCmd.ListenerID;
+  _command.Reserve      := 0;
+  _command.Index        := _parCmd.Index;
+  
+  
+  // copy command data to header
+  _cmdHeader := _command;
+  // call base implementation to copy header to payload buffer
+  CreateCommandPayload := SUPER^.CreateCommandPayload(AxesGroup := AxesGroup);
+  
+  
+  FOR _idx := 0 TO 3
+  DO
+    // Check parameter must be added ?
+    IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+    THEN
+      // add command.EmitterID[x]
+      CreateCommandPayload.AddSint(_command.EmitterID[_idx]);
+      // inc parameter counter
+     _parameterCnt := _parameterCnt + 1;
+    END_IF
+  END_FOR
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.ListenerID
+    CreateCommandPayload.AddSint(_command.ListenerID);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.Reserve
+    CreateCommandPayload.AddByte(_command.Reserve);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check parameter must be added ?
+  IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
+  THEN
+    // add command.Index
+    CreateCommandPayload.AddUsint(_command.Index);
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Create logging
+  CreateCommandPayloadLog(AxesGroup := AxesGroup, ParameterCnt := _parameterCnt);
+
+END_METHOD
+
+METHOD INTERNAL CreateCommandPayloadLog
+VAR_IN_OUT
+  /// Robot assignment of function
+  AxesGroup : AxesGroup;
+END_VAR
+VAR_INPUT
+  /// Parameter count
+  ParameterCnt : DINT;
+END_VAR
+VAR
+  /// internal index for loops
+ _idx : DINT;
+END_VAR
+
+  // Create log entry for Parameter start
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Create command payload with {1} parameter(s) :',
+                          Para1       := DINT_TO_STRING(ParameterCnt));
+  
+  // Create log entry for EmitterID[x]
+  FOR _idx := 0 TO 3
+  DO
+    // Return if no parameter is remaining...
+    IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+    // dec remaining parameter(s)
+    ParameterCnt := ParameterCnt - 1;
+    // Create log entry for Command.EmitterID
+    CreateLogMessagePara2 ( Timestamp   := AxesGroup.State.SystemTime,
+                            MessageType := MessageType.CMD,
+                            Severity    := Severity.DEBUG,
+                            MessageCode := 0,
+                            MessageText := 'Command.EmitterID[{2}] = {1}',
+                            Para1       :=  SINT_TO_STRING(_command.EmitterID[_idx]),
+                            Para2       :=  DINT_TO_STRING(_idx));
+  END_FOR
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for ListenerID
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.ListenerID = {1}',
+                          Para1       :=  SINT_TO_STRING(_command.ListenerID));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Reserve
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Reserve = {1}',
+                          Para1       :=  BYTE_TO_STRING(_command.Reserve));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Index
+  CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Command.Index = {1}',
+                          Para1       :=  USINT_TO_STRING(_command.Index));
+
+END_METHOD
+
+METHOD FB_init : BOOL
+VAR_INPUT
+  /// if TRUE, the retain variables are initialized (warm start / cold start)
+  bInitRetains : BOOL;
+  /// if TRUE, the instance afterwards gets moved into the copy code (online change)
+  bInCopyCode  : BOOL;
+END_VAR
+
+  MyType := 'MC_ReadAnalogOutputFB';
+  
+  ExecMode       := ExecutionMode.PARALLEL;
+  Priority       := PriorityLevel.NORMAL;
+  ProcessingMode := ProcessingModeEnum.PARALLEL;
+  SequenceFlag   := SequenceFlagEnum.NO_SEQUENCE;
+
+END_METHOD
+
+METHOD PROTECTED OnApplyOutCmd
+VAR_INPUT
+  /// Command message state
+  State : CmdMessageState;
+END_VAR
+
+  IF ( State = CmdMessageState.EMPTY )
+  THEN
+    // Reset command outputs
+    SysDepMemSet(pDest := ADR(OutCmd), Value := 0, DataLen := SIZEOF(OutCmd));
+  END_IF
+  
+  IF (( State = CmdMessageState.ACTIVE ) OR
+      ( State = CmdMessageState.DONE   ))
+  THEN
+    // Update results
+    OutCmd.OriginID          := _response.OriginID;
+    OutCmd.InvocationCounter := _response.InvocationCounter;
+    OutCmd.Value             := _response.Value;
+    OutCmd.Unit              := _response.Unit;
+  END_IF
+
+END_METHOD
+
+METHOD PROTECTED OnExecRun : DINT
+VAR_IN_OUT
+  /// Robot assignment of function
+  AxesGroup : AxesGroup;
+END_VAR
+
+  // call base implementation
+  SUPER^.OnExecRun(AxesGroup := AxesGroup);
+  
+  CASE _stepCmd OF
+  
+    00:  IF ( _execute_R.Q ) AND ( NOT Error)
+         THEN
+           // Check function is supported and parameter are valid ?
+           IF (( CheckFunctionSupported( AxesGroup := AxesGroup )) AND
+               ( CheckParameterValid   ( AxesGroup := AxesGroup )))
+           THEN
+             // set busy flag
+             Busy := TRUE;
+             // Reset command outputs
+             SysDepMemSet(pDest := ADR(OutCmd), Value := 0, DataLen := SIZEOF(OutCmd));
+             // apply command parameter
+            _parCmd := ParCmd;
+             // init parameter sequence
+            _command.ParSeq := 1;
+             // create command data
+             CommandData := CreateCommandPayload(AxesGroup := AxesGroup);
+             // Add command to active command register
+            _uniqueID := AxesGroup.Acyclic.ActiveCommandRegister.AddCmd( pCommandFB := ADR(THIS^ ));
+             // set timeout
+             SetTimeout(PT := _timeoutCmd, rTimer := _timerCmd);
+             // inc step counter
+            _stepCmd := _stepCmd + 1;
+           END_IF
+         END_IF
+  
+  
+    01:
+         // ProcessingMode DEACTIVATE + new rising edge of Execute while the command runs
+         // (continuous / triggered): the same command again with execution mode Stop, the RC ends it with DONE
+         IF ( _executeRestart_R.Q ) AND ( ProcessingMode = ProcessingModeEnum.DEACTIVATE )
+         THEN
+           // inc parameter sequence
+          _command.ParSeq := _command.ParSeq + 1;
+           // update command data (execution mode Stop)
+           CommandData := CreateCommandPayload(AxesGroup := AxesGroup);
+           // notify active command register
+           AxesGroup.Acyclic.ActiveCommandRegister.NotifyParameterChanged := _uniqueID;
+         END_IF
+          // Wait for responce received
+         IF ( _responseReceived )
+         THEN
+           // reset response received flag
+          _responseReceived := FALSE;
+           // update state flags
+           OnUpdateStateFlags(_response.State);
+           // update state flags
+           OnApplyOutCmd(_response.State);
+  
+           // Done, Aborted or Error ?
+           IF (_response.State >= CmdMessageState.DONE )
+           THEN
+             // set timeout
+             SetTimeout(PT := _timeoutCmd, rTimer := _timerCmd);
+             // inc step counter
+            _stepCmd := _stepCmd + 1;
+           END_IF
+         END_IF
+  
+  
+    02: IF ( NOT Execute)
+        THEN
+          Reset();
+        END_IF
+  
+  ELSE
+    // invalid step
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_STEP, Overwrite := TRUE );
+  END_CASE
+  
+  
+  // Reset FB
+  IF ( NOT Execute )
+  THEN
+    Reset();
+  END_IF
+
+END_METHOD
+
+METHOD PROTECTED OnUpdateStateFlags
+VAR_INPUT
+  /// Command message state
+  State : CmdMessageState;
+END_VAR
+
+  // Reset State flags
+  CommandAborted     := FALSE;
+  CommandInterrupted := FALSE;
+  Done               := FALSE;
+  
+  CASE State OF
+  
+    // No operation or process is active
+    CmdMessageState.EMPTY               :;
+    // Created but not yet started
+    CmdMessageState.CREATED             :;
+    // Buffered and awaiting execution
+    CmdMessageState.BUFFERED            : CommandBuffered    := TRUE;
+                                          ParameterAccepted  := TRUE;
+    // Buffered in planner for future execution
+    CmdMessageState.BUFFERED_IN_PLANNER : CommandBuffered    := TRUE;
+                                          ParameterAccepted  := TRUE;
+    // Currently active and in progress
+    CmdMessageState.ACTIVE              :;
+    // Interrupted and awaiting continuation
+    CmdMessageState.INTERRUPTED         : CommandInterrupted := TRUE;
+    // Requested for abort
+    CmdMessageState.ABORT_REQUEST       :;
+    // Successfully completed
+    CmdMessageState.DONE                : Done               := TRUE;
+                                          Busy               := FALSE;
+    // Aborted before completion
+    CmdMessageState.ABORTED             : CommandAborted     := TRUE;
+                                          Busy               := FALSE;
+    // Encountered an error during execution
+    CmdMessageState.ERROR               : Error              := TRUE;
+                                          Busy               := FALSE;
+  END_CASE
+  
+  // output data are valid while the command is active (continuous) or done
+  Valid := ( State = CmdMessageState.ACTIVE ) OR ( State = CmdMessageState.DONE );
+
+END_METHOD
+
+METHOD INTERNAL ParseResponsePayload : DINT
+VAR_INPUT
+  /// Response data
+  ResponseData : RobotLibraryResponseDataFB;
+  /// Timestamp
+  Timestamp    : SystemTime;
+END_VAR
+VAR
+  /// Parameter count
+ _parameterCnt : DINT;
+END_VAR
+// Table 6-576: Received CMD payload (RC to PLC) of "ReadAnalogOutput"
+// --------------------------
+// Header
+// --------------------------
+// Byte 00 : USINT   - ParSeq | State
+// Byte 01 : SINT    - AlarmMessageSeverity
+// Byte 02 : UINT    - AlarmMessageCode HB
+// Byte 03 :         - AlarmMessageCode LB
+// --------------------------
+// Datablock
+// --------------------------
+// Byte 04 : USINT   - InvocationCounter
+// Byte 05 : SINT    - Reserved
+// Byte 06 : INT     - Origin ID HB
+// Byte 07 : INT       Origin ID LB
+// Byte 08 : REAL    - Values HW HB
+// Byte 09 :         - Values HW LB
+// Byte 10 :         - Values LW HB
+// Byte 11 :         - Values LW LB
+// Byte 12 : USINT   - Unit
+// --------------------------
+
+  // call base implementation to parse the header from payload buffer
+  ResponseData.PayloadPtr := SUPER^.ParseResponsePayload(ResponseData := ResponseData, Timestamp := Timestamp);
+  
+  // missing (trailing zero) bytes of the payload are 0, no values of the previous response
+  SysDepMemSet( pDest := ADR(_response), Value := 0, DataLen := SIZEOF(_response));
+  
+  // copy parsed header to response
+  _response.ParSeq               := _rspHeader.ParSeq;
+  _response.State                := _rspHeader.State;
+  _response.AlarmMessageSeverity := _rspHeader.AlarmMessageSeverity;
+  _response.AlarmMessageCode     := _rspHeader.AlarmMessageCode;
+  
+  
+  // Check payload remaining ?
+  IF ( ResponseData.IsPayloadRemaining)
+  THEN
+    // Get Response.InvocationCounter
+   _response.InvocationCounter := ResponseData.GetUsint();
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check payload remaining ?
+  IF ( ResponseData.IsPayloadRemaining)
+  THEN
+    // Get Response.Reserve
+   _response.Reserve := ResponseData.GetSint();
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check payload remaining ?
+  IF ( ResponseData.IsPayloadRemaining)
+  THEN
+    // Get Response.OriginID
+   _response.OriginID := ResponseData.GetInt();
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check payload remaining ?
+  IF ( ResponseData.IsPayloadRemaining)
+  THEN
+    // Get Response.Value
+   _response.Value := ResponseData.GetReal();
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Check payload remaining ?
+  IF ( ResponseData.IsPayloadRemaining)
+  THEN
+    // Get Response.Unit
+   _response.Unit := ResponseData.GetUsint();
+    // inc parameter counter
+   _parameterCnt := _parameterCnt + 1;
+  END_IF
+  
+  
+  // Create logging
+  ParseResponsePayloadLog(ResponseData := ResponseData, Timestamp := Timestamp, ParameterCnt := _parameterCnt);
+
+END_METHOD
+
+METHOD INTERNAL ParseResponsePayloadLog
+VAR_INPUT
+  /// Response data
+  ResponseData : RobotLibraryResponseDataFB;
+  /// Timestamp
+  Timestamp    : SystemTime;
+  /// Parameter count
+  ParameterCnt : DINT;
+END_VAR
+
+  // Create log entry for Parameter start
+  CreateLogMessagePara1 ( Timestamp   := Timestamp,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := '{1} parameter(s) to parse from the response data:',
+                          Para1       := DINT_TO_STRING(ParameterCnt));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for InvocationCounter
+  CreateLogMessagePara1 ( Timestamp   := Timestamp,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Response.InvocationCounter = {1}',
+                          Para1       :=  USINT_TO_STRING(_response.InvocationCounter));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Reserve
+  CreateLogMessagePara1 ( Timestamp   := Timestamp,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Response.Reserve = {1}',
+                          Para1       :=  SINT_TO_STRING(_response.Reserve));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for OriginID
+  CreateLogMessagePara1 ( Timestamp   := Timestamp,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Response.OriginID = {1}',
+                          Para1       :=  INT_TO_STRING(_response.OriginID));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Value
+  CreateLogMessagePara1 ( Timestamp   := Timestamp,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Response.Value = {1}',
+                          Para1       :=  REAL_TO_STRING(_response.Value));
+  
+  
+  // Return if no parameter is remaining...
+  IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
+  // dec remaining parameter(s)
+  ParameterCnt := ParameterCnt - 1;
+  // Create log entry for Unit
+  CreateLogMessagePara1 ( Timestamp   := Timestamp,
+                          MessageType := MessageType.CMD,
+                          Severity    := Severity.DEBUG,
+                          MessageCode := 0,
+                          MessageText := 'Response.Unit = {1}',
+                          Para1       :=  USINT_TO_STRING(_response.Unit));
+
+END_METHOD
+
+METHOD PROTECTED Reset : DINT
+VAR_INPUT
+END_VAR
+
+  Reset := SUPER^.Reset();
+  
+  Done               := FALSE;
+  Busy               := FALSE;
+  Valid              := FALSE;
+  ParameterAccepted  := FALSE;
+  CommandBuffered    := FALSE;
+  CommandAborted     := FALSE;
+  CommandInterrupted := FALSE;
+
+END_METHOD
+

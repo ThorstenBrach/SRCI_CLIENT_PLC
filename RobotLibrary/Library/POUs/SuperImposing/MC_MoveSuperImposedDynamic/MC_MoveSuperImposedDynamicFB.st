@@ -477,7 +477,8 @@ END_VAR
   
   
   // Check ParCmd.VelocityDiffRate valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.VelocityDiffRate) = FALSE )  OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.VelocityDiffRate) = FALSE )  OR_ELSE
       (* ST-FIX F96: every value < 0 is the default *)
        (                   ParCmd.VelocityDiffRate  >   100 ))      
   THEN
@@ -497,7 +498,8 @@ END_VAR
   
   
   // Check ParCmd.AccelerationDiffRate valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.AccelerationDiffRate) = FALSE )  OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.AccelerationDiffRate) = FALSE )  OR_ELSE
       (* ST-FIX F96: every value < 0 is the default *)
        (                   ParCmd.AccelerationDiffRate  >   100 ))      
   THEN
@@ -517,7 +519,8 @@ END_VAR
   
   
   // Check ParCmd.DecelerationDiffRate valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.DecelerationDiffRate) = FALSE )  OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.DecelerationDiffRate) = FALSE )  OR_ELSE
       (* ST-FIX F96: every value < 0 is the default *)
        (                   ParCmd.DecelerationDiffRate  >   100 ))      
   THEN
@@ -537,7 +540,8 @@ END_VAR
   
   
   // Check ParCmd.JerkDiffRate valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.JerkDiffRate) = FALSE )  OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.JerkDiffRate) = FALSE )  OR_ELSE
       (* ST-FIX F96: every value < 0 is the default *)
        (                   ParCmd.JerkDiffRate  >   100 ))      
   THEN
@@ -1422,8 +1426,26 @@ END_VAR
          END_IF
        
   
-    01:  // Wait for responce received
-         IF ( _responseReceived )
+    01:  // ST-FIX F150: falling edge of Enable: Enabled FALSE and the function is ended on the RC.
+         // The payload has no Enable field: parameter update with execution mode Stop (abort request),
+         // the RC answers ABORTED / DONE (step 03)
+         IF ( _enable_F.Q )
+         THEN
+           // function is no longer enabled
+           Enabled := FALSE;
+           // execution mode Stop for the parameter update
+           ExecMode := ExecutionMode.STOP_PARALLEL_CONTINUOUS_TRIGGER;
+           // trigger parameter update to end the function
+          _parameterUpdateInternal := TRUE;
+           // reset the falling edge
+          _enable_F();
+           // set timeout
+           SetTimeout(PT := _timeoutCmd, rTimer := _timerCmd);
+           // wait for the end of the function
+          _stepCmd := 3;
+         
+         // Wait for responce received
+         ELSIF ( _responseReceived )
          THEN
            // reset response received flag
           _responseReceived := FALSE;
@@ -1447,6 +1469,32 @@ END_VAR
         THEN
           Reset();
   	    END_IF
+  
+  
+    // ST-FIX F150: wait for the end of the function on the RC (ABORTED / DONE / ERROR) or timeout
+    03: IF ( _responseReceived )
+        THEN
+          // reset response received flag
+         _responseReceived := FALSE;
+          // Error: keep it until the next enable
+          IF ( _response.State = CmdMessageState.ERROR )
+          THEN
+            OnUpdateStateFlags(_response.State);
+            // execution mode for the next enable
+            ExecMode := ExecutionMode.SEQUENCE_PRIMARY;
+          // Done or Aborted ?
+          ELSIF ( _response.State >= CmdMessageState.DONE )
+          THEN
+            Reset();
+            // execution mode for the next enable
+            ExecMode := ExecutionMode.SEQUENCE_PRIMARY;
+          END_IF
+        ELSIF ( CheckTimeout(_timerCmd) = RobotLibraryConstants.OK )
+        THEN
+          Reset();
+          // execution mode for the next enable
+          ExecMode := ExecutionMode.SEQUENCE_PRIMARY;
+        END_IF
   
   ELSE
     // invalid step

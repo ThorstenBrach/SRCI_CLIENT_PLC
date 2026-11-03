@@ -1,5 +1,4 @@
 {attribute 'qualified_only'}
-{attribute 'to_string'}
 // ------------------------------------------------------------------------- 
 //  SRCI Robot Library                                                
 // ------------------------------------------------------------------------- 
@@ -21,6 +20,7 @@
 //    own risk and responsibility.
 //
 // -------------------------------------------------------------------------
+// ST-FIX W02: no attribute 'to_string' - LogLevel is an alias of Severity, the attribute is only valid for enumerations
 TYPE LogLevel : Severity; END_TYPE
 
 

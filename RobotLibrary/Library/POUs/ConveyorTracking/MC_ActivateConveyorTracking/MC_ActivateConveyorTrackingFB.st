@@ -632,6 +632,14 @@ END_VAR
                                           Enabled            := FALSE;
   END_CASE
   
+  // ST-FIX F147: parameters acknowledged by the RC also while the function is ACTIVE
+  // (response ParSeq = command ParSeq, ParSeq is 4 bit in the telegram)
+  IF (( State = CmdMessageState.ACTIVE                   ) AND
+      (( _response.ParSeq MOD 16 ) = ( _command.ParSeq MOD 16 )))
+  THEN
+    ParameterAccepted := TRUE;
+  END_IF
+  
   // ST-FIX F25: output data are valid while the command is active (continuous) or done
   Valid := ( State = CmdMessageState.ACTIVE ) OR ( State = CmdMessageState.DONE );
 

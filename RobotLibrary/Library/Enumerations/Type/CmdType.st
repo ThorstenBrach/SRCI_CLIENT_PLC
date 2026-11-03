@@ -255,7 +255,11 @@ TYPE CmdType :
   /// ST-FIX F108: create a server log on the RC (spec 6.2.5)
   CreateServerLog := 9003,
   /// ST-FIX F108: read a server log from the RC (spec 6.2.6)
-  ReadServerLog := 9004
+  ReadServerLog := 9004,
+  /// ST-FIX F109: read the safe reference position of the RC (spec 6.5.38)
+  ReadSafeReferencePosition := 7009,
+  /// ST-FIX F109: execute the safe referencing process on the RC (spec 6.5.39)
+  SafeReferencing := 7010
 )UINT;
 END_TYPE
 

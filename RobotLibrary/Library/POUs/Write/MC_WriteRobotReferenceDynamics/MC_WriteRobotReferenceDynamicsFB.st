@@ -278,7 +278,8 @@ END_VAR
   _command.ParSeq                := _command.ParSeq;
   _command.Priority              :=  Priority;
   
-  _command.DynamicValues         := _parCmd.DynamicValues; {warning 'ToDo: Check if this is a mistake in the SRCI specification ? '}
+  // the reference dynamics are sent as REAL values, not as percentages (table 6-163)
+  _command.DynamicValues         := _parCmd.DynamicValues;
   
   (*
    _command.Timestamp             := _parCmd.DynamicValues.Timestamp;

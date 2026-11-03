@@ -111,8 +111,13 @@ END_VAR
   // check parameter valid ?
   _parameterValid   := CheckParameterValid( AxesGroup := AxesGroup );
   
+  // ST-FIX F128: an invalid parameter while jogging stops the jog on the RC: the update is sent
+  // with the Enable bit FALSE (CreateCommandPayload: Enable AND NOT HasError), only once per change
   IF ((  _parameterChanged        )  AND 
       (  _parameterValid          )) OR
+      (( _parameterChanged        )  AND
+       ( NOT _parameterValid      )  AND
+       ( _stepCmd = 1             )) OR
       (  _parameterUpdateInternal )  
   THEN  
     // Create log entry for parameter changed event
@@ -148,8 +153,9 @@ END_VAR
   CheckParameterValid := TRUE;
   
   // Check ParCmd.Override valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.Override) = FALSE )  OR
-       (                   ParCmd.Override  <     0 )  OR 
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.Override) = FALSE )  OR_ELSE
+       (                   ParCmd.Override  <     0 )  OR_ELSE 
        (                   ParCmd.Override  >   100 ))      
   THEN
     // Parameter not valid
@@ -248,7 +254,8 @@ END_VAR
   
   
   // Check ParCmd.IncrementalTranslation valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.IncrementalTranslation) = FALSE )  OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.IncrementalTranslation) = FALSE )  OR_ELSE
        (                   ParCmd.IncrementalTranslation  <     0 ))      
   THEN
     // Parameter not valid
@@ -267,7 +274,8 @@ END_VAR
   
   
   // Check ParCmd.IncrementalRotation valid ? 
-  IF  (( SysDepIsValidReal(ParCmd.IncrementalRotation) = FALSE )  OR
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF  (( SysDepIsValidReal(ParCmd.IncrementalRotation) = FALSE )  OR_ELSE
        (                   ParCmd.IncrementalRotation  <     0 ))      
   THEN
     // Parameter not valid
@@ -333,7 +341,8 @@ END_VAR
   _command.ParSeq                 := _command.ParSeq;
   _command.Priority               :=  Priority;
                            
-  _command.Enable                 :=  Enable;
+  // ST-FIX F128: with an error of the block (invalid parameter while jogging) the jog is disabled on the RC
+  _command.Enable                 :=  Enable AND NOT HasError;
   _command.Reserve                :=  0;
   _command.ToolNo                 := _parCmd.ToolNo; 
   _command.FrameNo                := _parCmd.FrameNo;
@@ -886,7 +895,7 @@ END_VAR
            // Set Busy flag
            Busy := TRUE;
            // reset busy flag
-           Enabled := FALSE;  {warning 'ToDo: doit for all others the same'} 
+           Enabled := FALSE; // ST-FIX F135: done for all enable FBs in RobotLibraryBaseEnableFB
            // trigger parameter update to disable FB
           _parameterUpdateInternal := TRUE;
            // reset the falling edge
@@ -1065,6 +1074,8 @@ END_VAR
   Busy               := FALSE;
   CommandBuffered    := FALSE;
   ParameterAccepted  := FALSE;
+  // ST-FIX F127: Active stayed TRUE after Enable FALSE
+  Active             := FALSE;
 
 END_METHOD
 

@@ -98,6 +98,8 @@ STRUCT
   NewSEQ                         : ARRAY[0..1] OF BOOL;
   /// Last received acknowledge ID
   LastACK                        : ARRAY[0..1] OF UINT;    
+  /// ST-FIX F132: instance of the RobotTask that uses this axes group (0 = none)
+  RobotTaskId                    : UDINT;
 END_STRUCT
 END_TYPE
 

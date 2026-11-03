@@ -152,8 +152,10 @@ END_VAR
   CheckParameterValid := TRUE;
   
   // Check ParCmd.ProcessingMode defined ? 
+  // ST-FIX F122: the values between CONTINUOUS and DEACTIVATE are not defined either
   IF (( ProcessingMode < ProcessingModeEnum.BUFFERED         ) OR // ST-FIX F26
-      ( ProcessingMode > ProcessingModeEnum.TRIGGER_MULTIPLE ))
+      ( ProcessingMode > ProcessingModeEnum.TRIGGER_MULTIPLE ) OR
+      (( ProcessingMode > ProcessingModeEnum.CONTINUOUS ) AND ( ProcessingMode < ProcessingModeEnum.DEACTIVATE )))
   THEN
     // Parameter not valid
     CheckParameterValid := FALSE;
@@ -248,8 +250,9 @@ END_VAR
   
   
   // Check ParCmd.Sensitivity valid ? 
-  IF (( SysDepIsValidReal(ParCmd.Sensitivity) = FALSE ) OR
-      ( ParCmd.Sensitivity                    <     0 ) OR  
+  // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+  IF (( SysDepIsValidReal(ParCmd.Sensitivity) = FALSE ) OR_ELSE
+      ( ParCmd.Sensitivity                    <     0 ) OR_ELSE  
       ( ParCmd.Sensitivity                    >   200 ))
   THEN
     // Parameter not valid
@@ -272,8 +275,9 @@ END_VAR
   FOR _idx := 0 TO 6
   DO
     // Check ParCmd.SensitivityAxis valid ? 
-    IF (( SysDepIsValidReal(ParCmd.SensitivityAxis[_idx]) = FALSE ) OR
-        (                   ParCmd.SensitivityAxis[_idx]  <     0 ) OR  
+    // ST-FIX F152: OR_ELSE - ST evaluates OR completely, a comparison with NaN raises an FPU exception
+    IF (( SysDepIsValidReal(ParCmd.SensitivityAxis[_idx]) = FALSE ) OR_ELSE
+        (                   ParCmd.SensitivityAxis[_idx]  <     0 ) OR_ELSE  
         (                   ParCmd.SensitivityAxis[_idx]  >   200 ))      
     THEN
       // Parameter not valid

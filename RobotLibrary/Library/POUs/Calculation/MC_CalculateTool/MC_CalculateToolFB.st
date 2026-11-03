@@ -396,7 +396,8 @@ END_VAR
   
   
     // Check ParCmd.PositionsArray[x].E2 valid ? 
-    IF ( SysDepIsValidReal(ParCmd.PositionsArray[_idx].E1) = FALSE ) 
+    // ST-FIX F142: checked E1 instead of E2
+    IF ( SysDepIsValidReal(ParCmd.PositionsArray[_idx].E2) = FALSE ) 
     THEN
       // Parameter not valid
       CheckParameterValid := FALSE;

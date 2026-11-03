@@ -243,7 +243,8 @@ END_VAR
       // Parameter not valid
       CheckParameterValid := FALSE;
       // Set error
-      SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_JERK_INVALID, Overwrite := TRUE );
+      // ST-FIX F112: blending parameter error instead of the jerk error, log the blending parameter, leave the method
+      SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
       // Create log entry
       CreateLogMessagePara2 ( Timestamp   := AxesGroup.State.SystemTime,
                               MessageType := MessageType.CMD,
@@ -252,7 +253,6 @@ END_VAR
                               MessageText := 'Invalid Parameter ParCmd.BlendingParameter[{2}] = {1}',
                               Para1       := VALID_REAL_TO_STRING(ParCmd.BlendingParameter[_idx]),
                               Para2       := DINT_TO_STRING(_idx));       
-      EXIT;                     
       RETURN;
     END_IF
   END_FOR
@@ -517,7 +517,9 @@ END_VAR
       ( State = CmdMessageState.DONE   ))
   THEN
     // Update results
-    OutCmd.ActualIndex       := 0; {warning 'ToDo'}
+    // ActualIndex is an output of the FB (spec V1.5.9), but the response payload has no field for it
+    // (table 6-789 of spec V1.5.9) -> stays 0 (gap of the specification)
+    OutCmd.ActualIndex       := 0;
     OutCmd.Progress          :=  PERCENT_UINT_TO_REAL( Value := _response.Progress, IsOptional := TRUE);
     OutCmd.RemainingDistance := _response.RemainingDistance;
   END_IF
