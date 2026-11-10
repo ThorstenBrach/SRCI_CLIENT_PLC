@@ -8701,7 +8701,17 @@ END_VAR
            END_IF
          END_IF
        
-    01:  // ST-FIX F23: wait until the RC left the state INITIALIZED of the previous enable
+    01:  // ST-FIX F153: INITIALIZED without a request of this RobotTask: the RC is still
+  // initialized from an earlier connection -> reset the interface on the RC first
+  IF (( AxesGroup.Cyclic.RobToPlc.TelegramState = TelegramState.INITIALIZED ) AND
+      ( AxesGroup.Cyclic.PlcToRob.Control       = ControlHalfByte.NONE      ) AND
+      ( NOT _restartReset                                                   ))
+  THEN
+    AxesGroup.Cyclic.PlcToRob.Control := ControlHalfByte.RESET;
+    _restartReset := TRUE;
+  END_IF
+  
+  // ST-FIX F23: wait until the RC left the state INITIALIZED of the previous enable
   IF ( _restartReset )
   THEN
     IF ( AxesGroup.Cyclic.RobToPlc.TelegramState <> TelegramState.INITIALIZED )
@@ -9059,7 +9069,7 @@ END_VAR
   // AxesGroup.OptionalCyclic.RobToPlc.SubProgramData {{{
   IF ( AxesGroup.CyclicOptional.RobToPlc.SubProgramData.Active )
   THEN
-    FOR _idx := 0 TO SIZEOF(Telegram.RobToPlc.CyclicOptional.SubProgramData.Data) - 1
+    FOR _idx := 0 TO UPPER_BOUND(Telegram.RobToPlc.CyclicOptional.SubProgramData.Data, 1)
     DO
       Telegram.RobToPlc.CyclicOptional.SubProgramData.Data[_idx] := RecvData.GetByte(); 
     END_FOR

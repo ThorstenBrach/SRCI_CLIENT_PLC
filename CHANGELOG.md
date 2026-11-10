@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [V1.5.5.0] - 2026-11-08
+
+Fixes of two findings of the acceptance tests at a real robot (JAKA MiniCobo, firmware 3.3.15), tested
+with SRCI_PY and in the TcUnit project SRCI_PLC_TEST_SUITE (3749 tests, all green on 2026-11-10).
+
+### Fixed
+ - ST-FIX F153: `MC_RobotTaskFB.OnExecRun` step 1 - the RC can still be INITIALIZED from an earlier connection (e.g. the PLC was restarted, the RC not). The RobotTask waited for a state change that never came. Fix: INITIALIZED while the RobotTask sends Control NONE resets the interface on the RC first (Control RESET), then the normal start follows
+ - ST-FIX F154: `MC_GroupJogFB.OnUpdateStateFlags` - state INTERRUPTED with the info 16#6C14 / 16#6C15 means the jog was aborted (spec 6.3.1.8); `CommandAborted` was never set
+ - `MC_RobotTaskFB`: copy of the SubProgramData of the optional cyclic area loops to `UPPER_BOUND` of the array instead of `SIZEOF - 1`
+
+### Known issues
+Open findings of the library (and of the Python client generated from it), to be fixed in the next version;
+details in SRCI_PY `docs/ST_FINDINGS.md`:
+ - F113: a new rising edge of `Execute` while a motion block is `Busy` is ignored (no new command, a changed target is not used)
+ - F116: `ERR_AXESGROUP_CHANGED` (16#8614) is never set when the `AxesGroup` input changes while a block is `Busy`
+ - F117: `ChangeSpeedOverrideParCmd.Override` starts with 5 %; the specification (6.2.3) names 10 %
+ - F125: the warning `WARN_CYCLIC_DATA_DISABLED_STILL_ACTIVE` (16#7303) is never set
+ - F126: `ReferenceDynamics` / `DefaultDynamics` start with 0.0 instead of a negative value ("do not change", 6.2.13 / 6.2.14)
+
 ## [V1.5.4.0] - 2026-11-03
 
 Target specification: SRCI V1.5.9 (2024-12-04). Known error of the specification (confirmed by PI):

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="Beckhoff Automation GmbH" productName="TwinCAT PLC Control" productVersion="3.5.13.21" creationDateTime="2026-11-03T20:36:23.3409004" />
-  <contentHeader name="RobotLibrary" modificationDateTime="2026-11-03T20:36:23.3438892">
+  <fileHeader companyName="Beckhoff Automation GmbH" productName="TwinCAT PLC Control" productVersion="3.5.13.21" creationDateTime="2026-11-10T20:40:32.3612933" />
+  <contentHeader name="RobotLibrary" modificationDateTime="2026-11-10T20:40:32.366374">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -212124,7 +212124,12 @@ CASE State OF
   CmdMessageState.ACTIVE              : Active             := TRUE;
                                         Busy               := FALSE; 
   // Interrupted and awaiting continuation
-  CmdMessageState.INTERRUPTED         :;  
+  CmdMessageState.INTERRUPTED         : // ST-FIX F154: info 16#6C14 / 16#6C15 - the jog was aborted (spec 6.3.1.8)
+                                        IF (( _response.AlarmMessageCode = 16#6C14 ) OR
+                                            ( _response.AlarmMessageCode = 16#6C15 ))
+                                        THEN
+                                          CommandAborted := TRUE;
+                                        END_IF
   // Requested for abort
   CmdMessageState.ABORT_REQUEST       :;
   // Successfully completed
@@ -270801,7 +270806,17 @@ CASE _stepCmd OF
          END_IF
        END_IF
      
-  01:  // ST-FIX F23: wait until the RC left the state INITIALIZED of the previous enable
+  01:  // ST-FIX F153: INITIALIZED without a request of this RobotTask: the RC is still
+// initialized from an earlier connection -&gt; reset the interface on the RC first
+IF (( AxesGroup.Cyclic.RobToPlc.TelegramState = TelegramState.INITIALIZED ) AND
+    ( AxesGroup.Cyclic.PlcToRob.Control       = ControlHalfByte.NONE      ) AND
+    ( NOT _restartReset                                                   ))
+THEN
+  AxesGroup.Cyclic.PlcToRob.Control := ControlHalfByte.RESET;
+  _restartReset := TRUE;
+END_IF
+
+// ST-FIX F23: wait until the RC left the state INITIALIZED of the previous enable
 IF ( _restartReset )
 THEN
   IF ( AxesGroup.Cyclic.RobToPlc.TelegramState &lt;&gt; TelegramState.INITIALIZED )
@@ -271264,7 +271279,7 @@ END_VAR
                   <xhtml xmlns="http://www.w3.org/1999/xhtml">// AxesGroup.OptionalCyclic.RobToPlc.SubProgramData {{{
 IF ( AxesGroup.CyclicOptional.RobToPlc.SubProgramData.Active )
 THEN
-  FOR _idx := 0 TO SIZEOF(Telegram.RobToPlc.CyclicOptional.SubProgramData.Data) - 1
+  FOR _idx := 0 TO UPPER_BOUND(Telegram.RobToPlc.CyclicOptional.SubProgramData.Data, 1)
   DO
     Telegram.RobToPlc.CyclicOptional.SubProgramData.Data[_idx] := RecvData.GetByte(); 
   END_FOR

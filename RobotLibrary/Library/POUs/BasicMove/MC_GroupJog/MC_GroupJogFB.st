@@ -961,7 +961,12 @@ END_VAR
     CmdMessageState.ACTIVE              : Active             := TRUE;
                                           Busy               := FALSE; 
     // Interrupted and awaiting continuation
-    CmdMessageState.INTERRUPTED         :;  
+    CmdMessageState.INTERRUPTED         : // ST-FIX F154: info 16#6C14 / 16#6C15 - the jog was aborted (spec 6.3.1.8)
+                                          IF (( _response.AlarmMessageCode = 16#6C14 ) OR
+                                              ( _response.AlarmMessageCode = 16#6C15 ))
+                                          THEN
+                                            CommandAborted := TRUE;
+                                          END_IF
     // Requested for abort
     CmdMessageState.ABORT_REQUEST       :;
     // Successfully completed
