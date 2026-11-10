@@ -1,5 +1,5 @@
-[![create release](https://github.com/ThorstenBrach/SRCI/actions/workflows/build.yml/badge.svg)](https://github.com/ThorstenBrach/SRCI/actions/workflows/build.yml)
-[![Latest release](https://img.shields.io/github/v/release/ThorstenBrach/SRCI?include_prereleases&label=release)](https://github.com/ThorstenBrach/SRCI/releases)
+[![create release](https://github.com/ThorstenBrach/SRCI_CLIENT_PLC/actions/workflows/build.yml/badge.svg)](https://github.com/ThorstenBrach/SRCI_CLIENT_PLC/actions/workflows/build.yml)
+[![Latest release](https://img.shields.io/github/v/release/ThorstenBrach/SRCI_CLIENT_PLC?include_prereleases&label=release)](https://github.com/ThorstenBrach/SRCI_CLIENT_PLC/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![SRCI V1.5.9](https://img.shields.io/badge/SRCI_specification-V1.5.9-informational)
 ![Platforms](https://img.shields.io/badge/platforms-TwinCAT_3_%7C_CODESYS_3.5-lightgrey)
@@ -64,7 +64,7 @@ Findings of these tests are fixed in the library and marked in the code with `//
 
 ## Getting started
 
-1. Download the archive for your platform from the [releases](https://github.com/ThorstenBrach/SRCI/releases)
+1. Download the archive for your platform from the [releases](https://github.com/ThorstenBrach/SRCI_CLIENT_PLC/releases)
    (Beckhoff or Codesys: library, sources and example). For TwinCAT the library is also published
    with Twinpack.
 2. Install `RobotLibrary` and the system dependent library of your platform and add both to your
@@ -95,7 +95,7 @@ library with your robot before using it in production.
 ## Contributing
 
 Bug reports and feature requests are welcome: please use the
-[issue templates](https://github.com/ThorstenBrach/SRCI/issues/new/choose). Code follows
+[issue templates](https://github.com/ThorstenBrach/SRCI_CLIENT_PLC/issues/new/choose). Code follows
 [ST_Coding_Rules.md](ST_Coding_Rules.md).
 
 ## License
