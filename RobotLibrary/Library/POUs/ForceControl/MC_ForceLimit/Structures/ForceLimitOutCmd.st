@@ -22,7 +22,7 @@
 // -------------------------------------------------------------------------
 TYPE ForceLimitOutCmd :
 STRUCT
-  /// Current status of ForceControl and ForceLimit (chapter 6.5.25) according to Table 6-712
+  /// Current status of ForceControl and ForceLimit (chapter 6.5.25) according to Table 6-744
   ForceStatus        : ForceStatus;
   /// Relates to EmitterID <> 0: Unique system-generated ID of the trigger function when the function is called by user.
   /// For more information see chapter 5.5.12.4.

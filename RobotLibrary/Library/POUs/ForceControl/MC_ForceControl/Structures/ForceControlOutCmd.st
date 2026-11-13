@@ -22,7 +22,7 @@
 // -------------------------------------------------------------------------
 TYPE ForceControlOutCmd :
 STRUCT
-  /// Current status of ForceControl and ForceLimit (chapter 6.5.25) according to Table 6-712
+  /// Current status of ForceControl and ForceLimit (chapter 6.5.24) according to Table 6-734
   ForceStatus        : ForceStatus;  
 END_STRUCT
 END_TYPE

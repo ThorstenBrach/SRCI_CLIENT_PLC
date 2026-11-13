@@ -1163,7 +1163,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-430: Sent CMD payload (PLC to RC) of "MovePickPlaceDirect"
+// Table 6-452: Sent CMD payload (PLC to RC) of "MovePickPlaceDirect"
 // --------------------------
 // Header
 // --------------------------
@@ -2739,7 +2739,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-431: Received CMD payload (RC to PLC) of "MovePickPlaceDirect"
+// Table 6-453: Received CMD payload (RC to PLC) of "MovePickPlaceDirect"
 // --------------------------
 // Header
 // --------------------------

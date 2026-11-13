@@ -22,7 +22,7 @@
 // -------------------------------------------------------------------------
 TYPE ActivateConveyorTrackingOutCmd :
 STRUCT
-  /// Current status of "ConveyorTracking" according to Table 6-432
+  /// Current status of "ConveyorTracking" according to Table 6-454
   TrackingStatus     : TrackingStatus;
   /// Relates to "ConnectionMode" 1 – "RC connected": Traveled distance of assigned conveyor since ConveyorTracking has been activated (offset)
   RCEncoderValue     : REAL;

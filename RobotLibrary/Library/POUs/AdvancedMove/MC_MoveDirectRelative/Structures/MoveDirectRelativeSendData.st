@@ -81,7 +81,7 @@ STRUCT
   Manipulation       : BOOL;
   /// Reserve3
   Reserve3           : BYTE;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-317
   ConfigMode         : ARRAY[0..1] OF BYTE;
   /// Defines type of reference coordinate system of the offset position
   ReferenceType      : USINT;

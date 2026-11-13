@@ -494,7 +494,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-645: Received CMD payload (RC to PLC) of "CalculateCartesianPosition"
+// Table 6-667: Received CMD payload (RC to PLC) of "CalculateCartesianPosition"
 // --------------------------
 // Header
 // --------------------------
@@ -1176,7 +1176,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-645: Received CMD payload (RC to PLC) of "CalculateCartesianPosition"
+// Table 6-667: Received CMD payload (RC to PLC) of "CalculateCartesianPosition"
 // --------------------------
 // Header
 // --------------------------

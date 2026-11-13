@@ -22,7 +22,7 @@
 // -------------------------------------------------------------------------
 TYPE SetOperationModeSendData EXTENDS CmdHeader: 
 STRUCT
-  /// Limits for joints and external axes according to Table 6-180.
+  /// Operation mode according to Table 6-211.
   OperationMode : USINT;
 END_STRUCT
 END_TYPE

@@ -43,6 +43,7 @@ TcUnit project SRCI_PLC_TEST_SUITE (3746 tests, all green on 2026-11-13).
  - ST-FIX F169: `UserData.CollisionDetectionEnabled` from ExchangeConfiguration
  - ST-FIX F171 / F172: no checks of unsent CollisionDetection ParCmd fields; RedefineTrackingPos indexes without 0..5 limit
  - ST-FIX F176: comments (Depart, kg·m², LoadMeasurement Position_1, ForceLimit ConnectionMode, RaStatusWord bits)
+ - F177: spec references in the comments (table and chapter numbers) updated to V1.5.9 (312 lines, comments only)
 
 ### Known issues
  - F113: a new rising edge of `Execute` while a motion block is `Busy` is ignored (later)

@@ -914,7 +914,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-523: Sent CMD payload (PLC to RC) of "MoveLinearCam"
+// Table 6-545: Sent CMD payload (PLC to RC) of "MoveLinearCam"
 // --------------------------
 // Header
 // --------------------------
@@ -2021,7 +2021,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-524: Received CMD payload (RC to PLC) of "MoveLinearCam"
+// Table 6-546: Received CMD payload (RC to PLC) of "MoveLinearCam"
 // --------------------------
 // Header
 // --------------------------

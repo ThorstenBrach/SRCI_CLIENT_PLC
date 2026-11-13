@@ -22,7 +22,7 @@
 // -------------------------------------------------------------------------
 TYPE ReadRobotSWLimitsRecvData EXTENDS RspHeader :
 STRUCT
-  /// DLimits for joints and external axes according to Table 6-173.
+  /// DLimits for joints and external axes according to Table 6-197.
   LimitValues        : SWLimits;
   /// The status bit "DataChanged" represents the modification state 
   DataChanged : BOOL;

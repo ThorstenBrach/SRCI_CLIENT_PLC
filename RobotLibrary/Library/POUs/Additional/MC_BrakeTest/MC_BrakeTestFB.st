@@ -244,7 +244,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-740: Sent CMD payload (PLC to RC) of "BrakeTest"
+// Table 6-762: Sent CMD payload (PLC to RC) of "BrakeTest"
 // --------------------------
 // Header
 // --------------------------
@@ -571,7 +571,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-741: Received CMD payload (RC to PLC) of "BrakeTest"
+// Table 6-763: Received CMD payload (RC to PLC) of "BrakeTest"
 // --------------------------
 // Header
 // --------------------------

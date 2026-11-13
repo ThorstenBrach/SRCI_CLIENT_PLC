@@ -352,7 +352,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-733: Sent CMD payload (PLC to RC) of "ReadActualForce"
+// Table 6-755: Sent CMD payload (PLC to RC) of "ReadActualForce"
 // --------------------------
 // Header
 // --------------------------
@@ -803,7 +803,7 @@ VAR
  _idx          : DINT;
   /// Parameter count
  _parameterCnt : DINT;
-END_VAR// Table 6-734: Received CMD payload (RC to PLC) of "ReadActualForce"
+END_VAR// Table 6-756: Received CMD payload (RC to PLC) of "ReadActualForce"
 // --------------------------
 // Header
 // --------------------------

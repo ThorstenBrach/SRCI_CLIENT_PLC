@@ -29,7 +29,7 @@ STRUCT
   /// Define the index number of the UCS that will be assigned to the conveyor.
   /// For more information refer to chapter 5.5.14
   FrameNo            : USINT;
-  /// Specifies encoder connection setup according to Table 6-713 (at least one option must be supported) 
+  /// Specifies encoder connection setup according to Table 6-735 (at least one option must be supported) 
   ConnectionMode     : SensorConnectionMode;
   /// Defines sensor positioning:
   /// • FALSE (default): Sensor mounted on flange
@@ -104,7 +104,7 @@ STRUCT
   /// •      0: WCS (default)
   /// • 1..254: User frames
   ErrorFrameNo       : USINT;
-  /// Define axes whose position may be adjusted by the robot to apply specified force according to Table 6-711.
+  /// Define axes whose position may be adjusted by the robot to apply specified force according to Table 6-733.
   CompliantAxes      : BYTE;
 END_STRUCT
 END_TYPE

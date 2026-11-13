@@ -366,7 +366,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-748: Sent CMD payload (PLC to RC) of "SoftSwitchTCP"
+// Table 6-770: Sent CMD payload (PLC to RC) of "SoftSwitchTCP"
 // --------------------------
 // Header
 // --------------------------
@@ -1069,7 +1069,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-749: Received CMD payload (RC to PLC) of "SoftSwitchTCP"
+// Table 6-771: Received CMD payload (RC to PLC) of "SoftSwitchTCP"
 // --------------------------
 // Header
 // --------------------------

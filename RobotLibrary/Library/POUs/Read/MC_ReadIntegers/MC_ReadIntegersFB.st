@@ -322,7 +322,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-496: Sent CMD payload (PLC to RC) of "ReadIntegers"
+// Table 6-518: Sent CMD payload (PLC to RC) of "ReadIntegers"
 // --------------------------
 // Header
 // --------------------------
@@ -726,7 +726,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-497: Received CMD payload (RC to PLC) of "ReadIntegers"
+// Table 6-519: Received CMD payload (RC to PLC) of "ReadIntegers"
 // --------------------------
 // Header
 // --------------------------

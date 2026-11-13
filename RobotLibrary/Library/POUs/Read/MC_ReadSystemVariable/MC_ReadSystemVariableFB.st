@@ -361,7 +361,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-618: Sent CMD payload (PLC to RC) of "ReadSystemVariable"
+// Table 6-640: Sent CMD payload (PLC to RC) of "ReadSystemVariable"
 // --------------------------
 // Header
 // --------------------------
@@ -844,7 +844,7 @@ VAR
  _idx          : DINT;
   /// Parameter count
  _parameterCnt : DINT;
-END_VAR// Table 6-619: Received CMD payload (RC to PLC) of "ReadSystemVariable"
+END_VAR// Table 6-641: Received CMD payload (RC to PLC) of "ReadSystemVariable"
 // --------------------------
 // Header
 // --------------------------

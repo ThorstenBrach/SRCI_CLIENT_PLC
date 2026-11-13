@@ -174,7 +174,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-709: Sent CMD payload (PLC to RC) of "AvoidSingularity"
+// Table 6-731: Sent CMD payload (PLC to RC) of "AvoidSingularity"
 // --------------------------
 // Header
 // --------------------------
@@ -586,7 +586,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-710: Received CMD payload (RC to PLC) of "AvoidSingularity"
+// Table 6-732: Received CMD payload (RC to PLC) of "AvoidSingularity"
 // --------------------------
 // Header
 // --------------------------

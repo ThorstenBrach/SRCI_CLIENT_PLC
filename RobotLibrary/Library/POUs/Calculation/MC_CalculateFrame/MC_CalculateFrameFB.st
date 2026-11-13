@@ -1401,7 +1401,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-656: Sent CMD payload (PLC to RC) of "CalculateFrame"
+// Table 6-678: Sent CMD payload (PLC to RC) of "CalculateFrame"
 // --------------------------
 // Header
 // --------------------------
@@ -2240,7 +2240,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-657: Received CMD payload (RC to PLC) of "CalculateFrame"
+// Table 6-679: Received CMD payload (RC to PLC) of "CalculateFrame"
 // --------------------------
 // Header
 // --------------------------

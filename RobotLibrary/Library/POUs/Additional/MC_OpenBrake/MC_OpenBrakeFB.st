@@ -370,7 +370,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-681: Sent CMD payload (PLC to RC) of "OpenBrake"
+// Table 6-703: Sent CMD payload (PLC to RC) of "OpenBrake"
 // --------------------------
 // Header
 // --------------------------
@@ -838,7 +838,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-682: Received CMD payload (RC to PLC) of "OpenBrake"
+// Table 6-704: Received CMD payload (RC to PLC) of "OpenBrake"
 // --------------------------
 // Header
 // --------------------------

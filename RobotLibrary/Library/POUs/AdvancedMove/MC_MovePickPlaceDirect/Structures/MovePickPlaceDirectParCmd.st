@@ -73,7 +73,7 @@ STRUCT
   MoveTime           : TIME;
   /// Parameter to describe how the orientation axes (RX, RY, RZ) will be interpolated during the movement
   OriMode            : OriMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-450
   ConfigMode         : ArmConfigParameter;
   /// Parameter which determines the transition behavior at the end of the movement to be sent to the next command. 
   /// The user can choose a transition type between exact stop and different blend possibilities

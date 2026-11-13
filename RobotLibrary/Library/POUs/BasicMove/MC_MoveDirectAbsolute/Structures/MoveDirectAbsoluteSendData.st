@@ -81,7 +81,7 @@ STRUCT
   Manipulation       : BOOL;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-274
   ConfigMode         : ARRAY[0..1] OF BYTE;
   /// Reserve
   Reserve3           : BYTE;

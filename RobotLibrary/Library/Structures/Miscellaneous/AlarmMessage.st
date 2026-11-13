@@ -24,9 +24,9 @@ TYPE AlarmMessage :
 STRUCT
   /// Timestamp
   Timestamp   : SystemTime;
-  /// Type of message according to Table 5-46:
+  /// Type of message according to Table 5-48:
   MessageType : MessageType;
-  /// Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error
+  /// Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error
   Severity    : Severity;
   /// Code of messages
   MessageCode : DWORD;

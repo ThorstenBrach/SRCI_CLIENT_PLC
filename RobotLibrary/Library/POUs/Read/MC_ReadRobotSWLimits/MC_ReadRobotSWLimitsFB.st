@@ -146,7 +146,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-178: Sent CMD payload (PLC to RC) of "ReadRobotSWLimits"
+// Table 6-202: Sent CMD payload (PLC to RC) of "ReadRobotSWLimits"
 // --------------------------
 // Header
 // --------------------------
@@ -361,7 +361,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-179: Received CMD payload (RC to PLC) of "WriteRobotSWLimits"
+// Table 6-203: Received CMD payload (RC to PLC) of "ReadRobotSWLimits" (labelled "WriteRobotSWLimits" in V1.5.9)
 // --------------------------
 // Header
 // --------------------------

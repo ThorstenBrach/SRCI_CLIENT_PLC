@@ -36,7 +36,7 @@ STRUCT
   /// • 0: ID 0 (default) (relates only to parameters without sub parameters)
   /// • 1..255: Indices 1 to 255 (relates only to parameters with sub parameters)
   SubParameterID     : ARRAY[0..7] OF USINT;  
-  /// Parameter data type as specified in Table 6-621.
+  /// Parameter data type as specified in Table 6-643.
   DataType           : ARRAY[0..7] OF DataType;
   /// Parameter data addressed by input values of ParameterID[0] and SubParameterID[0]
   Data_0             : ARRAY[0..3] OF BYTE;

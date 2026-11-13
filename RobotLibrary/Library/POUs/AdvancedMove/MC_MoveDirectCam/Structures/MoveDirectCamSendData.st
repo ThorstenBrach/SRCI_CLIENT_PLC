@@ -78,7 +78,7 @@ STRUCT
   OutputBitmask      : BYTE;
   /// Value of Digital Output
   Value              : BYTE;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-552
   ConfigMode         : ARRAY [0..1] OF BYTE;
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5

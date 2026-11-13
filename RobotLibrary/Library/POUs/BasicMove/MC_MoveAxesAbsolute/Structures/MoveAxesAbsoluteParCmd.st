@@ -62,7 +62,7 @@ STRUCT
   /// • Parameter defines the time for the movement to reach the target position
   /// Error is sent by the RC if the time cannot be kept
   MoveTime           : TIME;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 5-17
   ConfigMode         : ArmConfigParameter;
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5

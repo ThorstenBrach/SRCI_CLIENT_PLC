@@ -322,7 +322,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-484: Sent CMD payload (PLC to RC) of "ReadDigitalOutputs"
+// Table 6-506: Sent CMD payload (PLC to RC) of "ReadDigitalOutputs"
 // --------------------------
 // Header
 // --------------------------
@@ -723,7 +723,7 @@ VAR
  _idx          : DINT;
   /// Parameter count
  _parameterCnt : DINT;
-END_VAR// Table 6-485: Received CMD payload (RC to PLC) of "ReadDigitalOutputs"
+END_VAR// Table 6-507: Received CMD payload (RC to PLC) of "ReadDigitalOutputs"
 // --------------------------
 // Header
 // --------------------------

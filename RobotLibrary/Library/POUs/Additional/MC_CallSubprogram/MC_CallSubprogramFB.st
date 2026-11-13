@@ -360,7 +360,7 @@ VAR
  _idx          : DINT;
   /// Parameter count
  _parameterCnt : DINT;
-END_VAR// Table 6-687: Sent CMD payload (PLC to RC) of "CallSubprogram"
+END_VAR// Table 6-709: Sent CMD payload (PLC to RC) of "CallSubprogram"
 // --------------------------
 // Header
 // --------------------------
@@ -999,7 +999,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-688: Received CMD payload (RC to PLC) of "CallSubprogram"
+// Table 6-710: Received CMD payload (RC to PLC) of "CallSubprogram"
 // --------------------------
 // Header
 // --------------------------

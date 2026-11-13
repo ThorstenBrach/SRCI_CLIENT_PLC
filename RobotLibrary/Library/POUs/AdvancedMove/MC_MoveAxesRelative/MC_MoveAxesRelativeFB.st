@@ -639,7 +639,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-304: Sent CMD payload (PLC to RC) of "MoveAxesRelative"
+// Table 6-326: Sent CMD payload (PLC to RC) of "MoveAxesRelative"
 // --------------------------
 // Header
 // --------------------------
@@ -1577,7 +1577,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-305: Received CMD payload (RC to PLC) of "MoveAxesRelative"
+// Table 6-327: Received CMD payload (RC to PLC) of "MoveAxesRelative"
 // --------------------------
 // Header
 // --------------------------

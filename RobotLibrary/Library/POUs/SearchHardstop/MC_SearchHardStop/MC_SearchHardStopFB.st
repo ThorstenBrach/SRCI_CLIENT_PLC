@@ -796,7 +796,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-405: Sent CMD payload (PLC to RC) of "SearchHardStop"
+// Table 6-427: Sent CMD payload (PLC to RC) of "SearchHardStop"
 // --------------------------
 // Header
 // --------------------------
@@ -1890,7 +1890,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-406: Received CMD payload (RC to PLC) of "SearchHardStop"
+// Table 6-428: Received CMD payload (RC to PLC) of "SearchHardStop"
 // --------------------------
 // Header
 // --------------------------

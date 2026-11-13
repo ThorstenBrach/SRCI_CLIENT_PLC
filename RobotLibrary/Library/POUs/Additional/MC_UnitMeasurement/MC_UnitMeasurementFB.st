@@ -222,7 +222,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-803: Sent CMD payload (PLC to RC) of "UnitMeasurement"
+// Table 6-825: Sent CMD payload (PLC to RC) of "UnitMeasurement"
 // --------------------------
 // Header
 // --------------------------
@@ -773,7 +773,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-804: Received CMD payload (RC to PLC) of "UnitMeasurement"
+// Table 6-826: Received CMD payload (RC to PLC) of "UnitMeasurement"
 // --------------------------
 // Header
 // --------------------------

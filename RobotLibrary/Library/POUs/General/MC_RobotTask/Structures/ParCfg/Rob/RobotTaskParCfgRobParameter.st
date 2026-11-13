@@ -30,7 +30,7 @@ STRUCT
   WaitAtBlendingZone         : BOOL;
   /// Allow a sequence switch from primary to secondary while a subprogram called via CallSubprogram (6.5.18) in the sequence is in progress
   AllowSecSeqWhileSubprogram : BOOL;
-  /// Allows blending when CallSubprogram is called in sequence and removed afterwards. For more information see chapter 6.5.21.
+  /// Allows blending when CallSubprogram is called in sequence and removed afterwards. For more information see chapter 6.5.18.
   /// • 0 (default): Dynamic blending is prevented
   /// • 1: Dynamic blending is allowed
   AllowDynamicBlending       : BOOL;

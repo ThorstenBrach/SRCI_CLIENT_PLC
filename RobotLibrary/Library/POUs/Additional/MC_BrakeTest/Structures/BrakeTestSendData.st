@@ -25,12 +25,12 @@ STRUCT
   /// Defines which of the robot axis should be activated for the brake test.
   /// • TRUE (default): Axis activated.
   /// • FALSE: Axis deactivated.
-  /// See Table 6-735 for bit assignment.
+  /// See Table 6-757 for bit assignment.
   RobotAxesActive    : BYTE;
   /// Defines which of the external robot axis should be activated for the brake test.
   /// • TRUE: Axis activated.
   /// • FALSE (default): Axis deactivated.
-  /// See Table 6-735 for bit assignment.   
+  /// See Table 6-757 for bit assignment.   
   ExternalAxesActive : BYTE; 
 END_STRUCT
 END_TYPE

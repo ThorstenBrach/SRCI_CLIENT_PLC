@@ -1014,7 +1014,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-369: Sent CMD payload (PLC to RC) of "MoveApproachLinear"
+// Table 6-391: Sent CMD payload (PLC to RC) of "MoveApproachLinear"
 // --------------------------
 // Header
 // --------------------------
@@ -2402,7 +2402,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-370: Received CMD payload (RC to PLC) of "MoveApproachLinear"
+// Table 6-392: Received CMD payload (RC to PLC) of "MoveApproachLinear"
 // --------------------------
 // Header
 // --------------------------

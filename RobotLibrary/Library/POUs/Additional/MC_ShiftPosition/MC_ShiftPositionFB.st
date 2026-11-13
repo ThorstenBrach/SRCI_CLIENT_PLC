@@ -666,7 +666,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-668: Sent CMD payload (PLC to RC) of "ShiftPosition"
+// Table 6-690: Sent CMD payload (PLC to RC) of "ShiftPosition"
 // --------------------------
 // Header
 // --------------------------
@@ -1685,7 +1685,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-669: Received CMD payload (RC to PLC) of "ShiftPosition"
+// Table 6-691: Received CMD payload (RC to PLC) of "ShiftPosition"
 // --------------------------
 // Header
 // --------------------------

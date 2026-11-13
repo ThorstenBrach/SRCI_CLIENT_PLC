@@ -341,7 +341,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-444: Sent CMD payload (PLC to RC) of "RedefineTrackingPos"
+// Table 6-466: Sent CMD payload (PLC to RC) of "RedefineTrackingPos"
 // --------------------------
 // Header
 // --------------------------
@@ -842,7 +842,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-445: Received CMD payload (RC to PLC) of "RedefineTrackingPos"
+// Table 6-467: Received CMD payload (RC to PLC) of "RedefineTrackingPos"
 // --------------------------
 // Header
 // --------------------------

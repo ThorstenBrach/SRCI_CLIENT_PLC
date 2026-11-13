@@ -22,7 +22,7 @@
 // -------------------------------------------------------------------------
 TYPE WriteRobotReferenceDynamicsOutCmd :
 STRUCT
-  /// Commanded reference dynamics values according to Table 6-134
+  /// Commanded reference dynamics values according to Table 6-158
   ReferenceDynamicValues : ReferenceDynamics;
 END_STRUCT
 END_TYPE

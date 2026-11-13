@@ -72,7 +72,7 @@ STRUCT
   MoveTime           : TIME;
   /// Parameter to describe how the orientation axes (RX, RY, RZ) will be interpolated during the movement
   OriMode            : OriMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-364
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;

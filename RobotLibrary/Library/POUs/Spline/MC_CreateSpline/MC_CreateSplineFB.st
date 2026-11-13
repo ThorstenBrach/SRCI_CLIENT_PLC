@@ -685,7 +685,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-754: Sent CMD payload (PLC to RC) of "CreateSpline"
+// Table 6-776: Sent CMD payload (PLC to RC) of "CreateSpline"
 // --------------------------
 // Header
 // --------------------------
@@ -1579,7 +1579,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-755: Received CMD payload (RC to PLC) of "CreateSpline"
+// Table 6-777: Received CMD payload (RC to PLC) of "CreateSpline"
 // --------------------------
 // Header
 // --------------------------

@@ -32,7 +32,7 @@ STRUCT
   Timestamp              : IEC_TIMESTAMP;
   /// Message Type
   MsgType                : MessageType;
-  /// Severity of returned message according to .Table 5-47.
+  /// Severity of returned message according to .Table 5-49.
   Severity               : Severity;
   /// ErrorCode
   ErrorCode              : DWORD;

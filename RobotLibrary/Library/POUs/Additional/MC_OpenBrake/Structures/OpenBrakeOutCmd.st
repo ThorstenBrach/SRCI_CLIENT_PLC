@@ -27,12 +27,12 @@ STRUCT
   /// Indicates the brake release status of the main robot axes.
   /// • TRUE: The brake of the axis is opened.
   /// • FALSE: The brake of the axis is closed.
-  /// See Table 6-735 for bit assignment
+  /// See Table 6-698 for bit assignment
   RobotAxesBrakeReleased    : RobotAxesFlags;
   /// Indicates the brake release status of the external robot axes.
   /// • TRUE: The brake of the axis is opened.
   /// • FALSE: The brake of the axis is closed/not supported
-  /// See Table 6-735 for bit assignment
+  /// See Table 6-698 for bit assignment
   ExternalAxesBrakeReleased : ExternalAxesFlags;
 END_STRUCT
 END_TYPE

@@ -41,9 +41,9 @@ METHOD CreateLogMessage : STRING(RobotLibraryParameter.MESSAGE_TEXT_LEN)
 VAR_INPUT
   /// Timestamp
   Timestamp   : SystemTime;
-  /// Type of message according to Table 5-46:
+  /// Type of message according to Table 5-48:
   MessageType : MessageType;
-  /// Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error
+  /// Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error
   Severity    : Severity;
   /// Code of messages
   MessageCode : DWORD;
@@ -90,9 +90,9 @@ METHOD CreateLogMessagePara1 : STRING(RobotLibraryParameter.MESSAGE_TEXT_LEN)
 VAR_INPUT
   /// Timestamp
   Timestamp   : SystemTime;
-  /// Type of message according to Table 5-46:
+  /// Type of message according to Table 5-48:
   MessageType : MessageType;
-  /// Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error
+  /// Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error
   Severity    : Severity;
   /// Code of messages
   MessageCode : DWORD;
@@ -124,9 +124,9 @@ METHOD CreateLogMessagePara2 : STRING(RobotLibraryParameter.MESSAGE_TEXT_LEN)
 VAR_INPUT
   /// Timestamp
   Timestamp   : SystemTime;
-  /// Type of message according to Table 5-46:
+  /// Type of message according to Table 5-48:
   MessageType : MessageType;
-  /// Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error
+  /// Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error
   Severity    : Severity;
   /// Code of messages
   MessageCode : DWORD;
@@ -161,9 +161,9 @@ METHOD CreateLogMessagePara3 : STRING(RobotLibraryParameter.MESSAGE_TEXT_LEN)
 VAR_INPUT
   /// Timestamp
   Timestamp   : SystemTime;
-  /// Type of message according to Table 5-46:
+  /// Type of message according to Table 5-48:
   MessageType : MessageType;
-  /// Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error
+  /// Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error
   Severity    : Severity;
   /// Code of messages
   MessageCode : DWORD;
@@ -201,9 +201,9 @@ METHOD CreateLogMessagePara4 : STRING(RobotLibraryParameter.MESSAGE_TEXT_LEN)
 VAR_INPUT
   /// Timestamp
   Timestamp   : SystemTime;
-  /// Type of message according to Table 5-46:
+  /// Type of message according to Table 5-48:
   MessageType : MessageType;
-  /// Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error
+  /// Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error
   Severity    : Severity;
   /// Code of messages
   MessageCode : DWORD;
@@ -244,9 +244,9 @@ METHOD CreateLogMessagePara5 : STRING(RobotLibraryParameter.MESSAGE_TEXT_LEN)
 VAR_INPUT
   /// Timestamp
   Timestamp   : SystemTime;
-  /// Type of message according to Table 5-46:
+  /// Type of message according to Table 5-48:
   MessageType : MessageType;
-  /// Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error
+  /// Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error
   Severity    : Severity;
   /// Code of messages
   MessageCode : DWORD;
@@ -290,9 +290,9 @@ METHOD CreateLogMessagePara6 : STRING(RobotLibraryParameter.MESSAGE_TEXT_LEN)
 VAR_INPUT
   /// Timestamp
   Timestamp   : SystemTime;
-  /// Type of message according to Table 5-46:
+  /// Type of message according to Table 5-48:
   MessageType : MessageType;
-  /// Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error
+  /// Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error
   Severity    : Severity;
   /// Code of messages
   MessageCode : DWORD;

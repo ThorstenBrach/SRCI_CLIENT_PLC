@@ -176,7 +176,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-279: Sent CMD payload (PLC to RC) of "GroupContinue"
+// Table 6-301: Sent CMD payload (PLC to RC) of "GroupContinue"
 // --------------------------
 // Header
 // --------------------------
@@ -364,7 +364,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-280: Received CMD payload (RC to PLC) of "GroupContinue"
+// Table 6-302: Received CMD payload (RC to PLC) of "GroupContinue"
 // --------------------------
 // Header
 // --------------------------

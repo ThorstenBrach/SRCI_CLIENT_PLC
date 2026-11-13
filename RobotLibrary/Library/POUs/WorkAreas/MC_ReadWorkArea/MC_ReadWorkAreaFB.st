@@ -186,7 +186,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-199: Sent CMD payload (PLC to RC) of "ReadWorkArea"
+// Table 6-223: Sent CMD payload (PLC to RC) of "ReadWorkArea"
 // --------------------------
 // Header
 // --------------------------
@@ -432,7 +432,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-200: Received CMD payload (RC to PLC) of "ReadWorkArea"
+// Table 6-224: Received CMD payload (RC to PLC) of "ReadWorkArea"
 // --------------------------
 // Header
 // --------------------------

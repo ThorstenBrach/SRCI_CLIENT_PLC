@@ -324,7 +324,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-502: Sent CMD payload (PLC to RC) of "ReadReals"
+// Table 6-524: Sent CMD payload (PLC to RC) of "ReadReals"
 // --------------------------
 // Header
 // --------------------------
@@ -727,7 +727,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table Table 6-503: Received CMD payload (RC to PLC) of "ReadReals"
+// Table Table 6-525: Received CMD payload (RC to PLC) of "ReadReals"
 // --------------------------
 // Header
 // --------------------------

@@ -22,7 +22,7 @@
 // -------------------------------------------------------------------------
 TYPE ReadRobotDefaultDynamicsOutCmd :
 STRUCT
-  /// Default dynamics values according to Table 6-148.
+  /// Default dynamics values according to Table 6-172.
   DynamicValues      : DefaultDynamics;
 END_STRUCT
 END_TYPE

@@ -22,7 +22,7 @@
 // -------------------------------------------------------------------------
 TYPE WriteRobotReferenceDynamicsParCmd :
 STRUCT
-  /// Reference dynamics values according TO Table 6-134.
+  /// Reference dynamics values according TO Table 6-158.
   DynamicValues : ReferenceDynamics := ( VelocityReference := -1.0, AccelerationReference := -1.0, DecelerationReference := -1.0, JerkReference := -1.0); // ST-FIX F126: spec 6.2.13 / 6.2.14: input of the write command, default '<0' = do not change; 0.0 wrote 0 (minimum) for every value that was not set
 END_STRUCT
 END_TYPE

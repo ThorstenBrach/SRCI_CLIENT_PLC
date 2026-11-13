@@ -245,7 +245,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-146: Sent CMD payload (PLC to RC) of "WriteRobotDefaultDynamics"
+// Table 6-170: Sent CMD payload (PLC to RC) of "WriteRobotDefaultDynamics"
 // --------------------------
 // Header
 // --------------------------
@@ -622,7 +622,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-147: Received CMD payload (RC to PLC) of "WriteRobotDefaultDynamics"
+// Table 6-171: Received CMD payload (RC to PLC) of "WriteRobotDefaultDynamics"
 // --------------------------
 // Header
 // --------------------------

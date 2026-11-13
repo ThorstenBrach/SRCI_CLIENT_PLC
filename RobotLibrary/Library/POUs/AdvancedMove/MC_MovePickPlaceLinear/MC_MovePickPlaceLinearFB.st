@@ -1145,7 +1145,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-421: Sent CMD payload (PLC to RC) of "MovePickPlaceLinear"
+// Table 6-443: Sent CMD payload (PLC to RC) of "MovePickPlaceLinear"
 // --------------------------
 // Header
 // --------------------------
@@ -2720,7 +2720,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-422: Received CMD payload (RC to PLC) of "MovePickPlaceLinear"
+// Table 6-444: Received CMD payload (RC to PLC) of "MovePickPlaceLinear"
 // --------------------------
 // Header
 // --------------------------

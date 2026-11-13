@@ -142,7 +142,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-273: Sent CMD payload (PLC to RC) of "GroupInterrupt"
+// Table 6-295: Sent CMD payload (PLC to RC) of "GroupInterrupt"
 // --------------------------
 // Header
 // --------------------------
@@ -331,7 +331,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-274: Received CMD payload (RC to PLC) of "GroupInterrupt"
+// Table 6-296: Received CMD payload (RC to PLC) of "GroupInterrupt"
 // --------------------------
 // Header
 // --------------------------

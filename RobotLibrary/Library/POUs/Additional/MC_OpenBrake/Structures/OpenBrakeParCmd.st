@@ -29,7 +29,7 @@ STRUCT
   /// Defines which brake of the external robot axis must be released.
   /// • TRUE: Open the brake of the axis.
   /// • FALSE (default): Close the brake of the axis.
-  /// See Table 6-676 for bit assignment.
+  /// See Table 6-698 for bit assignment.
   ExternalAxesBrakeRelease : ExternalAxesFlags;
 END_STRUCT
 END_TYPE

@@ -109,7 +109,7 @@ TYPE RobotLibraryErrorIdEnum :
   ERR_SERVER_CONNECTION_LOST_0xAD := 16#AD,
   
   
-  /// Table 5-96: Telegram and Initialization State 
+  /// Table 5-103: Telegram and Initialization State 
   /// Initialization may fail due to several reasons, described in the following table. T he failure is
   /// signaled using the telegram state byte.
  

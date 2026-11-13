@@ -148,7 +148,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-797: Sent CMD payload (PLC to RC) of "FreeDrive"
+// Table 6-819: Sent CMD payload (PLC to RC) of "FreeDrive"
 // --------------------------
 // Header
 // --------------------------
@@ -535,7 +535,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-798: Received CMD payload (RC to PLC) of "FreeDrive"
+// Table 6-820: Received CMD payload (RC to PLC) of "FreeDrive"
 // --------------------------
 // Header
 // --------------------------

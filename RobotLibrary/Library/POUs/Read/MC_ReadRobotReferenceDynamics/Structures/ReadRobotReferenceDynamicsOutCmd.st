@@ -22,7 +22,7 @@
 // -------------------------------------------------------------------------
 TYPE ReadRobotReferenceDynamicsOutCmd :
 STRUCT
-  /// Reference dynamics values according to Table 6-109.
+  /// Reference dynamics values according to Table 6-158.
   DynamicValues      : ReferenceDynamics;
 END_STRUCT
 END_TYPE

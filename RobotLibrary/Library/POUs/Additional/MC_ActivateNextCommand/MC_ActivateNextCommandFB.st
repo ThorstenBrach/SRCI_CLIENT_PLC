@@ -241,7 +241,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-662: Sent CMD payload (PLC to RC) of "ActivateNextCommand"
+// Table 6-684: Sent CMD payload (PLC to RC) of "ActivateNextCommand"
 // --------------------------
 // Header
 // --------------------------
@@ -605,7 +605,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-663: Received CMD payload (RC to PLC) of "ActivateNextCommand"
+// Table 6-685: Received CMD payload (RC to PLC) of "ActivateNextCommand"
 // --------------------------
 // Header
 // --------------------------

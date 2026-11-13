@@ -22,7 +22,7 @@
 // -------------------------------------------------------------------------
 TYPE WriteRobotDefaultDynamicsOutCmd :
 STRUCT
-  /// Commanded dynamics values according to Table 6-141.
+  /// Commanded dynamics values according to Table 6-165.
   DefaultDynamicValues   : DefaultDynamics;
 END_STRUCT
 END_TYPE

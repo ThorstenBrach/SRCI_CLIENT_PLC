@@ -362,7 +362,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-674: Sent CMD payload (PLC to RC) of "SetTriggerMotion"
+// Table 6-696: Sent CMD payload (PLC to RC) of "SetTriggerMotion"
 // --------------------------
 // Header
 // --------------------------
@@ -779,7 +779,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-675: Received CMD payload (RC to PLC) of "SetTriggerMotion"
+// Table 6-697: Received CMD payload (RC to PLC) of "SetTriggerMotion"
 // --------------------------
 // Header
 // --------------------------

@@ -71,7 +71,7 @@ END_FUNCTION_BLOCK
 
 METHOD UpdateDefaultDynamics : DINT
 VAR_INPUT
-  /// Default dynamics values according to Table 6-148.
+  /// Default dynamics values according to Table 6-172.
   DynamicValues : DefaultDynamics;
 END_VAR
 
@@ -201,7 +201,7 @@ END_METHOD
 
 METHOD UpdateReferenceDynamics : DINT
 VAR_INPUT
-  /// Reference dynamics values according to Table 6-109.
+  /// Reference dynamics values according to Table 6-158.
   DynamicValues : ReferenceDynamics;
 END_VAR
 
@@ -218,7 +218,7 @@ END_METHOD
 
 METHOD UpdateSWLimits : DINT
 VAR_INPUT
-  /// Limits for joints and external axes according to Table 6-180.
+  /// Limits for joints and external axes according to Table 6-197.
   LimitValues : SWLimits;
 END_VAR
 

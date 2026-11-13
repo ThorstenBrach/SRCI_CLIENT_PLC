@@ -374,7 +374,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-727: Sent CMD payload (PLC to RC) of "ForceLimit"
+// Table 6-749: Sent CMD payload (PLC to RC) of "ForceLimit"
 // --------------------------
 // Header
 // --------------------------
@@ -1177,7 +1177,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-728: Received CMD payload (RC to PLC) of "ForceLimit"
+// Table 6-750: Received CMD payload (RC to PLC) of "ForceLimit"
 // --------------------------
 // Header
 // --------------------------

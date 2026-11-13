@@ -218,7 +218,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-360: Sent CMD payload (PLC to RC) of "WaitTime"
+// Table 6-382: Sent CMD payload (PLC to RC) of "WaitTime"
 // --------------------------
 // Header
 // --------------------------
@@ -555,7 +555,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-361: Received CMD payload (RC to PLC) of "WaitTime"
+// Table 6-383: Received CMD payload (RC to PLC) of "WaitTime"
 // --------------------------
 // Header
 // --------------------------

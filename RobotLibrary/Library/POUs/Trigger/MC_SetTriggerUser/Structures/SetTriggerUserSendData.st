@@ -42,7 +42,7 @@ STRUCT
   /// Reference real value, analog input or output value, for triggering the Action function with the EmitterID.
   /// • Relates to "TriggerMode" 30-37, 40-47,60-67
   RealValue              : ARRAY[1..2] OF REAL;
-  /// Specifies the trigger event according to Table 6-574.
+  /// Specifies the trigger event according to Table 6-596.
   /// For more information about registers on the RC see chapters 6.4.4 and 6.4.5.
   TriggerMode            : SINT;
   /// Depending on "TriggerMode":

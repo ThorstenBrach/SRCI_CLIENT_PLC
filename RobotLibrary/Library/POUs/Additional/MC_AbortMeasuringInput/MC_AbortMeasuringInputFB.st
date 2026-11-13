@@ -166,7 +166,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-571: Sent CMD payload (PLC to RC) of "AbortMeasuringInput"
+// Table 6-593: Sent CMD payload (PLC to RC) of "AbortMeasuringInput"
 // --------------------------
 // Header
 // --------------------------
@@ -381,7 +381,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-572: Received CMD payload (RC to PLC) of "AbortMeasuringInput"
+// Table 6-594: Received CMD payload (RC to PLC) of "AbortMeasuringInput"
 // --------------------------
 // Header
 // --------------------------

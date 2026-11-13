@@ -645,7 +645,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-470: Sent CMD payload (PLC to RC) of "MoveSuperImposedDynamic"
+// Table 6-492: Sent CMD payload (PLC to RC) of "MoveSuperImposedDynamic"
 // --------------------------
 // Header
 // --------------------------
@@ -1561,7 +1561,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-471: Received CMD payload (RC to PLC) of "MoveSuperImposedDynamic"
+// Table 6-493: Received CMD payload (RC to PLC) of "MoveSuperImposedDynamic"
 // --------------------------
 // Header
 // --------------------------

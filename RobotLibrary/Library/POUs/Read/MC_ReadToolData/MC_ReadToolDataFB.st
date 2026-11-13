@@ -186,7 +186,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-165: Sent CMD payload (PLC to RC) of "ReadToolData"
+// Table 6-189: Sent CMD payload (PLC to RC) of "ReadToolData"
 // --------------------------
 // Header
 // --------------------------
@@ -436,7 +436,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-166: Received CMD payload (RC to PLC) of "ReadToolData"
+// Table 6-190: Received CMD payload (RC to PLC) of "ReadToolData"
 // --------------------------
 // Header
 // --------------------------

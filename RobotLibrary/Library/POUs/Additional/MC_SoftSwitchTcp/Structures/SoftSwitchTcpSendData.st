@@ -25,7 +25,7 @@ STRUCT
   /// Defines which parameters will limit the space, where the robot complies (at least one option must be supported)
   LimitMode           : LimitMode;
   /// Relates to "LimitMode" with the setting "No limit defined". Defines for which cartesian axes the compliant motion is allowed. 
-  /// If TRUE, the direction is enabled. Default value is FALSE. See Table 6-744 for bit assignment.
+  /// If TRUE, the direction is enabled. Default value is FALSE. See Table 6-765 for bit assignment.
   CompliantAxes       : BYTE;
   /// Defines type of reference coordinate system at which the robot can be moved in a compliant manner.
   ReferenceType       : ReferenceType;  
@@ -55,7 +55,7 @@ STRUCT
   /// Relates to "LimitMode" with the setting "Limit defined". 
   /// Limit values in the selected cartesian coordinate system (see input parameters ReferenceType and ReferenceNo).
   /// "0" is (default) the origin of the vector, the TCP position, at the start position of the robot.
-  /// See Table 6-742 for the parameter index assignment.
+  /// See Table 6-764 for the parameter index assignment.
   VectorData          : ARRAY[0..5] OF REAL;
   /// Defines the type of the resistance force applied at the RA against the external force
   ResistanceForceMode : ResistanceForceMode;

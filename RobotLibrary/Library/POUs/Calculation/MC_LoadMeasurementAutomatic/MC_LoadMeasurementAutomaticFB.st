@@ -806,7 +806,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-778: Sent CMD payload (PLC to RC) of "LoadMeasurementAutomatic"
+// Table 6-800: Sent CMD payload (PLC to RC) of "LoadMeasurementAutomatic"
 // --------------------------
 // Header
 // --------------------------
@@ -1994,7 +1994,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-778: Sent CMD payload (PLC to RC) of "LoadMeasurementAutomatic"
+// Table 6-800: Sent CMD payload (PLC to RC) of "LoadMeasurementAutomatic"
 // --------------------------
 // Header
 // --------------------------

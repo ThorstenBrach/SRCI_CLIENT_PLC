@@ -34,7 +34,7 @@ STRUCT
   /// For more information see chapter 5.5.12.4 EmitterID, ListenerID, FollowID and OriginID
   OriginID           : INT;
   
-  /// Parameter data type as specified in Table 6-613.
+  /// Parameter data type as specified in Table 6-635.
   DataType           : ARRAY[0..7] OF USINT;
   /// Parameter data addressed by input values of ParameterID[0] and SubParameterID[0]
   Data_0             : ARRAY[0..3] OF BYTE;

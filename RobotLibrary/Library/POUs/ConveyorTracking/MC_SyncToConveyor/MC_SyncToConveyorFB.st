@@ -306,7 +306,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-452: Sent CMD payload (PLC to RC) of "SyncToConveyor"
+// Table 6-474: Sent CMD payload (PLC to RC) of "SyncToConveyor"
 // --------------------------
 // Header
 // --------------------------
@@ -940,7 +940,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-453: Received CMD payload (RC to PLC) of "SyncToConveyor"
+// Table 6-475: Received CMD payload (RC to PLC) of "SyncToConveyor"
 // --------------------------
 // Header
 // --------------------------

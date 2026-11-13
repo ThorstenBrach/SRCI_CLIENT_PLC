@@ -30,7 +30,7 @@ STRUCT
   /// • <0: The "Action" is stopped by the trigger function with identical FollowID.
   /// For more information see chapter 5.5.12.4 EmitterID, ListenerID, FollowID and OriginID
   OriginID          : INT;
-  /// Current status of ForceControl and ForceLimit (chapter 6.5.25) according to Table 6-712
+  /// Current status of ForceControl and ForceLimit (chapter 6.5.25) according to Table 6-744
   ForceStatus       : BYTE;
 END_STRUCT
 END_TYPE

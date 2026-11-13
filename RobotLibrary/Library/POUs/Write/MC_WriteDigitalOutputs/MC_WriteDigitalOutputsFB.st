@@ -386,7 +386,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-490: Sent CMD payload (PLC to RC) of "WriteDigitalOutputs"
+// Table 6-512: Sent CMD payload (PLC to RC) of "WriteDigitalOutputs"
 // --------------------------
 // Header
 // --------------------------
@@ -861,7 +861,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-491: Received CMD payload (RC to PLC) of "WriteDigitalOutputs"
+// Table 6-513: Received CMD payload (RC to PLC) of "WriteDigitalOutputs"
 // --------------------------
 // Header
 // --------------------------

@@ -723,7 +723,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-464: Sent CMD payload (PLC to RC) of "MoveSuperImposed"
+// Table 6-486: Sent CMD payload (PLC to RC) of "MoveSuperImposed"
 // --------------------------
 // Header
 // --------------------------
@@ -1753,7 +1753,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-465: Received CMD payload (RC to PLC) of "MoveSuperImposed"
+// Table 6-487: Received CMD payload (RC to PLC) of "MoveSuperImposed"
 // --------------------------
 // Header
 // --------------------------

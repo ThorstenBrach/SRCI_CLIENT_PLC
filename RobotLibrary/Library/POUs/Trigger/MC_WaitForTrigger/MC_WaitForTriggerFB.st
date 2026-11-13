@@ -304,7 +304,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-610: Sent CMD payload (PLC to RC) of "WaitForTrigger"
+// Table 6-632: Sent CMD payload (PLC to RC) of "WaitForTrigger"
 // --------------------------
 // Header
 // --------------------------
@@ -759,7 +759,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-611: Received CMD payload (RC to PLC) of "WaitForTrigger"
+// Table 6-633: Received CMD payload (RC to PLC) of "WaitForTrigger"
 // --------------------------
 // Header
 // --------------------------

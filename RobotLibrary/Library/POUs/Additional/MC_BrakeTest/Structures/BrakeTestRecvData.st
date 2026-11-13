@@ -25,22 +25,22 @@ STRUCT
   /// Indicates the result of the brake test of the robot axes related to the brake test.
   /// • TRUE: The brake test has been realized successfully.
   /// • FALSE: The brake test failed. 
-  /// See Table 6-735 for bit assignment.
+  /// See Table 6-757 for bit assignment.
   RobotAxesStatus    : BYTE;
   /// Indicates the result of the brake test of the external robot axes related to the brake test.
   /// • TRUE: The brake test has been realized successfully.
   /// • FALSE: The brake test failed.
-  /// See Table 6-735 for bit assignment.
+  /// See Table 6-757 for bit assignment.
   ExternalAxesStatus : BYTE;
   /// Indicates the warning messages availability related to the brake functionality of the robot axes reported by the RC.
   /// • TRUE: One or more warning messages are available.
   /// • FALSE: No warning message is available.
-  /// See Table 6-735 for bit assignment.
+  /// See Table 6-757 for bit assignment.
   RobotAxesWarning   : BYTE;
   /// Indicates the warning messages availability related to the brake functionality of the external robot axis reported by the RC.
   /// • TRUE: One or more warning messages are available.
   /// • FALSE: No warning message is available.
-  /// See Table 6-735 for bit assignment.
+  /// See Table 6-757 for bit assignment.
   ExternalAxesWarning: BYTE;
 END_STRUCT
 END_TYPE

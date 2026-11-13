@@ -353,7 +353,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-697: Sent CMD payload (PLC to RC) of "StopSubprogram"
+// Table 6-719: Sent CMD payload (PLC to RC) of "StopSubprogram"
 // --------------------------
 // Header
 // --------------------------
@@ -763,7 +763,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-698: Received CMD payload (RC to PLC) of "StopSubprogram"
+// Table 6-720: Received CMD payload (RC to PLC) of "StopSubprogram"
 // --------------------------
 // Header
 // --------------------------

@@ -172,7 +172,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-193: Sent CMD payload (PLC to RC) of "SetOperationMode"
+// Table 6-217: Sent CMD payload (PLC to RC) of "SetOperationMode"
 // --------------------------
 // Header
 // --------------------------
@@ -388,7 +388,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-194: Received CMD payload (RC to PLC) of "SetOperationMode"
+// Table 6-218: Received CMD payload (RC to PLC) of "SetOperationMode"
 // --------------------------
 // Header
 // --------------------------

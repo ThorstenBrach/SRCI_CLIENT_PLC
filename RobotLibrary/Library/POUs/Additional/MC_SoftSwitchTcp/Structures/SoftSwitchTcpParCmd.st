@@ -29,7 +29,7 @@ STRUCT
   /// • 1..254: Tool/User frames
   ReferenceNo         : USINT;
   /// Relates to "LimitMode" with the setting "No limit defined". Defines for which cartesian axes the compliant motion is allowed. 
-  /// If TRUE, the direction is enabled. Default value is FALSE. See Table 6-744 for bit assignment.
+  /// If TRUE, the direction is enabled. Default value is FALSE. See Table 6-765 for bit assignment.
   CompliantAxes       : BYTE;
   /// Defines which parameters will limit the space, where the robot complies (at least one option must be supported)
   LimitMode           : LimitMode;
@@ -57,7 +57,7 @@ STRUCT
   /// Relates to "LimitMode" with the setting "Limit defined". 
   /// Limit values in the selected cartesian coordinate system (see input parameters ReferenceType and ReferenceNo).
   /// "0" is (default) the origin of the vector, the TCP position, at the start position of the robot.
-  /// See Table 6-742 for the parameter index assignment.
+  /// See Table 6-764 for the parameter index assignment.
   VectorData          : ARRAY[0..5] OF REAL;
 END_STRUCT
 END_TYPE

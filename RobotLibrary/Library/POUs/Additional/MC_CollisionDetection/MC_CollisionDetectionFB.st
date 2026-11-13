@@ -372,7 +372,7 @@ VAR
   /// internal index for loops
  _idx          : DINT;
 END_VAR
-// Table 6-790: Sent CMD payload (PLC to RC) of "CollisionDetection"
+// Table 6-812: Sent CMD payload (PLC to RC) of "CollisionDetection"
 // --------------------------
 // Header
 // --------------------------
@@ -980,7 +980,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-791: Received CMD payload (RC to PLC) of "CollisionDetection"
+// Table 6-813: Received CMD payload (RC to PLC) of "CollisionDetection"
 // --------------------------
 // Header
 // --------------------------

@@ -279,7 +279,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-784: Sent CMD payload (PLC to RC) of "LoadMeasurementSequential"
+// Table 6-806: Sent CMD payload (PLC to RC) of "LoadMeasurementSequential"
 // --------------------------
 // Header
 // --------------------------
@@ -600,7 +600,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-785: Received CMD payload (RC to PLC) of "LoadMeasurementSequential"
+// Table 6-807: Received CMD payload (RC to PLC) of "LoadMeasurementSequential"
 // --------------------------
 // Header
 // --------------------------

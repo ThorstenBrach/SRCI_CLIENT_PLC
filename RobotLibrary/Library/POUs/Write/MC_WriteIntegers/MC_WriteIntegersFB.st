@@ -342,7 +342,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-508: Sent CMD payload (PLC to RC) of "WriteIntegers"
+// Table 6-530: Sent CMD payload (PLC to RC) of "WriteIntegers"
 // --------------------------
 // Header
 // --------------------------
@@ -786,7 +786,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-509: Received CMD payload (RC to PLC) of "WriteIntegers"
+// Table 6-531: Received CMD payload (RC to PLC) of "WriteIntegers"
 // --------------------------
 // Header
 // --------------------------

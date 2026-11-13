@@ -504,7 +504,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-638: Sent CMD payload (PLC to RC) of "CalculateInverseKinematic"
+// Table 6-660: Sent CMD payload (PLC to RC) of "CalculateInverseKinematic"
 // --------------------------
 // Header
 // --------------------------
@@ -1184,7 +1184,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-639: Received CMD payload (RC to PLC) of "CalculateInverseKinematic"
+// Table 6-661: Received CMD payload (RC to PLC) of "CalculateInverseKinematic"
 // --------------------------
 // Header
 // --------------------------

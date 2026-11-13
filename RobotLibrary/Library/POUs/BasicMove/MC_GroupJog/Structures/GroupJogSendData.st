@@ -51,7 +51,7 @@ STRUCT
   /// •   10%: default
   /// • ≤100%: use input parameter value
   Override               : UINT;
-  /// Change to jog and define direction according to Mode. See Table 6-223
+  /// Change to jog and define direction according to Mode. See Table 6-244
   JogControl             : ARRAY[0..2] OF BYTE;
 END_STRUCT
 END_TYPE

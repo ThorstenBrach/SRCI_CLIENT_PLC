@@ -1160,7 +1160,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-353: Sent CMD payload (PLC to RC) of "MoveDirectOffset"
+// Table 6-375: Sent CMD payload (PLC to RC) of "MoveDirectOffset"
 // --------------------------
 // Header
 // --------------------------
@@ -2756,7 +2756,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-354: Received CMD payload (RC to PLC) of "MoveDirectOffset"
+// Table 6-376: Received CMD payload (RC to PLC) of "MoveDirectOffset"
 // --------------------------
 // Header
 // --------------------------

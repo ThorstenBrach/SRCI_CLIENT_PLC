@@ -22,7 +22,7 @@
 // -------------------------------------------------------------------------
 TYPE SetTriggerRegisterParCmd :
 STRUCT
-  /// Specifies the trigger event according to Table 6-574.
+  /// Specifies the trigger event according to Table 6-596.
   /// For more information about registers on the RC see chapters 6.4.4 and 6.4.5.
   TriggerMode            : TriggerModeIo;
   /// Determines whether the start condition is evaluated or not.

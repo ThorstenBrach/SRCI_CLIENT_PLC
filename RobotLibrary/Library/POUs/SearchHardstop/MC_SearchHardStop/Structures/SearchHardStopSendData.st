@@ -73,7 +73,7 @@ STRUCT
   /// • Following Error [mm]   - >0: Robot stops when the following error reached positive limit
   ///                          - <0: Robot stops when the following error reaches the negative limit
   DetectionVector    : ARRAY [0..5] OF REAL;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-425
   ConfigMode         : ARRAY [0..1] OF BYTE;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : USINT;

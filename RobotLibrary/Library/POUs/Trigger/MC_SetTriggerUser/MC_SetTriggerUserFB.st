@@ -258,7 +258,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-591: Sent CMD payload (PLC to RC) of "SetTriggerUser"
+// Table 6-613: Sent CMD payload (PLC to RC) of "SetTriggerUser"
 // --------------------------
 // Header
 // --------------------------
@@ -617,7 +617,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-592: Received CMD payload (RC to PLC) of "SetTriggerUser"
+// Table 6-614: Received CMD payload (RC to PLC) of "SetTriggerUser"
 // --------------------------
 // Header
 // --------------------------

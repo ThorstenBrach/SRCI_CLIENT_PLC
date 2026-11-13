@@ -102,7 +102,7 @@ STRUCT
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5  
   Manipulation       : BOOL;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-561
   ConfigMode         : array[0..1] of byte;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;

@@ -66,7 +66,7 @@ STRUCT
   /// • Parameter defines the time for the movement to reach the target position
   /// Error is sent by the RC if the time cannot be kept
   MoveTime           : TIME;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-274
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;

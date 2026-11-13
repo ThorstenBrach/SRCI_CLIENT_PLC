@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="Beckhoff Automation GmbH" productName="TwinCAT PLC Control" productVersion="3.5.13.21" creationDateTime="2026-11-13T23:55:36.1109316" />
-  <contentHeader name="RobotLibrary" modificationDateTime="2026-11-13T23:55:36.1160315">
+  <fileHeader companyName="Beckhoff Automation GmbH" productName="TwinCAT PLC Control" productVersion="3.5.13.21" creationDateTime="2026-11-14T00:48:35.7311565" />
+  <contentHeader name="RobotLibrary" modificationDateTime="2026-11-14T00:48:35.7311565">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -907,7 +907,7 @@ END_TYPE</xhtml>
               <EnumValue>
                 <Name>ERR_VELOCITY_INVALID</Name>
                 <Documentation>
-                  <xhtml xmlns="http://www.w3.org/1999/xhtml"> Table 5-96: Telegram and Initialization State 
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml"> Table 5-103: Telegram and Initialization State 
  Initialization may fail due to several reasons, described in the following table. T he failure is
  signaled using the telegram state byte.
  7.1 Table "A" – Command ErrorIDs 
@@ -2966,7 +2966,7 @@ TYPE RobotLibraryErrorIdEnum :
   ERR_SERVER_CONNECTION_LOST_0xAD := 16#AD,
   
   
-  /// Table 5-96: Telegram and Initialization State 
+  /// Table 5-103: Telegram and Initialization State 
   /// Initialization may fail due to several reasons, described in the following table. T he failure is
   /// signaled using the telegram state byte.
  
@@ -18133,7 +18133,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Indicates the result of the brake test of the robot axes related to the brake test.
  • TRUE: The brake test has been realized successfully.
  • FALSE: The brake test failed. 
- See Table 6-735 for bit assignment.</xhtml>
+ See Table 6-757 for bit assignment.</xhtml>
               </documentation>
             </variable>
             <variable name="ExternalAxesStatus">
@@ -18144,7 +18144,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Indicates the result of the brake test of the external robot axes related to the brake test.
  • TRUE: The brake test has been realized successfully.
  • FALSE: The brake test failed.
- See Table 6-735 for bit assignment.</xhtml>
+ See Table 6-757 for bit assignment.</xhtml>
               </documentation>
             </variable>
             <variable name="RobotAxesWarning">
@@ -18155,7 +18155,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Indicates the warning messages availability related to the brake functionality of the robot axes reported by the RC.
  • TRUE: One or more warning messages are available.
  • FALSE: No warning message is available.
- See Table 6-735 for bit assignment.</xhtml>
+ See Table 6-757 for bit assignment.</xhtml>
               </documentation>
             </variable>
             <variable name="ExternalAxesWarning">
@@ -18166,7 +18166,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Indicates the warning messages availability related to the brake functionality of the external robot axis reported by the RC.
  • TRUE: One or more warning messages are available.
  • FALSE: No warning message is available.
- See Table 6-735 for bit assignment.</xhtml>
+ See Table 6-757 for bit assignment.</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -18206,22 +18206,22 @@ STRUCT
   /// Indicates the result of the brake test of the robot axes related to the brake test.
   /// • TRUE: The brake test has been realized successfully.
   /// • FALSE: The brake test failed. 
-  /// See Table 6-735 for bit assignment.
+  /// See Table 6-757 for bit assignment.
   RobotAxesStatus    : RobotAxesFlags;
   /// Indicates the result of the brake test of the external robot axes related to the brake test.
   /// • TRUE: The brake test has been realized successfully.
   /// • FALSE: The brake test failed.
-  /// See Table 6-735 for bit assignment.
+  /// See Table 6-757 for bit assignment.
   ExternalAxesStatus : ExternalAxesFlags;
   /// Indicates the warning messages availability related to the brake functionality of the robot axes reported by the RC.
   /// • TRUE: One or more warning messages are available.
   /// • FALSE: No warning message is available.
-  /// See Table 6-735 for bit assignment.
+  /// See Table 6-757 for bit assignment.
   RobotAxesWarning   : RobotAxesFlags;
   /// Indicates the warning messages availability related to the brake functionality of the external robot axis reported by the RC.
   /// • TRUE: One or more warning messages are available.
   /// • FALSE: No warning message is available.
-  /// See Table 6-735 for bit assignment.
+  /// See Table 6-757 for bit assignment.
   ExternalAxesWarning: ExternalAxesFlags;
 END_STRUCT
 END_TYPE</xhtml>
@@ -18288,7 +18288,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines which of the robot axis should be activated for the brake test.
  • TRUE (default): Axis activated.
  • FALSE: Axis deactivated.
- See Table 6-735 for bit assignment.</xhtml>
+ See Table 6-757 for bit assignment.</xhtml>
               </documentation>
             </variable>
             <variable name="ExternalAxesActive">
@@ -18299,7 +18299,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines which of the external robot axis should be activated for the brake test.
  • TRUE: Axis activated.
  • FALSE (default): Axis deactivated.
- See Table 6-735 for bit assignment.   </xhtml>
+ See Table 6-757 for bit assignment.   </xhtml>
               </documentation>
             </variable>
           </struct>
@@ -18339,12 +18339,12 @@ STRUCT
   /// Defines which of the robot axis should be activated for the brake test.
   /// • TRUE (default): Axis activated.
   /// • FALSE: Axis deactivated.
-  /// See Table 6-735 for bit assignment.
+  /// See Table 6-757 for bit assignment.
   RobotAxesActive    : RobotAxesFlags := ( AxisJ1 := TRUE, AxisJ2 := TRUE, AxisJ3 := TRUE, AxisJ4 := TRUE, AxisJ5 := TRUE, AxisJ6 := TRUE); // ST-FIX F156: spec 6.5.27: 'TRUE (default): axis activated' for J1..J6
   /// Defines which of the external robot axis should be activated for the brake test.
   /// • TRUE: Axis activated.
   /// • FALSE (default): Axis deactivated.
-  /// See Table 6-735 for bit assignment.   
+  /// See Table 6-757 for bit assignment.   
   ExternalAxesActive : ExternalAxesFlags;
 END_STRUCT
 END_TYPE</xhtml>
@@ -18389,7 +18389,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Indicates the result of the brake test of the robot axes related to the brake test.
  • TRUE: The brake test has been realized successfully.
  • FALSE: The brake test failed. 
- See Table 6-735 for bit assignment.</xhtml>
+ See Table 6-757 for bit assignment.</xhtml>
               </documentation>
             </variable>
             <variable name="ExternalAxesStatus">
@@ -18400,7 +18400,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Indicates the result of the brake test of the external robot axes related to the brake test.
  • TRUE: The brake test has been realized successfully.
  • FALSE: The brake test failed.
- See Table 6-735 for bit assignment.</xhtml>
+ See Table 6-757 for bit assignment.</xhtml>
               </documentation>
             </variable>
             <variable name="RobotAxesWarning">
@@ -18411,7 +18411,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Indicates the warning messages availability related to the brake functionality of the robot axes reported by the RC.
  • TRUE: One or more warning messages are available.
  • FALSE: No warning message is available.
- See Table 6-735 for bit assignment.</xhtml>
+ See Table 6-757 for bit assignment.</xhtml>
               </documentation>
             </variable>
             <variable name="ExternalAxesWarning">
@@ -18422,7 +18422,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Indicates the warning messages availability related to the brake functionality of the external robot axis reported by the RC.
  • TRUE: One or more warning messages are available.
  • FALSE: No warning message is available.
- See Table 6-735 for bit assignment.</xhtml>
+ See Table 6-757 for bit assignment.</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -18467,22 +18467,22 @@ STRUCT
   /// Indicates the result of the brake test of the robot axes related to the brake test.
   /// • TRUE: The brake test has been realized successfully.
   /// • FALSE: The brake test failed. 
-  /// See Table 6-735 for bit assignment.
+  /// See Table 6-757 for bit assignment.
   RobotAxesStatus    : BYTE;
   /// Indicates the result of the brake test of the external robot axes related to the brake test.
   /// • TRUE: The brake test has been realized successfully.
   /// • FALSE: The brake test failed.
-  /// See Table 6-735 for bit assignment.
+  /// See Table 6-757 for bit assignment.
   ExternalAxesStatus : BYTE;
   /// Indicates the warning messages availability related to the brake functionality of the robot axes reported by the RC.
   /// • TRUE: One or more warning messages are available.
   /// • FALSE: No warning message is available.
-  /// See Table 6-735 for bit assignment.
+  /// See Table 6-757 for bit assignment.
   RobotAxesWarning   : BYTE;
   /// Indicates the warning messages availability related to the brake functionality of the external robot axis reported by the RC.
   /// • TRUE: One or more warning messages are available.
   /// • FALSE: No warning message is available.
-  /// See Table 6-735 for bit assignment.
+  /// See Table 6-757 for bit assignment.
   ExternalAxesWarning: BYTE;
 END_STRUCT
 END_TYPE</xhtml>
@@ -18527,7 +18527,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines which of the robot axis should be activated for the brake test.
  • TRUE (default): Axis activated.
  • FALSE: Axis deactivated.
- See Table 6-735 for bit assignment.</xhtml>
+ See Table 6-757 for bit assignment.</xhtml>
               </documentation>
             </variable>
             <variable name="ExternalAxesActive">
@@ -18538,7 +18538,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines which of the external robot axis should be activated for the brake test.
  • TRUE: Axis activated.
  • FALSE (default): Axis deactivated.
- See Table 6-735 for bit assignment.   </xhtml>
+ See Table 6-757 for bit assignment.   </xhtml>
               </documentation>
             </variable>
           </struct>
@@ -18583,12 +18583,12 @@ STRUCT
   /// Defines which of the robot axis should be activated for the brake test.
   /// • TRUE (default): Axis activated.
   /// • FALSE: Axis deactivated.
-  /// See Table 6-735 for bit assignment.
+  /// See Table 6-757 for bit assignment.
   RobotAxesActive    : BYTE;
   /// Defines which of the external robot axis should be activated for the brake test.
   /// • TRUE: Axis activated.
   /// • FALSE (default): Axis deactivated.
-  /// See Table 6-735 for bit assignment.   
+  /// See Table 6-757 for bit assignment.   
   ExternalAxesActive : BYTE; 
 END_STRUCT
 END_TYPE</xhtml>
@@ -20107,7 +20107,7 @@ END_TYPE</xhtml>
                 <BOOL />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Allows blending when CallSubprogram is called in sequence and removed afterwards. For more information see chapter 6.5.21.
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Allows blending when CallSubprogram is called in sequence and removed afterwards. For more information see chapter 6.5.18.
  • 0 (default): Dynamic blending is prevented
  • 1: Dynamic blending is allowed</xhtml>
               </documentation>
@@ -20219,7 +20219,7 @@ STRUCT
   WaitAtBlendingZone         : BOOL;
   /// Allow a sequence switch from primary to secondary while a subprogram called via CallSubprogram (6.5.18) in the sequence is in progress
   AllowSecSeqWhileSubprogram : BOOL;
-  /// Allows blending when CallSubprogram is called in sequence and removed afterwards. For more information see chapter 6.5.21.
+  /// Allows blending when CallSubprogram is called in sequence and removed afterwards. For more information see chapter 6.5.18.
   /// • 0 (default): Dynamic blending is prevented
   /// • 1: Dynamic blending is allowed
   AllowDynamicBlending       : BOOL;
@@ -21471,7 +21471,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Indicates the brake release status of the main robot axes.
  • TRUE: The brake of the axis is opened.
  • FALSE: The brake of the axis is closed.
- See Table 6-735 for bit assignment</xhtml>
+ See Table 6-698 for bit assignment</xhtml>
               </documentation>
             </variable>
             <variable name="ExternalAxesBrakeReleased">
@@ -21482,7 +21482,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Indicates the brake release status of the external robot axes.
  • TRUE: The brake of the axis is opened.
  • FALSE: The brake of the axis is closed/not supported
- See Table 6-735 for bit assignment</xhtml>
+ See Table 6-698 for bit assignment</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -21524,12 +21524,12 @@ STRUCT
   /// Indicates the brake release status of the main robot axes.
   /// • TRUE: The brake of the axis is opened.
   /// • FALSE: The brake of the axis is closed.
-  /// See Table 6-735 for bit assignment
+  /// See Table 6-698 for bit assignment
   RobotAxesBrakeReleased    : RobotAxesFlags;
   /// Indicates the brake release status of the external robot axes.
   /// • TRUE: The brake of the axis is opened.
   /// • FALSE: The brake of the axis is closed/not supported
-  /// See Table 6-735 for bit assignment
+  /// See Table 6-698 for bit assignment
   ExternalAxesBrakeReleased : ExternalAxesFlags;
 END_STRUCT
 END_TYPE</xhtml>
@@ -21584,7 +21584,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines which brake of the external robot axis must be released.
  • TRUE: Open the brake of the axis.
  • FALSE (default): Close the brake of the axis.
- See Table 6-676 for bit assignment.</xhtml>
+ See Table 6-698 for bit assignment.</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -21628,7 +21628,7 @@ STRUCT
   /// Defines which brake of the external robot axis must be released.
   /// • TRUE: Open the brake of the axis.
   /// • FALSE (default): Close the brake of the axis.
-  /// See Table 6-676 for bit assignment.
+  /// See Table 6-698 for bit assignment.
   ExternalAxesBrakeRelease : ExternalAxesFlags;
 END_STRUCT
 END_TYPE</xhtml>
@@ -21681,7 +21681,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Indicates the brake release status of the main robot axes.
  • TRUE: The brake of the axis is opened.
  • FALSE: The brake of the axis is closed.
- See Table 6-735 for bit assignment</xhtml>
+ See Table 6-698 for bit assignment</xhtml>
               </documentation>
             </variable>
             <variable name="ExternalAxesBrakeReleased">
@@ -21692,7 +21692,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Indicates the brake release status of the external robot axes.
  • TRUE: The brake of the axis is opened.
  • FALSE: The brake of the axis is closed/not supported
- See Table 6-735 for bit assignment</xhtml>
+ See Table 6-698 for bit assignment</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -21739,12 +21739,12 @@ STRUCT
   /// Indicates the brake release status of the main robot axes.
   /// • TRUE: The brake of the axis is opened.
   /// • FALSE: The brake of the axis is closed.
-  /// See Table 6-735 for bit assignment
+  /// See Table 6-698 for bit assignment
   RobotAxesBrakeReleased    : BYTE;
   /// Indicates the brake release status of the external robot axes.
   /// • TRUE: The brake of the axis is opened.
   /// • FALSE: The brake of the axis is closed/not supported
-  /// See Table 6-735 for bit assignment
+  /// See Table 6-698 for bit assignment
   ExternalAxesBrakeReleased : BYTE;
 END_STRUCT
 END_TYPE</xhtml>
@@ -21799,7 +21799,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines which brake of the external robot axis must be released.
  • TRUE: Open the brake of the axis.
  • FALSE (default): Close the brake of the axis.
- See Table 6-676 for bit assignment.</xhtml>
+ See Table 6-698 for bit assignment.</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -21848,7 +21848,7 @@ STRUCT
   /// Defines which brake of the external robot axis must be released.
   /// • TRUE: Open the brake of the axis.
   /// • FALSE (default): Close the brake of the axis.
-  /// See Table 6-676 for bit assignment.
+  /// See Table 6-698 for bit assignment.
   ExternalAxesBrakeRelease : BYTE;
 END_STRUCT
 END_TYPE</xhtml>
@@ -23902,7 +23902,7 @@ END_TYPE</xhtml>
               </type>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Relates to "LimitMode" with the setting "No limit defined". Defines for which cartesian axes the compliant motion is allowed. 
- If TRUE, the direction is enabled. Default value is FALSE. See Table 6-744 for bit assignment.</xhtml>
+ If TRUE, the direction is enabled. Default value is FALSE. See Table 6-765 for bit assignment.</xhtml>
               </documentation>
             </variable>
             <variable name="LimitMode">
@@ -23970,7 +23970,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Relates to "LimitMode" with the setting "Limit defined". 
  Limit values in the selected cartesian coordinate system (see input parameters ReferenceType and ReferenceNo).
  "0" is (default) the origin of the vector, the TCP position, at the start position of the robot.
- See Table 6-742 for the parameter index assignment.</xhtml>
+ See Table 6-764 for the parameter index assignment.</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -24014,7 +24014,7 @@ STRUCT
   /// • 1..254: Tool/User frames
   ReferenceNo         : USINT;
   /// Relates to "LimitMode" with the setting "No limit defined". Defines for which cartesian axes the compliant motion is allowed. 
-  /// If TRUE, the direction is enabled. Default value is FALSE. See Table 6-744 for bit assignment.
+  /// If TRUE, the direction is enabled. Default value is FALSE. See Table 6-765 for bit assignment.
   CompliantAxes       : BYTE;
   /// Defines which parameters will limit the space, where the robot complies (at least one option must be supported)
   LimitMode           : LimitMode;
@@ -24042,7 +24042,7 @@ STRUCT
   /// Relates to "LimitMode" with the setting "Limit defined". 
   /// Limit values in the selected cartesian coordinate system (see input parameters ReferenceType and ReferenceNo).
   /// "0" is (default) the origin of the vector, the TCP position, at the start position of the robot.
-  /// See Table 6-742 for the parameter index assignment.
+  /// See Table 6-764 for the parameter index assignment.
   VectorData          : ARRAY[0..5] OF REAL;
 END_STRUCT
 END_TYPE</xhtml>
@@ -24177,7 +24177,7 @@ END_TYPE</xhtml>
               </type>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Relates to "LimitMode" with the setting "No limit defined". Defines for which cartesian axes the compliant motion is allowed. 
- If TRUE, the direction is enabled. Default value is FALSE. See Table 6-744 for bit assignment.</xhtml>
+ If TRUE, the direction is enabled. Default value is FALSE. See Table 6-765 for bit assignment.</xhtml>
               </documentation>
             </variable>
             <variable name="ReferenceType">
@@ -24247,7 +24247,7 @@ END_TYPE</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Relates to "LimitMode" with the setting "Limit defined". 
  Limit values in the selected cartesian coordinate system (see input parameters ReferenceType and ReferenceNo).
  "0" is (default) the origin of the vector, the TCP position, at the start position of the robot.
- See Table 6-742 for the parameter index assignment.</xhtml>
+ See Table 6-764 for the parameter index assignment.</xhtml>
               </documentation>
             </variable>
             <variable name="ResistanceForceMode">
@@ -24300,7 +24300,7 @@ STRUCT
   /// Defines which parameters will limit the space, where the robot complies (at least one option must be supported)
   LimitMode           : LimitMode;
   /// Relates to "LimitMode" with the setting "No limit defined". Defines for which cartesian axes the compliant motion is allowed. 
-  /// If TRUE, the direction is enabled. Default value is FALSE. See Table 6-744 for bit assignment.
+  /// If TRUE, the direction is enabled. Default value is FALSE. See Table 6-765 for bit assignment.
   CompliantAxes       : BYTE;
   /// Defines type of reference coordinate system at which the robot can be moved in a compliant manner.
   ReferenceType       : ReferenceType;  
@@ -24330,7 +24330,7 @@ STRUCT
   /// Relates to "LimitMode" with the setting "Limit defined". 
   /// Limit values in the selected cartesian coordinate system (see input parameters ReferenceType and ReferenceNo).
   /// "0" is (default) the origin of the vector, the TCP position, at the start position of the robot.
-  /// See Table 6-742 for the parameter index assignment.
+  /// See Table 6-764 for the parameter index assignment.
   VectorData          : ARRAY[0..5] OF REAL;
   /// Defines the type of the resistance force applied at the RA against the external force
   ResistanceForceMode : ResistanceForceMode;
@@ -25828,7 +25828,7 @@ END_TYPE</xhtml>
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-407</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -25967,7 +25967,7 @@ STRUCT
   MoveTime           : TIME;
   /// Parameter to describe how the orientation axes (RX, RY, RZ) will be interpolated during the movement
   OriMode            : OriMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-407
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -26363,7 +26363,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-407</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -26500,7 +26500,7 @@ STRUCT
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5
   Manipulation       : BOOL;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-407
   ConfigMode         :  ARRAY[0..1] OF BYTE;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -26823,7 +26823,7 @@ END_TYPE</xhtml>
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-389</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -26962,7 +26962,7 @@ STRUCT
   MoveTime           : TIME;
   /// Parameter to describe how the orientation axes (RX, RY, RZ) will be interpolated during the movement
   OriMode            : OriMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-389
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -27358,7 +27358,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-389</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -27495,7 +27495,7 @@ STRUCT
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5
   Manipulation       : BOOL;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-389
   ConfigMode         :  ARRAY[0..1] OF BYTE;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -28629,7 +28629,7 @@ END_TYPE</xhtml>
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-346</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -28764,7 +28764,7 @@ STRUCT
   MoveTime           : TIME;
   /// Parameter to describe how the orientation axes (RX, RY, RZ) will be interpolated during the movement
   OriMode            : OriMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-346
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -29179,7 +29179,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-346</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -29323,7 +29323,7 @@ STRUCT
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5
   Manipulation       : BOOL;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-346
   ConfigMode         : ARRAY[0..1] OF BYTE;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -29664,7 +29664,7 @@ END_TYPE</xhtml>
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-561</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -29832,7 +29832,7 @@ STRUCT
   MoveTime           : TIME;
   /// Parameter to describe how the orientation axes (RX, RY, RZ) will be interpolated during the movement
   OriMode            : OriMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-561
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -30234,7 +30234,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-561</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -30380,7 +30380,7 @@ STRUCT
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5  
   Manipulation       : BOOL;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-561
   ConfigMode         : array[0..1] of byte;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -30738,7 +30738,7 @@ END_TYPE</xhtml>
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-355</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -30875,7 +30875,7 @@ STRUCT
   MoveTime           : TIME;
   /// Parameter to describe how the orientation axes (RX, RY, RZ) will be interpolated during the movement
   OriMode            : OriMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-355
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -31289,7 +31289,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-355</xhtml>
               </documentation>
             </variable>
             <variable name="ReferenceType">
@@ -31430,7 +31430,7 @@ STRUCT
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5  
   Manipulation       : BOOL;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-355
   ConfigMode         : ARRAY[0..1] OF BYTE;
   /// Defines type of reference coordinate system of the offset position
   ReferenceType      : BOOL;
@@ -31750,7 +31750,7 @@ END_TYPE</xhtml>
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-416</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -31889,7 +31889,7 @@ STRUCT
   MoveTime           : TIME;
   /// Parameter to describe how the orientation axes (RX, RY, RZ) will be interpolated during the movement
   OriMode            : OriMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-416
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -32286,7 +32286,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-416</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -32420,7 +32420,7 @@ STRUCT
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5  
   Manipulation       : BOOL;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-416
   ConfigMode         : ARRAY[0..1] OF BYTE;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -32740,7 +32740,7 @@ END_TYPE</xhtml>
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-398</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -32879,7 +32879,7 @@ STRUCT
   MoveTime           : TIME;
   /// Parameter to describe how the orientation axes (RX, RY, RZ) will be interpolated during the movement
   OriMode            : OriMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-398
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -33276,7 +33276,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-398</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -33410,7 +33410,7 @@ STRUCT
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5  
   Manipulation       : BOOL;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-398
   ConfigMode         : ARRAY [0..1] OF BYTE;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -33689,7 +33689,7 @@ END_TYPE
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-552</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -33838,7 +33838,7 @@ STRUCT
   /// • Parameter defines the time for the movement to reach the target position
   /// Error is sent by the RC if the time cannot be kept
   MoveTime           : TIME;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-552
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -34177,7 +34177,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-552</xhtml>
               </documentation>
             </variable>
             <variable name="Manipulation">
@@ -34303,7 +34303,7 @@ STRUCT
   OutputBitmask      : BYTE;
   /// Value of Digital Output
   Value              : BYTE;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-552
   ConfigMode         : ARRAY [0..1] OF BYTE;
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5
@@ -34621,7 +34621,7 @@ END_TYPE</xhtml>
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-373</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -34742,7 +34742,7 @@ STRUCT
   MoveTime           : TIME;
   /// Parameter to describe how the orientation axes (RX, RY, RZ) will be interpolated during the movement.
   OriMode            : OriMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-373
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -35119,7 +35119,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-373</xhtml>
               </documentation>
             </variable>
             <variable name="ReferenceType">
@@ -35249,7 +35249,7 @@ STRUCT
   Manipulation       : BOOL;
   /// Reserve2
   Reserve2           : BYTE;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-373
   ConfigMode         : ARRAY[0..1] OF BYTE;
   /// Defines type of reference coordinate system of the offset position
   ReferenceType      : USINT;
@@ -35549,7 +35549,7 @@ END_TYPE</xhtml>
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-317</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -35667,7 +35667,7 @@ STRUCT
   /// • Parameter defines the time for the movement to reach the target position
   /// Error is sent by the RC if the time cannot be kept
   MoveTime           : TIME;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-317
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -36036,7 +36036,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-317</xhtml>
               </documentation>
             </variable>
             <variable name="ReferenceType">
@@ -36164,7 +36164,7 @@ STRUCT
   Manipulation       : BOOL;
   /// Reserve3
   Reserve3           : BYTE;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-317
   ConfigMode         : ARRAY[0..1] OF BYTE;
   /// Defines type of reference coordinate system of the offset position
   ReferenceType      : USINT;
@@ -37271,7 +37271,7 @@ END_TYPE</xhtml>
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-543</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -37421,7 +37421,7 @@ STRUCT
   MoveTime           : TIME;
   /// Parameter to describe how the orientation axes (RX, RY, RZ) will be interpolated during the movement
   OriMode            : OriMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-543
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -37757,7 +37757,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-543</xhtml>
               </documentation>
             </variable>
             <variable name="Manipulation">
@@ -37882,7 +37882,7 @@ STRUCT
   OutputBitmask      : BYTE;
   /// Value of Digital Output
   Value              : BYTE;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-543
   ConfigMode         : ARRAY [0..1] OF BYTE;
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5
@@ -38198,7 +38198,7 @@ END_TYPE</xhtml>
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-364</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -38319,7 +38319,7 @@ STRUCT
   MoveTime           : TIME;
   /// Parameter to describe how the orientation axes (RX, RY, RZ) will be interpolated during the movement
   OriMode            : OriMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-364
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -38696,7 +38696,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-364</xhtml>
               </documentation>
             </variable>
             <variable name="ReferenceType">
@@ -38826,7 +38826,7 @@ STRUCT
   Manipulation       : BOOL;
   /// Reserve2
   Reserve2           : BYTE;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-364
   ConfigMode         : ARRAY[0..1] OF BYTE;
   /// Defines type of reference coordinate system of the offset position
   ReferenceType      : USINT;
@@ -39133,7 +39133,7 @@ END_TYPE</xhtml>
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-308</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -39252,7 +39252,7 @@ STRUCT
   MoveTime           : TIME;
   /// Parameter to describe how the orientation axes (RX, RY, RZ) will be interpolated during the movement
   OriMode            : OriMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-308
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -39613,7 +39613,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-308</xhtml>
               </documentation>
             </variable>
             <variable name="ReferenceType">
@@ -39739,7 +39739,7 @@ STRUCT
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5
   Manipulation       : BOOL;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-308
   ConfigMode         : ARRAY[0..1] OF BYTE;
   /// Defines type of reference coordinate system of the offset position
   ReferenceType      : USINT;
@@ -40046,7 +40046,7 @@ END_TYPE</xhtml>
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-450</xhtml>
               </documentation>
             </variable>
             <variable name="BlendingMode">
@@ -40229,7 +40229,7 @@ STRUCT
   MoveTime           : TIME;
   /// Parameter to describe how the orientation axes (RX, RY, RZ) will be interpolated during the movement
   OriMode            : OriMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-450
   ConfigMode         : ArmConfigParameter;
   /// Parameter which determines the transition behavior at the end of the movement to be sent to the next command. 
   /// The user can choose a transition type between exact stop and different blend possibilities
@@ -40651,7 +40651,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-450</xhtml>
               </documentation>
             </variable>
             <variable name="ReferenceType">
@@ -40792,7 +40792,7 @@ STRUCT
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5
   Manipulation       : BOOL;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-450
   ConfigMode         : ARRAY [0..1] OF BYTE;
   /// Defines type of reference coordinate system of the offset position
   ReferenceType      : USINT;
@@ -41115,7 +41115,7 @@ END_TYPE</xhtml>
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-441</xhtml>
               </documentation>
             </variable>
             <variable name="BlendingMode">
@@ -41277,7 +41277,7 @@ STRUCT
   MoveTime           : TIME;
   /// Parameter to describe how the orientation axes (RX, RY, RZ) will be interpolated during the movement
   OriMode            : OriMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-441
   ConfigMode         : ArmConfigParameter;
   /// Parameter which determines the transition behavior at the end of the movement to be sent to the next command. 
   /// The user can choose a transition type between exact stop and different blend possibilities
@@ -41688,7 +41688,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-441</xhtml>
               </documentation>
             </variable>
             <variable name="ReferenceType">
@@ -41829,7 +41829,7 @@ STRUCT
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5
   Manipulation       : BOOL;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-441
   ConfigMode         : array [0..1] of byte;
   /// Defines type of reference coordinate system of the offset position
   ReferenceType      : USINT;
@@ -42876,7 +42876,7 @@ END_TYPE</xhtml>
                 <derived name="JogControl" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Change to jog and define direction according to Mode. See Table 6-223</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Change to jog and define direction according to Mode. See Table 6-244</xhtml>
               </documentation>
             </variable>
             <variable name="ToolNo">
@@ -42961,7 +42961,7 @@ STRUCT
   /// •   10%: default
   /// • ≤100%: use input parameter value
   Override               : UINT := 10; // ST-FIX F155: the comment of the field names 10 % as default (the library had 5, like F117)
-  /// Change to jog and define direction according to Mode. See Table 6-223
+  /// Change to jog and define direction according to Mode. See Table 6-244
   Control                : JogControl;
   /// Relates to Mode 0 (JogFrame) and 1 (JogTool) Index of tool
   /// •      0: Flange (default):
@@ -43189,7 +43189,7 @@ END_TYPE</xhtml>
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Change to jog and define direction according to Mode. See Table 6-223</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Change to jog and define direction according to Mode. See Table 6-244</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -43260,7 +43260,7 @@ STRUCT
   /// •   10%: default
   /// • ≤100%: use input parameter value
   Override               : UINT;
-  /// Change to jog and define direction according to Mode. See Table 6-223
+  /// Change to jog and define direction according to Mode. See Table 6-244
   JogControl             : ARRAY[0..2] OF BYTE;
 END_STRUCT
 END_TYPE</xhtml>
@@ -43809,7 +43809,7 @@ END_TYPE</xhtml>
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 5-17</xhtml>
               </documentation>
             </variable>
             <variable name="Manipulation">
@@ -43912,7 +43912,7 @@ STRUCT
   /// • Parameter defines the time for the movement to reach the target position
   /// Error is sent by the RC if the time cannot be kept
   MoveTime           : TIME;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 5-17
   ConfigMode         : ArmConfigParameter;
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5
@@ -44626,7 +44626,7 @@ END_TYPE</xhtml>
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-274</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -44741,7 +44741,7 @@ STRUCT
   /// • Parameter defines the time for the movement to reach the target position
   /// Error is sent by the RC if the time cannot be kept
   MoveTime           : TIME;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-274
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -45110,7 +45110,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-274</xhtml>
               </documentation>
             </variable>
             <variable name="Reserve3">
@@ -45235,7 +45235,7 @@ STRUCT
   Manipulation       : BOOL;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-274
   ConfigMode         : ARRAY[0..1] OF BYTE;
   /// Reserve
   Reserve3           : BYTE;
@@ -45531,7 +45531,7 @@ END_TYPE</xhtml>
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-265</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -45648,7 +45648,7 @@ STRUCT
   MoveTime           : TIME;
   /// Parameter to describe how the orientation axes (RX, RY, RZ) will be interpolated during the movement
   OriMode            : OriMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-265
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -46017,7 +46017,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-265</xhtml>
               </documentation>
             </variable>
             <variable name="Reserve2">
@@ -46145,7 +46145,7 @@ STRUCT
   Manipulation       : BOOL;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-265
   ConfigMode         : ARRAY [0..1] OF BYTE;
   /// Reserve2
   Reserve2           : BYTE;
@@ -50258,7 +50258,7 @@ END_TYPE</xhtml>
                 <derived name="TrackingStatus" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Current status of "ConveyorTracking" according to Table 6-432</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Current status of "ConveyorTracking" according to Table 6-454</xhtml>
               </documentation>
             </variable>
             <variable name="RCEncoderValue">
@@ -50303,7 +50303,7 @@ END_TYPE</xhtml>
 // -------------------------------------------------------------------------
 TYPE ActivateConveyorTrackingOutCmd :
 STRUCT
-  /// Current status of "ConveyorTracking" according to Table 6-432
+  /// Current status of "ConveyorTracking" according to Table 6-454
   TrackingStatus     : TrackingStatus;
   /// Relates to "ConnectionMode" 1 – "RC connected": Traveled distance of assigned conveyor since ConveyorTracking has been activated (offset)
   RCEncoderValue     : REAL;
@@ -52249,7 +52249,7 @@ END_TYPE</xhtml>
                 <derived name="ForceStatus" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Current status of ForceControl and ForceLimit (chapter 6.5.25) according to Table 6-712</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Current status of ForceControl and ForceLimit (chapter 6.5.24) according to Table 6-734</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -52286,7 +52286,7 @@ END_TYPE</xhtml>
 // -------------------------------------------------------------------------
 TYPE ForceControlOutCmd :
 STRUCT
-  /// Current status of ForceControl and ForceLimit (chapter 6.5.25) according to Table 6-712
+  /// Current status of ForceControl and ForceLimit (chapter 6.5.24) according to Table 6-734
   ForceStatus        : ForceStatus;  
 END_STRUCT
 END_TYPE</xhtml>
@@ -52403,7 +52403,7 @@ END_TYPE</xhtml>
                 <derived name="SensorConnectionMode" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Specifies encoder connection setup according to Table 6-713 (at least one option must be supported) </xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Specifies encoder connection setup according to Table 6-735 (at least one option must be supported) </xhtml>
               </documentation>
             </variable>
             <variable name="SensorFrame">
@@ -52447,7 +52447,7 @@ END_TYPE</xhtml>
                 <BYTE />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Define axes whose position may be adjusted by the robot to apply specified force according to Table 6-711.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Define axes whose position may be adjusted by the robot to apply specified force according to Table 6-733.</xhtml>
               </documentation>
             </variable>
             <variable name="MaxVelocity">
@@ -52611,7 +52611,7 @@ STRUCT
   /// Define the index number of the UCS that will be assigned to the conveyor.
   /// For more information refer to chapter 5.5.14
   FrameNo            : USINT;
-  /// Specifies encoder connection setup according to Table 6-713 (at least one option must be supported) 
+  /// Specifies encoder connection setup according to Table 6-735 (at least one option must be supported) 
   ConnectionMode     : SensorConnectionMode;
   /// Position of sensor relative to flange (FixedSensor FALSE) or relative to WCS (FixedSensor TRUE)
   /// • [0]: X-Axis
@@ -52626,7 +52626,7 @@ STRUCT
   CalibrationData    : USINT;
   /// Tolerance of TargetValue within which currently applied force/torque will return ForceStatus "Specified force/torque reached" TRUE.
   TargetWindow       : REAL;
-  /// Define axes whose position may be adjusted by the robot to apply specified force according to Table 6-711.
+  /// Define axes whose position may be adjusted by the robot to apply specified force according to Table 6-733.
   CompliantAxes      : BYTE;
   /// Maximum allowed TCP velocity for compliant axes in % of nominal velocity.
   /// •   0% (default): no limit - RC internal limit applies
@@ -52709,7 +52709,7 @@ END_TYPE</xhtml>
                 <BYTE />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Current status of ForceControl and ForceLimit (chapter 6.5.25) according to Table 6-712</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Current status of ForceControl and ForceLimit (chapter 6.5.24) according to Table 6-734</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -52751,7 +52751,7 @@ END_TYPE</xhtml>
 // -------------------------------------------------------------------------
 TYPE ForceControlRecvData EXTENDS RspHeader :
 STRUCT
-  /// Current status of ForceControl and ForceLimit (chapter 6.5.25) according to Table 6-712
+  /// Current status of ForceControl and ForceLimit (chapter 6.5.24) according to Table 6-734
   ForceStatus : BYTE;
 END_STRUCT
 END_TYPE</xhtml>
@@ -52812,7 +52812,7 @@ END_TYPE</xhtml>
                 <derived name="SensorConnectionMode" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Specifies encoder connection setup according to Table 6-713 (at least one option must be supported) </xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Specifies encoder connection setup according to Table 6-735 (at least one option must be supported) </xhtml>
               </documentation>
             </variable>
             <variable name="FixedSensor">
@@ -52996,7 +52996,7 @@ END_TYPE</xhtml>
                 <BYTE />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Define axes whose position may be adjusted by the robot to apply specified force according to Table 6-711.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Define axes whose position may be adjusted by the robot to apply specified force according to Table 6-733.</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -53045,7 +53045,7 @@ STRUCT
   /// Define the index number of the UCS that will be assigned to the conveyor.
   /// For more information refer to chapter 5.5.14
   FrameNo            : USINT;
-  /// Specifies encoder connection setup according to Table 6-713 (at least one option must be supported) 
+  /// Specifies encoder connection setup according to Table 6-735 (at least one option must be supported) 
   ConnectionMode     : SensorConnectionMode;
   /// Defines sensor positioning:
   /// • FALSE (default): Sensor mounted on flange
@@ -53120,7 +53120,7 @@ STRUCT
   /// •      0: WCS (default)
   /// • 1..254: User frames
   ErrorFrameNo       : USINT;
-  /// Define axes whose position may be adjusted by the robot to apply specified force according to Table 6-711.
+  /// Define axes whose position may be adjusted by the robot to apply specified force according to Table 6-733.
   CompliantAxes      : BYTE;
 END_STRUCT
 END_TYPE</xhtml>
@@ -53162,7 +53162,7 @@ END_TYPE</xhtml>
                 <derived name="ForceStatus" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Current status of ForceControl and ForceLimit (chapter 6.5.25) according to Table 6-712</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Current status of ForceControl and ForceLimit (chapter 6.5.25) according to Table 6-744</xhtml>
               </documentation>
             </variable>
             <variable name="FollowID">
@@ -53208,7 +53208,7 @@ END_TYPE</xhtml>
 // -------------------------------------------------------------------------
 TYPE ForceLimitOutCmd :
 STRUCT
-  /// Current status of ForceControl and ForceLimit (chapter 6.5.25) according to Table 6-712
+  /// Current status of ForceControl and ForceLimit (chapter 6.5.25) according to Table 6-744
   ForceStatus        : ForceStatus;
   /// Relates to EmitterID &lt;&gt; 0: Unique system-generated ID of the trigger function when the function is called by user.
   /// For more information see chapter 5.5.12.4.
@@ -53320,7 +53320,7 @@ END_TYPE</xhtml>
                 <derived name="ConnectionMode" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Specifies the sensor connection (0: RC connected, 1: PLC connected) according to Table 6-743 (ST-FIX F176: was 'encoder', Table 6-713) (at least one option must be supported) </xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Specifies the sensor connection (0: RC connected, 1: PLC connected) according to Table 6-743 (ST-FIX F176: was 'encoder', Table 6-743) (at least one option must be supported) </xhtml>
               </documentation>
             </variable>
             <variable name="SensorFrame">
@@ -53434,7 +53434,7 @@ STRUCT
   /// • [4]: Rotation around Y-Axis (RY)
   /// • [5]: Rotation around Z- Axis (RZ)
   ForceLimit        : ARRAY[0..5] OF REAL;
-  /// Specifies the sensor connection (0: RC connected, 1: PLC connected) according to Table 6-743 (ST-FIX F176: was 'encoder', Table 6-713) (at least one option must be supported) 
+  /// Specifies the sensor connection (0: RC connected, 1: PLC connected) according to Table 6-743 (ST-FIX F176: was 'encoder', Table 6-743) (at least one option must be supported) 
   ConnectionMode    : ConnectionMode;
   /// Position of sensor relative to flange (FixedSensor FALSE) or relative to WCS (FixedSensor TRUE)
   /// • [0]: X-Axis
@@ -53521,7 +53521,7 @@ END_TYPE</xhtml>
                 <BYTE />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Current status of ForceControl and ForceLimit (chapter 6.5.25) according to Table 6-712</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Current status of ForceControl and ForceLimit (chapter 6.5.25) according to Table 6-744</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -53571,7 +53571,7 @@ STRUCT
   /// • &lt;0: The "Action" is stopped by the trigger function with identical FollowID.
   /// For more information see chapter 5.5.12.4 EmitterID, ListenerID, FollowID and OriginID
   OriginID          : INT;
-  /// Current status of ForceControl and ForceLimit (chapter 6.5.25) according to Table 6-712
+  /// Current status of ForceControl and ForceLimit (chapter 6.5.25) according to Table 6-744
   ForceStatus       : BYTE;
 END_STRUCT
 END_TYPE</xhtml>
@@ -53665,7 +53665,7 @@ END_TYPE</xhtml>
                 <USINT />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Specifies encoder connection setup according to Table 6-713 (at least one option must be supported) </xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Specifies encoder connection setup according to Table 6-743 (at least one option must be supported) </xhtml>
               </documentation>
             </variable>
             <variable name="FixedSensor">
@@ -53810,7 +53810,7 @@ STRUCT
   /// Define the index number of the UCS that will be assigned to the conveyor.
   /// For more information refer to chapter 5.5.14
   FrameNo            : USINT;
-  /// Specifies encoder connection setup according to Table 6-713 (at least one option must be supported) 
+  /// Specifies encoder connection setup according to Table 6-743 (at least one option must be supported) 
   ConnectionMode     : USINT;
   /// Defines sensor positioning:
   /// • FALSE (default): Sensor mounted on flange
@@ -56805,7 +56805,7 @@ END_TYPE</xhtml>
                 <BOOL />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Allows blending when CallSubprogram is called in sequence and removed afterwards. For more information see chapter 6.5.21.
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Allows blending when CallSubprogram is called in sequence and removed afterwards. For more information see chapter 6.5.18.
  • 0 (default): Dynamic blending is prevented
  • 1: Dynamic blending is allowed</xhtml>
               </documentation>
@@ -56896,7 +56896,7 @@ STRUCT
   WaitAtBlendingZone         : BOOL;
   /// Allow a sequence switch from primary to secondary while a subprogram called via CallSubprogram (6.5.18) in the sequence is in progress
   AllowSecSeqWhileSubprogram : BOOL;
-  /// Allows blending when CallSubprogram is called in sequence and removed afterwards. For more information see chapter 6.5.21.
+  /// Allows blending when CallSubprogram is called in sequence and removed afterwards. For more information see chapter 6.5.18.
   /// • 0 (default): Dynamic blending is prevented
   /// • 1: Dynamic blending is allowed
   AllowDynamicBlending       : BOOL;
@@ -57118,7 +57118,7 @@ END_TYPE</xhtml>
                 <derived name="OperationMode" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Limits for joints and external axes according to Table 6-180.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Operation mode according to Table 6-211.</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -57155,7 +57155,7 @@ END_TYPE</xhtml>
 // -------------------------------------------------------------------------
 TYPE SetOperationModeParCmd :
 STRUCT
-  /// Limits for joints and external axes according to Table 6-180.
+  /// Operation mode according to Table 6-211.
   OperationMode : OperationMode;
 END_STRUCT
 END_TYPE</xhtml>
@@ -57271,7 +57271,7 @@ END_TYPE
                 <USINT />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Limits for joints and external axes according to Table 6-180.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Operation mode according to Table 6-211.</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -57313,7 +57313,7 @@ END_TYPE
 // -------------------------------------------------------------------------
 TYPE SetOperationModeSendData EXTENDS CmdHeader: 
 STRUCT
-  /// Limits for joints and external axes according to Table 6-180.
+  /// Operation mode according to Table 6-211.
   OperationMode : USINT;
 END_STRUCT
 END_TYPE</xhtml>
@@ -63371,7 +63371,7 @@ END_TYPE</xhtml>
                 <derived name="Severity" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of returned message according to .Table 5-47.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of returned message according to .Table 5-49.</xhtml>
               </documentation>
             </variable>
             <variable name="ErrorCode">
@@ -63434,7 +63434,7 @@ STRUCT
   Timestamp              : IEC_TIMESTAMP;
   /// Message Type
   MsgType                : MessageType;
-  /// Severity of returned message according to .Table 5-47.
+  /// Severity of returned message according to .Table 5-49.
   Severity               : Severity;
   /// ErrorCode
   ErrorCode              : DWORD;
@@ -63618,7 +63618,7 @@ END_TYPE
                 <SINT />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of returned message according to .Table 5-47.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of returned message according to .Table 5-49.</xhtml>
               </documentation>
             </variable>
             <variable name="ErrorCode">
@@ -63688,7 +63688,7 @@ STRUCT
   Timestamp              : IEC_TIMESTAMP;
   /// Message Type
   MsgType                : USINT;
-  /// Severity of returned message according to .Table 5-47.
+  /// Severity of returned message according to .Table 5-49.
   Severity               : SINT;
   /// ErrorCode
   ErrorCode              : DWORD;
@@ -64918,7 +64918,7 @@ END_TYPE</xhtml>
                 <derived name="DefaultDynamics" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Default dynamics values according to Table 6-148.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Default dynamics values according to Table 6-172.</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -64955,7 +64955,7 @@ END_TYPE</xhtml>
 // -------------------------------------------------------------------------
 TYPE ReadRobotDefaultDynamicsOutCmd :
 STRUCT
-  /// Default dynamics values according to Table 6-148.
+  /// Default dynamics values according to Table 6-172.
   DynamicValues      : DefaultDynamics;
 END_STRUCT
 END_TYPE</xhtml>
@@ -65306,7 +65306,7 @@ END_TYPE</xhtml>
                 <derived name="ReferenceDynamics" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Reference dynamics values according to Table 6-109.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Reference dynamics values according to Table 6-158.</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -65343,7 +65343,7 @@ END_TYPE</xhtml>
 // -------------------------------------------------------------------------
 TYPE ReadRobotReferenceDynamicsOutCmd :
 STRUCT
-  /// Reference dynamics values according to Table 6-109.
+  /// Reference dynamics values according to Table 6-158.
   DynamicValues      : ReferenceDynamics;
 END_STRUCT
 END_TYPE</xhtml>
@@ -65678,7 +65678,7 @@ END_TYPE</xhtml>
                 <derived name="SWLimits" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> DLimits for joints and external axes according to Table 6-173.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> DLimits for joints and external axes according to Table 6-197.</xhtml>
               </documentation>
             </variable>
             <variable name="DataChanged">
@@ -65723,7 +65723,7 @@ END_TYPE</xhtml>
 // -------------------------------------------------------------------------
 TYPE ReadRobotSWLimitsOutCmd :
 STRUCT
-  /// DLimits for joints and external axes according to Table 6-173.
+  /// DLimits for joints and external axes according to Table 6-197.
   LimitValues        : SWLimits;
   /// The limits were changed on the RC since the last synchronization (ST-FIX F32: byte 106 of the response)
   DataChanged : BOOL;
@@ -65836,7 +65836,7 @@ END_TYPE
                 <derived name="SWLimits" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> DLimits for joints and external axes according to Table 6-173.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> DLimits for joints and external axes according to Table 6-197.</xhtml>
               </documentation>
             </variable>
             <variable name="DataChanged">
@@ -65886,7 +65886,7 @@ END_TYPE
 // -------------------------------------------------------------------------
 TYPE ReadRobotSWLimitsRecvData EXTENDS RspHeader :
 STRUCT
-  /// DLimits for joints and external axes according to Table 6-173.
+  /// DLimits for joints and external axes according to Table 6-197.
   LimitValues        : SWLimits;
   /// The status bit "DataChanged" represents the modification state 
   DataChanged : BOOL;
@@ -66030,7 +66030,7 @@ END_TYPE</xhtml>
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Parameter data type as specified in Table 6-613.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Parameter data type as specified in Table 6-635.</xhtml>
               </documentation>
             </variable>
             <variable name="Data_0">
@@ -66181,7 +66181,7 @@ STRUCT
   /// For more information refer to chapter 5.5.12.4.
   InvocationCounter  : USINT;
   
-  /// Parameter data type as specified in Table 6-613.
+  /// Parameter data type as specified in Table 6-635.
   DataType           : ARRAY[0..7] OF USINT;
   /// Parameter data addressed by input values of ParameterID[0] and SubParameterID[0]
   Data_0             : ARRAY[0..3] OF BYTE;
@@ -66417,7 +66417,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Parameter data type as specified in Table 6-613.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Parameter data type as specified in Table 6-635.</xhtml>
               </documentation>
             </variable>
             <variable name="Data_0">
@@ -66575,7 +66575,7 @@ STRUCT
   /// For more information see chapter 5.5.12.4 EmitterID, ListenerID, FollowID and OriginID
   OriginID           : INT;
   
-  /// Parameter data type as specified in Table 6-613.
+  /// Parameter data type as specified in Table 6-635.
   DataType           : ARRAY[0..7] OF USINT;
   /// Parameter data addressed by input values of ParameterID[0] and SubParameterID[0]
   Data_0             : ARRAY[0..3] OF BYTE;
@@ -67426,7 +67426,7 @@ END_TYPE</xhtml>
                 <derived name="ArmConfigParameter" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-425</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -67526,7 +67526,7 @@ STRUCT
   FrameNo            : USINT;
   /// Parameter to describe how the orientation axes (RX, RY, RZ) will be interpolated during the movement
   OriMode            : OriMode;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-425
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
@@ -67819,7 +67819,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-238</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Defines the usage of the config byte inside the position according to Table 6-425</xhtml>
               </documentation>
             </variable>
             <variable name="TurnMode">
@@ -67920,7 +67920,7 @@ STRUCT
   /// • Following Error [mm]   - &gt;0: Robot stops when the following error reached positive limit
   ///                          - &lt;0: Robot stops when the following error reaches the negative limit
   DetectionVector    : ARRAY [0..5] OF REAL;
-  /// Defines the usage of the config byte inside the position according to Table 6-238
+  /// Defines the usage of the config byte inside the position according to Table 6-425
   ConfigMode         : ARRAY [0..1] OF BYTE;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : USINT;
@@ -74120,7 +74120,7 @@ END_TYPE</xhtml>
                 <derived name="TriggerModeIo" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Specifies the trigger event according to Table 6-574.
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Specifies the trigger event according to Table 6-596.
  For more information about registers on the RC see chapters 6.4.4 and 6.4.5.</xhtml>
               </documentation>
             </variable>
@@ -74242,7 +74242,7 @@ END_TYPE</xhtml>
 // -------------------------------------------------------------------------
 TYPE SetTriggerRegisterParCmd :
 STRUCT
-  /// Specifies the trigger event according to Table 6-574.
+  /// Specifies the trigger event according to Table 6-596.
   /// For more information about registers on the RC see chapters 6.4.4 and 6.4.5.
   TriggerMode            : TriggerModeIo;
   /// Determines whether the start condition is evaluated or not.
@@ -74497,7 +74497,7 @@ END_TYPE
                 <SINT />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Specifies the trigger event according to Table 6-574.
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Specifies the trigger event according to Table 6-596.
  For more information about registers on the RC see chapters 6.4.4 and 6.4.5.</xhtml>
               </documentation>
             </variable>
@@ -74582,7 +74582,7 @@ STRUCT
   /// Reference real value, analog input or output value, for triggering the Action function with the EmitterID.
   /// • Relates to "TriggerMode" 30-37, 40-47,60-67
   RealValue              : ARRAY[1..2] OF REAL;
-  /// Specifies the trigger event according to Table 6-574.
+  /// Specifies the trigger event according to Table 6-596.
   /// For more information about registers on the RC see chapters 6.4.4 and 6.4.5.
   TriggerMode            : SINT;
   /// Depending on "TriggerMode":
@@ -75014,7 +75014,7 @@ END_TYPE
                 <SINT />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Specifies the trigger event according to Table 6-574.
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Specifies the trigger event according to Table 6-596.
  For more information about registers on the RC see chapters 6.4.4 and 6.4.5.</xhtml>
               </documentation>
             </variable>
@@ -75099,7 +75099,7 @@ STRUCT
   /// Reference real value, analog input or output value, for triggering the Action function with the EmitterID.
   /// • Relates to "TriggerMode" 30-37, 40-47,60-67
   RealValue              : ARRAY[1..2] OF REAL;
-  /// Specifies the trigger event according to Table 6-574.
+  /// Specifies the trigger event according to Table 6-596.
   /// For more information about registers on the RC see chapters 6.4.4 and 6.4.5.
   TriggerMode            : SINT;
   /// Depending on "TriggerMode":
@@ -80122,7 +80122,7 @@ END_TYPE</xhtml>
                 <derived name="DefaultDynamics" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Commanded dynamics values according to Table 6-141.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Commanded dynamics values according to Table 6-165.</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -80159,7 +80159,7 @@ END_TYPE</xhtml>
 // -------------------------------------------------------------------------
 TYPE WriteRobotDefaultDynamicsOutCmd :
 STRUCT
-  /// Commanded dynamics values according to Table 6-141.
+  /// Commanded dynamics values according to Table 6-165.
   DefaultDynamicValues   : DefaultDynamics;
 END_STRUCT
 END_TYPE</xhtml>
@@ -80217,7 +80217,7 @@ END_TYPE</xhtml>
                 </structValue>
               </initialValue>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Default dynamics values according to Table 6-141.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Default dynamics values according to Table 6-165.</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -80254,7 +80254,7 @@ END_TYPE</xhtml>
 // -------------------------------------------------------------------------
 TYPE WriteRobotDefaultDynamicsParCmd :
 STRUCT
-  /// Default dynamics values according to Table 6-141.
+  /// Default dynamics values according to Table 6-165.
   DynamicValues          : DefaultDynamics := ( VelocityRate := -1.0, AccelerationRate := -1.0, DecelerationRate := -1.0, JerkRate := -1.0); // ST-FIX F126: spec 6.2.13 / 6.2.14: input of the write command, default '&lt;0' = do not change; 0.0 wrote 0 (minimum) for every value that was not set
 END_STRUCT
 END_TYPE
@@ -80600,7 +80600,7 @@ END_TYPE</xhtml>
                 <derived name="ReferenceDynamics" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Commanded reference dynamics values according to Table 6-134</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Commanded reference dynamics values according to Table 6-158</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -80637,7 +80637,7 @@ END_TYPE</xhtml>
 // -------------------------------------------------------------------------
 TYPE WriteRobotReferenceDynamicsOutCmd :
 STRUCT
-  /// Commanded reference dynamics values according to Table 6-134
+  /// Commanded reference dynamics values according to Table 6-158
   ReferenceDynamicValues : ReferenceDynamics;
 END_STRUCT
 END_TYPE</xhtml>
@@ -80695,7 +80695,7 @@ END_TYPE</xhtml>
                 </structValue>
               </initialValue>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Reference dynamics values according TO Table 6-134.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Reference dynamics values according TO Table 6-158.</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -80732,7 +80732,7 @@ END_TYPE</xhtml>
 // -------------------------------------------------------------------------
 TYPE WriteRobotReferenceDynamicsParCmd :
 STRUCT
-  /// Reference dynamics values according TO Table 6-134.
+  /// Reference dynamics values according TO Table 6-158.
   DynamicValues : ReferenceDynamics := ( VelocityReference := -1.0, AccelerationReference := -1.0, DecelerationReference := -1.0, JerkReference := -1.0); // ST-FIX F126: spec 6.2.13 / 6.2.14: input of the write command, default '&lt;0' = do not change; 0.0 wrote 0 (minimum) for every value that was not set
 END_STRUCT
 END_TYPE
@@ -80775,7 +80775,7 @@ END_TYPE
                 <derived name="ReferenceDynamics" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Commanded reference dynamics values according to Table 6-134</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Commanded reference dynamics values according to Table 6-158</xhtml>
               </documentation>
             </variable>
           </struct>
@@ -80817,7 +80817,7 @@ END_TYPE
 // -------------------------------------------------------------------------
 TYPE WriteRobotReferenceDynamicsRecvData EXTENDS RspHeader :
 STRUCT
-  /// Commanded reference dynamics values according to Table 6-134
+  /// Commanded reference dynamics values according to Table 6-158
   ReferenceDynamicValues : ReferenceDynamics;
 END_STRUCT
 END_TYPE
@@ -81040,7 +81040,7 @@ END_TYPE</xhtml>
                 <derived name="SWLimits" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Limits for joints and external axes according to Table 6-180.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Limits for joints and external axes according to Table 6-204.</xhtml>
               </documentation>
             </variable>
             <variable name="ResetToFactoryDefaults">
@@ -81085,7 +81085,7 @@ END_TYPE</xhtml>
 // -------------------------------------------------------------------------
 TYPE WriteRobotSWLimitsParCmd :
 STRUCT
-  /// Limits for joints and external axes according to Table 6-180.
+  /// Limits for joints and external axes according to Table 6-204.
   LimitValues            : SWLimits;
   /// Reset limits to RC specific factory settings
   ResetToFactoryDefaults : BOOL;;
@@ -81215,7 +81215,7 @@ END_TYPE
                 <derived name="SWLimits" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Limits for joints and external axes according to Table 6-180.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Limits for joints and external axes according to Table 6-204.</xhtml>
               </documentation>
             </variable>
             <variable name="ResetToFactoryDefaults">
@@ -81265,7 +81265,7 @@ END_TYPE
 // -------------------------------------------------------------------------
 TYPE WriteRobotSWLimitsSendData EXTENDS CmdHeader: 
 STRUCT
-  /// Limits for joints and external axes according to Table 6-180.
+  /// Limits for joints and external axes according to Table 6-204.
   LimitValues            : SWLimits;
   /// Reset limits to RC specific factory settings
   ResetToFactoryDefaults : BOOL;;
@@ -81465,7 +81465,7 @@ END_TYPE</xhtml>
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Parameter data type as specified in Table 6-621.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Parameter data type as specified in Table 6-643.</xhtml>
               </documentation>
             </variable>
             <variable name="Data_0">
@@ -81632,7 +81632,7 @@ STRUCT
   /// • 0: ID 0 (default) (relates only to parameters without sub parameters)
   /// • 1..255: Indices 1 to 255 (relates only to parameters with sub parameters)
   SubParameterID     : ARRAY[0..7] OF USINT;  
-  /// Parameter data type as specified in Table 6-621.
+  /// Parameter data type as specified in Table 6-643.
   DataType           : ARRAY[0..7] OF DataType;
   /// Parameter data addressed by input values of ParameterID[0] and SubParameterID[0]
   Data_0             : ARRAY[0..3] OF BYTE;
@@ -81892,7 +81892,7 @@ END_TYPE
                 </array>
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Parameter data type as specified in Table 6-621.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Parameter data type as specified in Table 6-643.</xhtml>
               </documentation>
             </variable>
             <variable name="Data_0">
@@ -82071,7 +82071,7 @@ STRUCT
   /// • 0: ID 0 (default) (relates only to parameters without sub parameters)
   /// • 1..255: Indices 1 to 255 (relates only to parameters with sub parameters)
   SubParameterID     : ARRAY[0..7] OF USINT;  
-  /// Parameter data type as specified in Table 6-621.
+  /// Parameter data type as specified in Table 6-643.
   DataType           : ARRAY[0..7] OF USINT;
   /// Parameter data addressed by input values of ParameterID[0] and SubParameterID[0]
   Data_0             : ARRAY[0..3] OF BYTE;
@@ -89909,7 +89909,7 @@ END_TYPE
                 <derived name="CmdMessageState" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Actual state of the command - For more information and examples, see chapter 5.6.3.2</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Actual state of the command - For more information and examples, see chapter 5.6.4.3</xhtml>
               </documentation>
             </variable>
             <variable name="AlarmMessageSeverity">
@@ -89917,7 +89917,7 @@ END_TYPE
                 <derived name="Severity" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of returned message according to .Table 5-47.</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of returned message according to .Table 5-49.</xhtml>
               </documentation>
             </variable>
             <variable name="AlarmMessageCode">
@@ -89967,9 +89967,9 @@ TYPE RspHeader :
 STRUCT
   /// Parameter Sequence, used to identify sets of CMD parameter - For more information see chapter 5.6.4
   ParSeq               : USINT;
-  /// Actual state of the command - For more information and examples, see chapter 5.6.3.2
+  /// Actual state of the command - For more information and examples, see chapter 5.6.4.3
   State                : CmdMessageState;
-  /// Severity of returned message according to .Table 5-47.
+  /// Severity of returned message according to .Table 5-49.
   AlarmMessageSeverity : Severity;
   /// Message code for error/warning/info identification reported during execution of command according to
   /// • Error: Table 7-1
@@ -91204,7 +91204,7 @@ END_TYPE</xhtml>
               </type>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> Allows blending when CallSubprogram is called in sequence and removed afterwards.
- For more information see chapter 6.5.21.
+ For more information see chapter 6.5.18.
  • 0 (default): Dynamic blending is prevented
  • 1: Dynamic blending is allowed</xhtml>
               </documentation>
@@ -91603,7 +91603,7 @@ END_TYPE</xhtml>
                 <BOOL />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> TRUE, when the RC requests a restart of the RC induced through the functions "WriteRobotSWLimits" (chapter 6.2.16) or "WriteSystemVariable" (chapter 6.5.8) Default: FALSE </xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> TRUE, when the RC requests a restart of the RC induced through the functions "WriteRobotSWLimits" (chapter 6.2.20) or "WriteSystemVariable" (chapter 6.5.8) Default: FALSE </xhtml>
               </documentation>
             </variable>
             <variable name="ActualOverride">
@@ -91806,7 +91806,7 @@ STRUCT
   /// Allow a sequence switch from primary to secondary while a subprogram called via CallSubprogram (6.5.18) in the sequence is in progress
   AllowSecSeqWhileSubprogram     : BOOL;
   /// Allows blending when CallSubprogram is called in sequence and removed afterwards.
-  /// For more information see chapter 6.5.21.
+  /// For more information see chapter 6.5.18.
   /// • 0 (default): Dynamic blending is prevented
   /// • 1: Dynamic blending is allowed
   AllowDynamicBlending           : BOOL;
@@ -91911,7 +91911,7 @@ STRUCT
   CollisionDetectionEnabled      : BOOL;
   /// TRUE, when a collision was detected while CollisionDetection is enabled (see chapter 6.5.35) Default: FALSE 
   CollisionDetected              : BOOL;
-  /// TRUE, when the RC requests a restart of the RC induced through the functions "WriteRobotSWLimits" (chapter 6.2.16) or "WriteSystemVariable" (chapter 6.5.8) Default: FALSE 
+  /// TRUE, when the RC requests a restart of the RC induced through the functions "WriteRobotSWLimits" (chapter 6.2.20) or "WriteSystemVariable" (chapter 6.5.8) Default: FALSE 
   RestartRequested               : BOOL;
   /// Actual override
   ActualOverride                 : REAL;
@@ -94283,7 +94283,7 @@ END_TYPE</xhtml>
                 <derived name="MessageType" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Type of message according to Table 5-46:</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Type of message according to Table 5-48:</xhtml>
               </documentation>
             </variable>
             <variable name="Severity">
@@ -94291,7 +94291,7 @@ END_TYPE</xhtml>
                 <derived name="Severity" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error</xhtml>
               </documentation>
             </variable>
             <variable name="MessageCode">
@@ -94362,9 +94362,9 @@ TYPE AlarmMessage :
 STRUCT
   /// Timestamp
   Timestamp   : SystemTime;
-  /// Type of message according to Table 5-46:
+  /// Type of message according to Table 5-48:
   MessageType : MessageType;
-  /// Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error
+  /// Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error
   Severity    : Severity;
   /// Code of messages
   MessageCode : DWORD;
@@ -119296,7 +119296,7 @@ END_VAR
                       <derived name="MessageType" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Type of message according to Table 5-46:</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Type of message according to Table 5-48:</xhtml>
                     </documentation>
                   </variable>
                   <variable name="Severity">
@@ -119304,7 +119304,7 @@ END_VAR
                       <derived name="Severity" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error</xhtml>
                     </documentation>
                   </variable>
                   <variable name="MessageCode">
@@ -119377,9 +119377,9 @@ END_IF</xhtml>
 VAR_INPUT
   /// Timestamp
   Timestamp   : SystemTime;
-  /// Type of message according to Table 5-46:
+  /// Type of message according to Table 5-48:
   MessageType : MessageType;
-  /// Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error
+  /// Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error
   Severity    : Severity;
   /// Code of messages
   MessageCode : DWORD;
@@ -119417,7 +119417,7 @@ END_VAR</xhtml>
                       <derived name="MessageType" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Type of message according to Table 5-46:</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Type of message according to Table 5-48:</xhtml>
                     </documentation>
                   </variable>
                   <variable name="Severity">
@@ -119425,7 +119425,7 @@ END_VAR</xhtml>
                       <derived name="Severity" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error</xhtml>
                     </documentation>
                   </variable>
                   <variable name="MessageCode">
@@ -119484,9 +119484,9 @@ END_IF                         </xhtml>
 VAR_INPUT
   /// Timestamp
   Timestamp   : SystemTime;
-  /// Type of message according to Table 5-46:
+  /// Type of message according to Table 5-48:
   MessageType : MessageType;
-  /// Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error
+  /// Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error
   Severity    : Severity;
   /// Code of messages
   MessageCode : DWORD;
@@ -119523,7 +119523,7 @@ END_VAR</xhtml>
                       <derived name="MessageType" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Type of message according to Table 5-46:</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Type of message according to Table 5-48:</xhtml>
                     </documentation>
                   </variable>
                   <variable name="Severity">
@@ -119531,7 +119531,7 @@ END_VAR</xhtml>
                       <derived name="Severity" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error</xhtml>
                     </documentation>
                   </variable>
                   <variable name="MessageCode">
@@ -119599,9 +119599,9 @@ END_IF                              </xhtml>
 VAR_INPUT
   /// Timestamp
   Timestamp   : SystemTime;
-  /// Type of message according to Table 5-46:
+  /// Type of message according to Table 5-48:
   MessageType : MessageType;
-  /// Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error
+  /// Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error
   Severity    : Severity;
   /// Code of messages
   MessageCode : DWORD;
@@ -119641,7 +119641,7 @@ END_VAR
                       <derived name="MessageType" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Type of message according to Table 5-46:</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Type of message according to Table 5-48:</xhtml>
                     </documentation>
                   </variable>
                   <variable name="Severity">
@@ -119649,7 +119649,7 @@ END_VAR
                       <derived name="Severity" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error</xhtml>
                     </documentation>
                   </variable>
                   <variable name="MessageCode">
@@ -119726,9 +119726,9 @@ END_IF                              </xhtml>
 VAR_INPUT
   /// Timestamp
   Timestamp   : SystemTime;
-  /// Type of message according to Table 5-46:
+  /// Type of message according to Table 5-48:
   MessageType : MessageType;
-  /// Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error
+  /// Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error
   Severity    : Severity;
   /// Code of messages
   MessageCode : DWORD;
@@ -119769,7 +119769,7 @@ END_VAR</xhtml>
                       <derived name="MessageType" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Type of message according to Table 5-46:</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Type of message according to Table 5-48:</xhtml>
                     </documentation>
                   </variable>
                   <variable name="Severity">
@@ -119777,7 +119777,7 @@ END_VAR</xhtml>
                       <derived name="Severity" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error</xhtml>
                     </documentation>
                   </variable>
                   <variable name="MessageCode">
@@ -119863,9 +119863,9 @@ END_IF                              </xhtml>
 VAR_INPUT
   /// Timestamp
   Timestamp   : SystemTime;
-  /// Type of message according to Table 5-46:
+  /// Type of message according to Table 5-48:
   MessageType : MessageType;
-  /// Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error
+  /// Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error
   Severity    : Severity;
   /// Code of messages
   MessageCode : DWORD;
@@ -119908,7 +119908,7 @@ END_VAR</xhtml>
                       <derived name="MessageType" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Type of message according to Table 5-46:</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Type of message according to Table 5-48:</xhtml>
                     </documentation>
                   </variable>
                   <variable name="Severity">
@@ -119916,7 +119916,7 @@ END_VAR</xhtml>
                       <derived name="Severity" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error</xhtml>
                     </documentation>
                   </variable>
                   <variable name="MessageCode">
@@ -120011,9 +120011,9 @@ END_IF                              </xhtml>
 VAR_INPUT
   /// Timestamp
   Timestamp   : SystemTime;
-  /// Type of message according to Table 5-46:
+  /// Type of message according to Table 5-48:
   MessageType : MessageType;
-  /// Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error
+  /// Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error
   Severity    : Severity;
   /// Code of messages
   MessageCode : DWORD;
@@ -120059,7 +120059,7 @@ END_VAR
                       <derived name="MessageType" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Type of message according to Table 5-46:</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Type of message according to Table 5-48:</xhtml>
                     </documentation>
                   </variable>
                   <variable name="Severity">
@@ -120067,7 +120067,7 @@ END_VAR
                       <derived name="Severity" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error</xhtml>
                     </documentation>
                   </variable>
                   <variable name="MessageCode">
@@ -120171,9 +120171,9 @@ END_IF                       </xhtml>
 VAR_INPUT
   /// Timestamp
   Timestamp   : SystemTime;
-  /// Type of message according to Table 5-46:
+  /// Type of message according to Table 5-48:
   MessageType : MessageType;
-  /// Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error
+  /// Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error
   Severity    : Severity;
   /// Code of messages
   MessageCode : DWORD;
@@ -120537,7 +120537,7 @@ END_VAR</xhtml>
                       <derived name="MessageType" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Type of message according to Table 5-46:</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Type of message according to Table 5-48:</xhtml>
                     </documentation>
                   </variable>
                   <variable name="Severity">
@@ -120545,7 +120545,7 @@ END_VAR</xhtml>
                       <derived name="Severity" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error</xhtml>
                     </documentation>
                   </variable>
                   <variable name="MessageCode">
@@ -120593,9 +120593,9 @@ AddMessageLog(_message);        </xhtml>
 VAR_INPUT
   /// Timestamp
   Timestamp   : SystemTime;
-  /// Type of message according to Table 5-46:
+  /// Type of message according to Table 5-48:
   MessageType : MessageType;
-  /// Severity of message according to Table 5-47: Debug, Info, Warning, Error, Fatal error
+  /// Severity of message according to Table 5-49: Debug, Info, Warning, Error, Fatal error
   Severity    : Severity;
   /// Code of messages
   MessageCode : DWORD;
@@ -124061,7 +124061,7 @@ END_VAR</xhtml>
                       <derived name="DefaultDynamics" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Default dynamics values according to Table 6-148.</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Default dynamics values according to Table 6-172.</xhtml>
                     </documentation>
                   </variable>
                 </inputVars>
@@ -124081,7 +124081,7 @@ DefaultDynamics := DynamicValues;</xhtml>
               <InterfaceAsPlainText>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml">METHOD UpdateDefaultDynamics : DINT
 VAR_INPUT
-  /// Default dynamics values according to Table 6-148.
+  /// Default dynamics values according to Table 6-172.
   DynamicValues : DefaultDynamics;
 END_VAR
 </xhtml>
@@ -124340,7 +124340,7 @@ END_VAR
                       <derived name="ReferenceDynamics" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Reference dynamics values according to Table 6-109.</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Reference dynamics values according to Table 6-158.</xhtml>
                     </documentation>
                   </variable>
                 </inputVars>
@@ -124360,7 +124360,7 @@ ReferenceDynamics := DynamicValues;</xhtml>
               <InterfaceAsPlainText>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml">METHOD UpdateReferenceDynamics : DINT
 VAR_INPUT
-  /// Reference dynamics values according to Table 6-109.
+  /// Reference dynamics values according to Table 6-158.
   DynamicValues : ReferenceDynamics;
 END_VAR
 </xhtml>
@@ -124380,7 +124380,7 @@ END_VAR
                       <derived name="SWLimits" />
                     </type>
                     <documentation>
-                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Limits for joints and external axes according to Table 6-180.</xhtml>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> Limits for joints and external axes according to Table 6-197.</xhtml>
                     </documentation>
                   </variable>
                 </inputVars>
@@ -124400,7 +124400,7 @@ SWLimits := LimitValues;</xhtml>
               <InterfaceAsPlainText>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml">METHOD UpdateSWLimits : DINT
 VAR_INPUT
-  /// Limits for joints and external axes according to Table 6-180.
+  /// Limits for joints and external axes according to Table 6-197.
   LimitValues : SWLimits;
 END_VAR
 </xhtml>
@@ -126397,7 +126397,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-571: Sent CMD payload (PLC to RC) of "AbortMeasuringInput"
+// Table 6-593: Sent CMD payload (PLC to RC) of "AbortMeasuringInput"
 // --------------------------
 // Header
 // --------------------------
@@ -126764,7 +126764,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-572: Received CMD payload (RC to PLC) of "AbortMeasuringInput"
+// Table 6-594: Received CMD payload (RC to PLC) of "AbortMeasuringInput"
 // --------------------------
 // Header
 // --------------------------
@@ -127507,7 +127507,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-662: Sent CMD payload (PLC to RC) of "ActivateNextCommand"
+// Table 6-684: Sent CMD payload (PLC to RC) of "ActivateNextCommand"
 // --------------------------
 // Header
 // --------------------------
@@ -128012,7 +128012,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-663: Received CMD payload (RC to PLC) of "ActivateNextCommand"
+// Table 6-685: Received CMD payload (RC to PLC) of "ActivateNextCommand"
 // --------------------------
 // Header
 // --------------------------
@@ -128644,7 +128644,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-709: Sent CMD payload (PLC to RC) of "AvoidSingularity"
+// Table 6-731: Sent CMD payload (PLC to RC) of "AvoidSingularity"
 // --------------------------
 // Header
 // --------------------------
@@ -129275,7 +129275,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-710: Received CMD payload (RC to PLC) of "AvoidSingularity"
+// Table 6-732: Received CMD payload (RC to PLC) of "AvoidSingularity"
 // --------------------------
 // Header
 // --------------------------
@@ -130008,7 +130008,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-740: Sent CMD payload (PLC to RC) of "BrakeTest"
+// Table 6-762: Sent CMD payload (PLC to RC) of "BrakeTest"
 // --------------------------
 // Header
 // --------------------------
@@ -130512,7 +130512,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-741: Received CMD payload (RC to PLC) of "BrakeTest"
+// Table 6-763: Received CMD payload (RC to PLC) of "BrakeTest"
 // --------------------------
 // Header
 // --------------------------
@@ -131488,7 +131488,7 @@ VAR
  _idx          : DINT;
   /// Parameter count
  _parameterCnt : DINT;
-END_VAR// Table 6-687: Sent CMD payload (PLC to RC) of "CallSubprogram"
+END_VAR// Table 6-709: Sent CMD payload (PLC to RC) of "CallSubprogram"
 // --------------------------
 // Header
 // --------------------------
@@ -132306,7 +132306,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-688: Received CMD payload (RC to PLC) of "CallSubprogram"
+// Table 6-710: Received CMD payload (RC to PLC) of "CallSubprogram"
 // --------------------------
 // Header
 // --------------------------
@@ -133556,7 +133556,7 @@ VAR
   /// internal index for loops
  _idx          : DINT;
 END_VAR
-// Table 6-790: Sent CMD payload (PLC to RC) of "CollisionDetection"
+// Table 6-812: Sent CMD payload (PLC to RC) of "CollisionDetection"
 // --------------------------
 // Header
 // --------------------------
@@ -134193,7 +134193,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-791: Received CMD payload (RC to PLC) of "CollisionDetection"
+// Table 6-813: Received CMD payload (RC to PLC) of "CollisionDetection"
 // --------------------------
 // Header
 // --------------------------
@@ -136942,7 +136942,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-797: Sent CMD payload (PLC to RC) of "FreeDrive"
+// Table 6-819: Sent CMD payload (PLC to RC) of "FreeDrive"
 // --------------------------
 // Header
 // --------------------------
@@ -137559,7 +137559,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-798: Received CMD payload (RC to PLC) of "FreeDrive"
+// Table 6-820: Received CMD payload (RC to PLC) of "FreeDrive"
 // --------------------------
 // Header
 // --------------------------
@@ -138212,7 +138212,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-565: Sent CMD payload (PLC to RC) of "MeasuringInput"
+// Table 6-587: Sent CMD payload (PLC to RC) of "MeasuringInput"
 // --------------------------
 // Header
 // --------------------------
@@ -139232,7 +139232,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-566: Received CMD payload (RC to PLC) of "MeasuringInput"
+// Table 6-588: Received CMD payload (RC to PLC) of "MeasuringInput"
 // --------------------------
 // Header
 // --------------------------
@@ -140801,7 +140801,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-681: Sent CMD payload (PLC to RC) of "OpenBrake"
+// Table 6-703: Sent CMD payload (PLC to RC) of "OpenBrake"
 // --------------------------
 // Header
 // --------------------------
@@ -141539,7 +141539,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-682: Received CMD payload (RC to PLC) of "OpenBrake"
+// Table 6-704: Received CMD payload (RC to PLC) of "OpenBrake"
 // --------------------------
 // Header
 // --------------------------
@@ -142106,7 +142106,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-703: Sent CMD payload (PLC to RC) of "PathAccuracyMode"
+// Table 6-725: Sent CMD payload (PLC to RC) of "PathAccuracyMode"
 // --------------------------
 // Header
 // --------------------------
@@ -142724,7 +142724,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-704: Received CMD payload (RC to PLC) of "PathAccuracyMode"
+// Table 6-726: Received CMD payload (RC to PLC) of "PathAccuracyMode"
 // --------------------------
 // Header
 // --------------------------
@@ -147984,7 +147984,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-668: Sent CMD payload (PLC to RC) of "ShiftPosition"
+// Table 6-690: Sent CMD payload (PLC to RC) of "ShiftPosition"
 // --------------------------
 // Header
 // --------------------------
@@ -149034,7 +149034,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-669: Received CMD payload (RC to PLC) of "ShiftPosition"
+// Table 6-691: Received CMD payload (RC to PLC) of "ShiftPosition"
 // --------------------------
 // Header
 // --------------------------
@@ -150347,7 +150347,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-748: Sent CMD payload (PLC to RC) of "SoftSwitchTCP"
+// Table 6-770: Sent CMD payload (PLC to RC) of "SoftSwitchTCP"
 // --------------------------
 // Header
 // --------------------------
@@ -151039,7 +151039,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-749: Received CMD payload (RC to PLC) of "SoftSwitchTCP"
+// Table 6-771: Received CMD payload (RC to PLC) of "SoftSwitchTCP"
 // --------------------------
 // Header
 // --------------------------
@@ -151937,7 +151937,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-697: Sent CMD payload (PLC to RC) of "StopSubprogram"
+// Table 6-719: Sent CMD payload (PLC to RC) of "StopSubprogram"
 // --------------------------
 // Header
 // --------------------------
@@ -152477,7 +152477,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-698: Received CMD payload (RC to PLC) of "StopSubprogram"
+// Table 6-720: Received CMD payload (RC to PLC) of "StopSubprogram"
 // --------------------------
 // Header
 // --------------------------
@@ -153234,7 +153234,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-803: Sent CMD payload (PLC to RC) of "UnitMeasurement"
+// Table 6-825: Sent CMD payload (PLC to RC) of "UnitMeasurement"
 // --------------------------
 // Header
 // --------------------------
@@ -154039,7 +154039,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-804: Received CMD payload (RC to PLC) of "UnitMeasurement"
+// Table 6-826: Received CMD payload (RC to PLC) of "UnitMeasurement"
 // --------------------------
 // Header
 // --------------------------
@@ -156348,7 +156348,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-387: Sent CMD payload (PLC to RC) of "MoveApproachDirect"
+// Table 6-409: Sent CMD payload (PLC to RC) of "MoveApproachDirect"
 // --------------------------
 // Header
 // --------------------------
@@ -157518,7 +157518,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-388: Received CMD payload (RC to PLC) of "MoveApproachDirect"
+// Table 6-410: Received CMD payload (RC to PLC) of "MoveApproachDirect"
 // --------------------------
 // Header
 // --------------------------
@@ -159511,7 +159511,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-369: Sent CMD payload (PLC to RC) of "MoveApproachLinear"
+// Table 6-391: Sent CMD payload (PLC to RC) of "MoveApproachLinear"
 // --------------------------
 // Header
 // --------------------------
@@ -160696,7 +160696,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-370: Received CMD payload (RC to PLC) of "MoveApproachLinear"
+// Table 6-392: Received CMD payload (RC to PLC) of "MoveApproachLinear"
 // --------------------------
 // Header
 // --------------------------
@@ -162154,7 +162154,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-304: Sent CMD payload (PLC to RC) of "MoveAxesRelative"
+// Table 6-326: Sent CMD payload (PLC to RC) of "MoveAxesRelative"
 // --------------------------
 // Header
 // --------------------------
@@ -163035,7 +163035,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-305: Received CMD payload (RC to PLC) of "MoveAxesRelative"
+// Table 6-327: Received CMD payload (RC to PLC) of "MoveAxesRelative"
 // --------------------------
 // Header
 // --------------------------
@@ -165310,7 +165310,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-326: Sent CMD payload (PLC to RC) of "MoveCircularAbsolute"
+// Table 6-348: Sent CMD payload (PLC to RC) of "MoveCircularAbsolute"
 // --------------------------
 // Header
 // --------------------------
@@ -166726,7 +166726,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-327: Received CMD payload (RC to PLC) of "MoveCircularAbsolute"
+// Table 6-349: Received CMD payload (RC to PLC) of "MoveCircularAbsolute"
 // --------------------------
 // Header
 // --------------------------
@@ -169133,7 +169133,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-541: Sent CMD payload (PLC to RC) of "MoveCircularCam"
+// Table 6-563: Sent CMD payload (PLC to RC) of "MoveCircularCam"
 // --------------------------
 // Header
 // --------------------------
@@ -170537,7 +170537,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-542: Received CMD payload (RC to PLC) of "MoveCircularCam"
+// Table 6-564: Received CMD payload (RC to PLC) of "MoveCircularCam"
 // --------------------------
 // Header
 // --------------------------
@@ -172838,7 +172838,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-335: Sent CMD payload (PLC to RC) of "MoveCircularRelative"
+// Table 6-357: Sent CMD payload (PLC to RC) of "MoveCircularRelative"
 // --------------------------
 // Header
 // --------------------------
@@ -174252,7 +174252,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-336: Received CMD payload (RC to PLC) of "MoveCircularRelative"
+// Table 6-358: Received CMD payload (RC to PLC) of "MoveCircularRelative"
 // --------------------------
 // Header
 // --------------------------
@@ -176241,7 +176241,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-396: Sent CMD payload (PLC to RC) of "MoveDepartDirect"
+// Table 6-418: Sent CMD payload (PLC to RC) of "MoveDepartDirect"
 // --------------------------
 // Header
 // --------------------------
@@ -177415,7 +177415,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-397: Received CMD payload (RC to PLC) of "MoveDepartDirect"
+// Table 6-419: Received CMD payload (RC to PLC) of "MoveDepartDirect"
 // --------------------------
 // Header
 // --------------------------
@@ -179403,7 +179403,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-378: Sent CMD payload (PLC to RC) of "MoveDepartLinear"
+// Table 6-400: Sent CMD payload (PLC to RC) of "MoveDepartLinear"
 // --------------------------
 // Header
 // --------------------------
@@ -180575,7 +180575,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-379: Received CMD payload (RC to PLC) of "MoveDepartLinear"
+// Table 6-401: Received CMD payload (RC to PLC) of "MoveDepartLinear"
 // --------------------------
 // Header
 // --------------------------
@@ -185403,7 +185403,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-353: Sent CMD payload (PLC to RC) of "MoveDirectOffset"
+// Table 6-375: Sent CMD payload (PLC to RC) of "MoveDirectOffset"
 // --------------------------
 // Header
 // --------------------------
@@ -186730,7 +186730,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-354: Received CMD payload (RC to PLC) of "MoveDirectOffset"
+// Table 6-376: Received CMD payload (RC to PLC) of "MoveDirectOffset"
 // --------------------------
 // Header
 // --------------------------
@@ -188476,7 +188476,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-297: Sent CMD payload (PLC to RC) of "MoveDirectRelative"
+// Table 6-319: Sent CMD payload (PLC to RC) of "MoveDirectRelative"
 // --------------------------
 // Header
 // --------------------------
@@ -189539,7 +189539,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-298: Received CMD payload (RC to PLC) of "MoveDirectRelative"
+// Table 6-320: Received CMD payload (RC to PLC) of "MoveDirectRelative"
 // --------------------------
 // Header
 // --------------------------
@@ -191017,7 +191017,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-317: Sent CMD payload (PLC to RC) of "MoveLinearAbsoluteJ"
+// Table 6-339: Sent CMD payload (PLC to RC) of "MoveLinearAbsoluteJ"
 // --------------------------
 // Header
 // --------------------------
@@ -191908,7 +191908,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-318: Received CMD payload (RC to PLC) of "MoveLinearAbsoluteJ"
+// Table 6-340: Received CMD payload (RC to PLC) of "MoveLinearAbsoluteJ"
 // --------------------------
 // Header
 // --------------------------
@@ -193626,7 +193626,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-523: Sent CMD payload (PLC to RC) of "MoveLinearCam"
+// Table 6-545: Sent CMD payload (PLC to RC) of "MoveLinearCam"
 // --------------------------
 // Header
 // --------------------------
@@ -194653,7 +194653,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-524: Received CMD payload (RC to PLC) of "MoveLinearCam"
+// Table 6-546: Received CMD payload (RC to PLC) of "MoveLinearCam"
 // --------------------------
 // Header
 // --------------------------
@@ -196810,7 +196810,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-344: Sent CMD payload (PLC to RC) of "MoveLinearOffset"
+// Table 6-366: Sent CMD payload (PLC to RC) of "MoveLinearOffset"
 // --------------------------
 // Header
 // --------------------------
@@ -198161,7 +198161,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-345: Received CMD payload (RC to PLC) of "MoveLinearOffset"
+// Table 6-367: Received CMD payload (RC to PLC) of "MoveLinearOffset"
 // --------------------------
 // Header
 // --------------------------
@@ -199917,7 +199917,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-288: Sent CMD payload (PLC to RC) of "MoveLinearRelative"
+// Table 6-310: Sent CMD payload (PLC to RC) of "MoveLinearRelative"
 // --------------------------
 // Header
 // --------------------------
@@ -200963,7 +200963,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-289: Received CMD payload (RC to PLC) of "MoveLinearRelative"
+// Table 6-311: Received CMD payload (RC to PLC) of "MoveLinearRelative"
 // --------------------------
 // Header
 // --------------------------
@@ -203171,7 +203171,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-430: Sent CMD payload (PLC to RC) of "MovePickPlaceDirect"
+// Table 6-452: Sent CMD payload (PLC to RC) of "MovePickPlaceDirect"
 // --------------------------
 // Header
 // --------------------------
@@ -204473,7 +204473,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-431: Received CMD payload (RC to PLC) of "MovePickPlaceDirect"
+// Table 6-453: Received CMD payload (RC to PLC) of "MovePickPlaceDirect"
 // --------------------------
 // Header
 // --------------------------
@@ -206662,7 +206662,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-421: Sent CMD payload (PLC to RC) of "MovePickPlaceLinear"
+// Table 6-443: Sent CMD payload (PLC to RC) of "MovePickPlaceLinear"
 // --------------------------
 // Header
 // --------------------------
@@ -207963,7 +207963,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-422: Received CMD payload (RC to PLC) of "MovePickPlaceLinear"
+// Table 6-444: Received CMD payload (RC to PLC) of "MovePickPlaceLinear"
 // --------------------------
 // Header
 // --------------------------
@@ -209563,7 +209563,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-279: Sent CMD payload (PLC to RC) of "GroupContinue"
+// Table 6-301: Sent CMD payload (PLC to RC) of "GroupContinue"
 // --------------------------
 // Header
 // --------------------------
@@ -209912,7 +209912,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-280: Received CMD payload (RC to PLC) of "GroupContinue"
+// Table 6-302: Received CMD payload (RC to PLC) of "GroupContinue"
 // --------------------------
 // Header
 // --------------------------
@@ -210425,7 +210425,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-273: Sent CMD payload (PLC to RC) of "GroupInterrupt"
+// Table 6-295: Sent CMD payload (PLC to RC) of "GroupInterrupt"
 // --------------------------
 // Header
 // --------------------------
@@ -210776,7 +210776,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-274: Received CMD payload (RC to PLC) of "GroupInterrupt"
+// Table 6-296: Received CMD payload (RC to PLC) of "GroupInterrupt"
 // --------------------------
 // Header
 // --------------------------
@@ -211651,7 +211651,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-236: Sent CMD payload (PLC to RC) of "GroupJog"
+// Table 6-258: Sent CMD payload (PLC to RC) of "GroupJog"
 // --------------------------
 // Header
 // --------------------------
@@ -212451,7 +212451,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-237: Received CMD payload (RC to PLC) of "GroupJog"
+// Table 6-259: Received CMD payload (RC to PLC) of "GroupJog"
 // --------------------------
 // Header
 // --------------------------
@@ -212985,7 +212985,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-267: Sent CMD payload (PLC to RC) of "GroupStop"
+// Table 6-289: Sent CMD payload (PLC to RC) of "GroupStop"
 // --------------------------
 // Header
 // --------------------------
@@ -213355,7 +213355,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-268: Received CMD payload (RC to PLC) of "GroupStop"
+// Table 6-290: Received CMD payload (RC to PLC) of "GroupStop"
 // --------------------------
 // Header
 // --------------------------
@@ -214748,7 +214748,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-261: Sent CMD payload (PLC to RC) of "MoveAxesAbsolute
+// Table 6-283: Sent CMD payload (PLC to RC) of "MoveAxesAbsolute
 // --------------------------
 // Header
 // --------------------------
@@ -215630,7 +215630,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-262: Received CMD payload (RC to PLC) of "MoveAxesAbsolute"  
+// Table 6-284: Received CMD payload (RC to PLC) of "MoveAxesAbsolute"  
 // --------------------------
 // Header
 // --------------------------
@@ -217338,7 +217338,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-254: Sent CMD payload (PLC to RC) of "MoveDirectAbsolute"
+// Table 6-276: Sent CMD payload (PLC to RC) of "MoveDirectAbsolute"
 // --------------------------
 // Header
 // --------------------------
@@ -218403,7 +218403,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-255: Received CMD payload (RC to PLC) of "MoveDirectAbsolute"
+// Table 6-277: Received CMD payload (RC to PLC) of "MoveDirectAbsolute"
 // --------------------------
 // Header
 // --------------------------
@@ -220152,7 +220152,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-245: Sent CMD payload (PLC to RC) of "MoveLinearAbsolute"
+// Table 6-267: Sent CMD payload (PLC to RC) of "MoveLinearAbsolute"
 // --------------------------
 // Header
 // --------------------------
@@ -221202,7 +221202,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-298: Received CMD payload (RC to PLC) of "MoveDirectRelative"
+// Table 6-320: Received CMD payload (RC to PLC) of "MoveDirectRelative"
 // --------------------------
 // Header
 // --------------------------
@@ -222918,7 +222918,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-311: Received CMD payload (RC to PLC) of "ReturnToPrimary"
+// Table 6-333: Received CMD payload (RC to PLC) of "ReturnToPrimary"
 // --------------------------
 // Header
 // --------------------------
@@ -224047,7 +224047,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-645: Received CMD payload (RC to PLC) of "CalculateCartesianPosition"
+// Table 6-667: Received CMD payload (RC to PLC) of "CalculateCartesianPosition"
 // --------------------------
 // Header
 // --------------------------
@@ -224914,7 +224914,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-645: Received CMD payload (RC to PLC) of "CalculateCartesianPosition"
+// Table 6-667: Received CMD payload (RC to PLC) of "CalculateCartesianPosition"
 // --------------------------
 // Header
 // --------------------------
@@ -226231,7 +226231,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-632: Sent CMD payload (PLC to RC) of "CalculateForwardKinematic"
+// Table 6-654: Sent CMD payload (PLC to RC) of "CalculateForwardKinematic"
 // --------------------------
 // Header
 // --------------------------
@@ -227024,7 +227024,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-633: Received CMD payload (RC to PLC) of "CalculateForwardKinematic"
+// Table 6-655: Received CMD payload (RC to PLC) of "CalculateForwardKinematic"
 // --------------------------
 // Header
 // --------------------------
@@ -229408,7 +229408,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-656: Sent CMD payload (PLC to RC) of "CalculateFrame"
+// Table 6-678: Sent CMD payload (PLC to RC) of "CalculateFrame"
 // --------------------------
 // Header
 // --------------------------
@@ -230299,7 +230299,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-657: Received CMD payload (RC to PLC) of "CalculateFrame"
+// Table 6-679: Received CMD payload (RC to PLC) of "CalculateFrame"
 // --------------------------
 // Header
 // --------------------------
@@ -231526,7 +231526,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-638: Sent CMD payload (PLC to RC) of "CalculateInverseKinematic"
+// Table 6-660: Sent CMD payload (PLC to RC) of "CalculateInverseKinematic"
 // --------------------------
 // Header
 // --------------------------
@@ -232351,7 +232351,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-639: Received CMD payload (RC to PLC) of "CalculateInverseKinematic"
+// Table 6-661: Received CMD payload (RC to PLC) of "CalculateInverseKinematic"
 // --------------------------
 // Header
 // --------------------------
@@ -233750,7 +233750,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-650: Sent CMD payload (PLC to RC) of "CalculateTool"
+// Table 6-672: Sent CMD payload (PLC to RC) of "CalculateTool"
 // --------------------------
 // Header
 // --------------------------
@@ -234683,7 +234683,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-651: Received CMD payload (RC to PLC) of "CalculateTool"
+// Table 6-673: Received CMD payload (RC to PLC) of "CalculateTool"
 // --------------------------
 // Header
 // --------------------------
@@ -236497,7 +236497,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-778: Sent CMD payload (PLC to RC) of "LoadMeasurementAutomatic"
+// Table 6-800: Sent CMD payload (PLC to RC) of "LoadMeasurementAutomatic"
 // --------------------------
 // Header
 // --------------------------
@@ -237639,7 +237639,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-778: Sent CMD payload (PLC to RC) of "LoadMeasurementAutomatic"
+// Table 6-800: Sent CMD payload (PLC to RC) of "LoadMeasurementAutomatic"
 // --------------------------
 // Header
 // --------------------------
@@ -238620,7 +238620,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-784: Sent CMD payload (PLC to RC) of "LoadMeasurementSequential"
+// Table 6-806: Sent CMD payload (PLC to RC) of "LoadMeasurementSequential"
 // --------------------------
 // Header
 // --------------------------
@@ -239200,7 +239200,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-785: Received CMD payload (RC to PLC) of "LoadMeasurementSequential"
+// Table 6-807: Received CMD payload (RC to PLC) of "LoadMeasurementSequential"
 // --------------------------
 // Header
 // --------------------------
@@ -240064,7 +240064,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-438: Sent CMD payload (PLC to RC) of "ActivateConveyorTracking"
+// Table 6-460: Sent CMD payload (PLC to RC) of "ActivateConveyorTracking"
 // --------------------------
 // Header
 // --------------------------
@@ -240744,7 +240744,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-439: Received CMD payload (RC to PLC) of "ActivateConveyorTracking"
+// Table 6-461: Received CMD payload (RC to PLC) of "ActivateConveyorTracking"
 // --------------------------
 // Header
 // --------------------------
@@ -241843,7 +241843,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-458: Sent CMD payload (PLC to RC) of "ConfigureConveyor"
+// Table 6-480: Sent CMD payload (PLC to RC) of "ConfigureConveyor"
 // --------------------------
 // Header
 // --------------------------
@@ -242487,7 +242487,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-459: Received CMD payload (RC to PLC) of "ConfigureConveyor"
+// Table 6-481: Received CMD payload (RC to PLC) of "ConfigureConveyor"
 // --------------------------
 // Header
 // --------------------------
@@ -243393,7 +243393,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-444: Sent CMD payload (PLC to RC) of "RedefineTrackingPos"
+// Table 6-466: Sent CMD payload (PLC to RC) of "RedefineTrackingPos"
 // --------------------------
 // Header
 // --------------------------
@@ -243975,7 +243975,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-445: Received CMD payload (RC to PLC) of "RedefineTrackingPos"
+// Table 6-467: Received CMD payload (RC to PLC) of "RedefineTrackingPos"
 // --------------------------
 // Header
 // --------------------------
@@ -244844,7 +244844,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-452: Sent CMD payload (PLC to RC) of "SyncToConveyor"
+// Table 6-474: Sent CMD payload (PLC to RC) of "SyncToConveyor"
 // --------------------------
 // Header
 // --------------------------
@@ -245679,7 +245679,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-453: Received CMD payload (RC to PLC) of "SyncToConveyor"
+// Table 6-475: Received CMD payload (RC to PLC) of "SyncToConveyor"
 // --------------------------
 // Header
 // --------------------------
@@ -247125,7 +247125,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-719: Sent CMD payload (PLC to RC) of "ForceControl"
+// Table 6-741: Sent CMD payload (PLC to RC) of "ForceControl"
 // --------------------------
 // Header
 // --------------------------
@@ -248471,7 +248471,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-720: Received CMD payload (RC to PLC) of "ForceControl"
+// Table 6-742: Received CMD payload (RC to PLC) of "ForceControl"
 // --------------------------
 // Header
 // --------------------------
@@ -249425,7 +249425,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-727: Sent CMD payload (PLC to RC) of "ForceLimit"
+// Table 6-749: Sent CMD payload (PLC to RC) of "ForceLimit"
 // --------------------------
 // Header
 // --------------------------
@@ -250390,7 +250390,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-728: Received CMD payload (RC to PLC) of "ForceLimit"
+// Table 6-750: Received CMD payload (RC to PLC) of "ForceLimit"
 // --------------------------
 // Header
 // --------------------------
@@ -251339,7 +251339,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-733: Sent CMD payload (PLC to RC) of "ReadActualForce"
+// Table 6-755: Sent CMD payload (PLC to RC) of "ReadActualForce"
 // --------------------------
 // Header
 // --------------------------
@@ -251930,7 +251930,7 @@ VAR
  _idx          : DINT;
   /// Parameter count
  _parameterCnt : DINT;
-END_VAR// Table 6-734: Received CMD payload (RC to PLC) of "ReadActualForce"
+END_VAR// Table 6-756: Received CMD payload (RC to PLC) of "ReadActualForce"
 // --------------------------
 // Header
 // --------------------------
@@ -273332,7 +273332,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-193: Sent CMD payload (PLC to RC) of "SetOperationMode"
+// Table 6-217: Sent CMD payload (PLC to RC) of "SetOperationMode"
 // --------------------------
 // Header
 // --------------------------
@@ -273699,7 +273699,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-194: Received CMD payload (RC to PLC) of "SetOperationMode"
+// Table 6-218: Received CMD payload (RC to PLC) of "SetOperationMode"
 // --------------------------
 // Header
 // --------------------------
@@ -282304,7 +282304,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-547: Sent CMD payload (PLC to RC) of "ReadAnalogInput"
+// Table 6-569: Sent CMD payload (PLC to RC) of "ReadAnalogInput"
 // --------------------------
 // Header
 // --------------------------
@@ -282859,7 +282859,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-548: Received CMD payload (RC to PLC) of "ReadAnalogInput"
+// Table 6-570: Received CMD payload (RC to PLC) of "ReadAnalogInput"
 // --------------------------
 // Header
 // --------------------------
@@ -286645,7 +286645,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-478: Sent CMD payload (PLC to RC) of "ReadDigitalInputs"
+// Table 6-500: Sent CMD payload (PLC to RC) of "ReadDigitalInputs"
 // --------------------------
 // Header
 // --------------------------
@@ -287209,7 +287209,7 @@ VAR
  _idx          : DINT;
   /// Parameter count
  _parameterCnt : DINT;
-END_VAR// Table 6-479: Received CMD payload (RC to PLC) of "ReadDigitalInputs"
+END_VAR// Table 6-501: Received CMD payload (RC to PLC) of "ReadDigitalInputs"
 // --------------------------
 // Header
 // --------------------------
@@ -288159,7 +288159,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-484: Sent CMD payload (PLC to RC) of "ReadDigitalOutputs"
+// Table 6-506: Sent CMD payload (PLC to RC) of "ReadDigitalOutputs"
 // --------------------------
 // Header
 // --------------------------
@@ -288724,7 +288724,7 @@ VAR
  _idx          : DINT;
   /// Parameter count
  _parameterCnt : DINT;
-END_VAR// Table 6-485: Received CMD payload (RC to PLC) of "ReadDigitalOutputs"
+END_VAR// Table 6-507: Received CMD payload (RC to PLC) of "ReadDigitalOutputs"
 // --------------------------
 // Header
 // --------------------------
@@ -289425,7 +289425,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-159: Sent CMD payload (PLC to RC) of "ReadFrameData"
+// Table 6-183: Sent CMD payload (PLC to RC) of "ReadFrameData"
 // --------------------------
 // Header
 // --------------------------
@@ -289973,7 +289973,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-479: Received CMD payload (RC to PLC) of "ReadDigitalInputs"
+// Table 6-501: Received CMD payload (RC to PLC) of "ReadDigitalInputs"
 // --------------------------
 // Header
 // --------------------------
@@ -291025,7 +291025,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-496: Sent CMD payload (PLC to RC) of "ReadIntegers"
+// Table 6-518: Sent CMD payload (PLC to RC) of "ReadIntegers"
 // --------------------------
 // Header
 // --------------------------
@@ -291593,7 +291593,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-497: Received CMD payload (RC to PLC) of "ReadIntegers"
+// Table 6-519: Received CMD payload (RC to PLC) of "ReadIntegers"
 // --------------------------
 // Header
 // --------------------------
@@ -292302,7 +292302,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-171: Sent CMD payload (PLC to RC) of "ReadLoadData"
+// Table 6-195: Sent CMD payload (PLC to RC) of "ReadLoadData"
 // --------------------------
 // Header
 // --------------------------
@@ -292868,7 +292868,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// TTable 6-172: Received CMD payload (RC to PLC) of "ReadLoadData"
+// TTable 6-196: Received CMD payload (RC to PLC) of "ReadLoadData"
 // --------------------------
 // Header
 // --------------------------
@@ -295693,7 +295693,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-502: Sent CMD payload (PLC to RC) of "ReadReals"
+// Table 6-524: Sent CMD payload (PLC to RC) of "ReadReals"
 // --------------------------
 // Header
 // --------------------------
@@ -296260,7 +296260,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table Table 6-503: Received CMD payload (RC to PLC) of "ReadReals"
+// Table Table 6-525: Received CMD payload (RC to PLC) of "ReadReals"
 // --------------------------
 // Header
 // --------------------------
@@ -298332,7 +298332,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-153: Sent CMD payload (PLC to RC) of "ReadRobotDefaultDynamics"
+// Table 6-177: Sent CMD payload (PLC to RC) of "ReadRobotDefaultDynamics"
 // --------------------------
 // Header
 // --------------------------
@@ -298811,7 +298811,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-154: Received CMD payload (RC to PLC) of "ReadRobotDefaultDynamics"
+// Table 6-178: Received CMD payload (RC to PLC) of "ReadRobotDefaultDynamics"
 // --------------------------
 // Header
 // --------------------------
@@ -299433,7 +299433,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-114: Sent CMD payload (PLC to RC) of "ReadRobotReferenceDynamics"
+// Table 6-138: Sent CMD payload (PLC to RC) of "ReadRobotReferenceDynamics"
 // --------------------------
 // Header
 // --------------------------
@@ -299917,7 +299917,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-115: Received CMD payload (RC to PLC) of "ReadRobotReferenceDynamics"
+// Table 6-139: Received CMD payload (RC to PLC) of "ReadRobotReferenceDynamics"
 // --------------------------
 // Header
 // --------------------------
@@ -300540,7 +300540,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-178: Sent CMD payload (PLC to RC) of "ReadRobotSWLimits"
+// Table 6-202: Sent CMD payload (PLC to RC) of "ReadRobotSWLimits"
 // --------------------------
 // Header
 // --------------------------
@@ -301217,7 +301217,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-179: Received CMD payload (RC to PLC) of "WriteRobotSWLimits"
+// Table 6-203: Received CMD payload (RC to PLC) of "ReadRobotSWLimits" (labelled "WriteRobotSWLimits" in V1.5.9)
 // --------------------------
 // Header
 // --------------------------
@@ -302584,7 +302584,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-618: Sent CMD payload (PLC to RC) of "ReadSystemVariable"
+// Table 6-640: Sent CMD payload (PLC to RC) of "ReadSystemVariable"
 // --------------------------
 // Header
 // --------------------------
@@ -303302,7 +303302,7 @@ VAR
  _idx          : DINT;
   /// Parameter count
  _parameterCnt : DINT;
-END_VAR// Table 6-619: Received CMD payload (RC to PLC) of "ReadSystemVariable"
+END_VAR// Table 6-641: Received CMD payload (RC to PLC) of "ReadSystemVariable"
 // --------------------------
 // Header
 // --------------------------
@@ -304187,7 +304187,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-165: Sent CMD payload (PLC to RC) of "ReadToolData"
+// Table 6-189: Sent CMD payload (PLC to RC) of "ReadToolData"
 // --------------------------
 // Header
 // --------------------------
@@ -304754,7 +304754,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-166: Received CMD payload (RC to PLC) of "ReadToolData"
+// Table 6-190: Received CMD payload (RC to PLC) of "ReadToolData"
 // --------------------------
 // Header
 // --------------------------
@@ -306566,7 +306566,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-405: Sent CMD payload (PLC to RC) of "SearchHardStop"
+// Table 6-427: Sent CMD payload (PLC to RC) of "SearchHardStop"
 // --------------------------
 // Header
 // --------------------------
@@ -307529,7 +307529,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-406: Received CMD payload (RC to PLC) of "SearchHardStop"
+// Table 6-428: Received CMD payload (RC to PLC) of "SearchHardStop"
 // --------------------------
 // Header
 // --------------------------
@@ -308866,7 +308866,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-412: Sent CMD payload (PLC to RC) of "SearchHardStopJ"
+// Table 6-434: Sent CMD payload (PLC to RC) of "SearchHardStopJ"
 // --------------------------
 // Header
 // --------------------------
@@ -309678,7 +309678,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-413: Received CMD payload (RC to PLC) of "SearchHardStopJ"
+// Table 6-435: Received CMD payload (RC to PLC) of "SearchHardStopJ"
 // --------------------------
 // Header
 // --------------------------
@@ -311085,7 +311085,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-754: Sent CMD payload (PLC to RC) of "CreateSpline"
+// Table 6-776: Sent CMD payload (PLC to RC) of "CreateSpline"
 // --------------------------
 // Header
 // --------------------------
@@ -311906,7 +311906,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-755: Received CMD payload (RC to PLC) of "CreateSpline"
+// Table 6-777: Received CMD payload (RC to PLC) of "CreateSpline"
 // --------------------------
 // Header
 // --------------------------
@@ -312503,7 +312503,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-760: Sent CMD payload (PLC to RC) of "DeleteSpline"
+// Table 6-782: Sent CMD payload (PLC to RC) of "DeleteSpline"
 // --------------------------
 // Header
 // --------------------------
@@ -312868,7 +312868,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-761: Received CMD payload (RC to PLC) of "DeleteSpline"
+// Table 6-783: Received CMD payload (RC to PLC) of "DeleteSpline"
 // --------------------------
 // Header
 // --------------------------
@@ -314435,7 +314435,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-772: Sent CMD payload (PLC to RC) of "DynamicSpline"
+// Table 6-794: Sent CMD payload (PLC to RC) of "DynamicSpline"
 // --------------------------
 // Header
 // --------------------------
@@ -315696,7 +315696,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-773: Received CMD payload (RC to PLC) of "DynamicSpline"
+// Table 6-795: Received CMD payload (RC to PLC) of "DynamicSpline"
 // --------------------------
 // Header
 // --------------------------
@@ -316593,7 +316593,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-766: Sent CMD payload (PLC to RC) of "MoveSpline"
+// Table 6-788: Sent CMD payload (PLC to RC) of "MoveSpline"
 // --------------------------
 // Header
 // --------------------------
@@ -317102,7 +317102,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-767: Received CMD payload (RC to PLC) of "MoveSpline"
+// Table 6-789: Received CMD payload (RC to PLC) of "MoveSpline"
 // --------------------------
 // Header
 // --------------------------
@@ -318586,7 +318586,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-464: Sent CMD payload (PLC to RC) of "MoveSuperImposed"
+// Table 6-486: Sent CMD payload (PLC to RC) of "MoveSuperImposed"
 // --------------------------
 // Header
 // --------------------------
@@ -319574,7 +319574,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-465: Received CMD payload (RC to PLC) of "MoveSuperImposed"
+// Table 6-487: Received CMD payload (RC to PLC) of "MoveSuperImposed"
 // --------------------------
 // Header
 // --------------------------
@@ -320962,7 +320962,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-470: Sent CMD payload (PLC to RC) of "MoveSuperImposedDynamic"
+// Table 6-492: Sent CMD payload (PLC to RC) of "MoveSuperImposedDynamic"
 // --------------------------
 // Header
 // --------------------------
@@ -321888,7 +321888,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-471: Received CMD payload (RC to PLC) of "MoveSuperImposedDynamic"
+// Table 6-493: Received CMD payload (RC to PLC) of "MoveSuperImposedDynamic"
 // --------------------------
 // Header
 // --------------------------
@@ -322703,7 +322703,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-604: Sent CMD payload (PLC to RC) of "ReactAtTrigger"
+// Table 6-626: Sent CMD payload (PLC to RC) of "ReactAtTrigger"
 // --------------------------
 // Header
 // --------------------------
@@ -323223,7 +323223,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-605: Received CMD payload (RC to PLC) of "ReactAtTrigger"
+// Table 6-627: Received CMD payload (RC to PLC) of "ReactAtTrigger"
 // --------------------------
 // Header
 // --------------------------
@@ -324091,7 +324091,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-598: Sent CMD payload (PLC to RC) of "SetTriggerError"
+// Table 6-620: Sent CMD payload (PLC to RC) of "SetTriggerError"
 // --------------------------
 // Header
 // --------------------------
@@ -325617,7 +325617,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-585: Sent CMD payload (PLC to RC) of "SetTriggerLimit"
+// Table 6-607: Sent CMD payload (PLC to RC) of "SetTriggerLimit"
 // --------------------------
 // Header
 // --------------------------
@@ -326275,7 +326275,7 @@ VAR
  _idx          : DINT;
   /// Parameter count
  _parameterCnt : DINT;
-END_VAR// Table 6-586: Received CMD payload (RC to PLC) of "SetTriggerLimit"
+END_VAR// Table 6-608: Received CMD payload (RC to PLC) of "SetTriggerLimit"
 // --------------------------
 // Header
 // --------------------------
@@ -327264,7 +327264,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-674: Sent CMD payload (PLC to RC) of "SetTriggerMotion"
+// Table 6-696: Sent CMD payload (PLC to RC) of "SetTriggerMotion"
 // --------------------------
 // Header
 // --------------------------
@@ -327806,7 +327806,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-675: Received CMD payload (RC to PLC) of "SetTriggerMotion"
+// Table 6-697: Received CMD payload (RC to PLC) of "SetTriggerMotion"
 // --------------------------
 // Header
 // --------------------------
@@ -328767,7 +328767,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-579: Sent CMD payload (PLC to RC) of "SetTriggerRegister"
+// Table 6-601: Sent CMD payload (PLC to RC) of "SetTriggerRegister"
 // --------------------------
 // Header
 // --------------------------
@@ -329382,7 +329382,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-580: Received CMD payload (RC to PLC) of "SetTriggerRegister"
+// Table 6-602: Received CMD payload (RC to PLC) of "SetTriggerRegister"
 // --------------------------
 // Header
 // --------------------------
@@ -330189,7 +330189,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-591: Sent CMD payload (PLC to RC) of "SetTriggerUser"
+// Table 6-613: Sent CMD payload (PLC to RC) of "SetTriggerUser"
 // --------------------------
 // Header
 // --------------------------
@@ -330701,7 +330701,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-592: Received CMD payload (RC to PLC) of "SetTriggerUser"
+// Table 6-614: Received CMD payload (RC to PLC) of "SetTriggerUser"
 // --------------------------
 // Header
 // --------------------------
@@ -331579,7 +331579,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-610: Sent CMD payload (PLC to RC) of "WaitForTrigger"
+// Table 6-632: Sent CMD payload (PLC to RC) of "WaitForTrigger"
 // --------------------------
 // Header
 // --------------------------
@@ -332176,7 +332176,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-611: Received CMD payload (RC to PLC) of "WaitForTrigger"
+// Table 6-633: Received CMD payload (RC to PLC) of "WaitForTrigger"
 // --------------------------
 // Header
 // --------------------------
@@ -332920,7 +332920,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-360: Sent CMD payload (PLC to RC) of "WaitTime"
+// Table 6-382: Sent CMD payload (PLC to RC) of "WaitTime"
 // --------------------------
 // Header
 // --------------------------
@@ -333437,7 +333437,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-361: Received CMD payload (RC to PLC) of "WaitTime"
+// Table 6-383: Received CMD payload (RC to PLC) of "WaitTime"
 // --------------------------
 // Header
 // --------------------------
@@ -334130,7 +334130,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-211: Sent CMD payload (PLC to RC) of "ActivateWorkArea"
+// Table 6-235: Sent CMD payload (PLC to RC) of "ActivateWorkArea"
 // --------------------------
 // Header
 // --------------------------
@@ -334512,7 +334512,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-212: Received CMD payload (RC to PLC) of "ActivateWorkArea"
+// Table 6-236: Received CMD payload (RC to PLC) of "ActivateWorkArea"
 // --------------------------
 // Header
 // --------------------------
@@ -335167,7 +335167,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-219: Sent CMD payload (PLC to RC) of "MonitorWorkArea"
+// Table 6-241: Sent CMD payload (PLC to RC) of "MonitorWorkArea"
 // --------------------------
 // Header
 // --------------------------
@@ -335639,7 +335639,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-220: Received CMD payload (RC to PLC) of "MonitorWorkArea"
+// Table 6-242: Received CMD payload (RC to PLC) of "MonitorWorkArea"
 // --------------------------
 // Header
 // --------------------------
@@ -336281,7 +336281,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-199: Sent CMD payload (PLC to RC) of "ReadWorkArea"
+// Table 6-223: Sent CMD payload (PLC to RC) of "ReadWorkArea"
 // --------------------------
 // Header
 // --------------------------
@@ -337152,7 +337152,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-200: Received CMD payload (RC to PLC) of "ReadWorkArea"
+// Table 6-224: Received CMD payload (RC to PLC) of "ReadWorkArea"
 // --------------------------
 // Header
 // --------------------------
@@ -339665,7 +339665,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-205: Sent CMD payload (PLC to RC) of "WriteWorkArea"
+// Table 6-229: Sent CMD payload (PLC to RC) of "WriteWorkArea"
 // --------------------------
 // Header
 // --------------------------
@@ -340759,7 +340759,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-206: Received CMD payload (RC to PLC) of "WriteWorkArea"
+// Table 6-230: Received CMD payload (RC to PLC) of "WriteWorkArea"
 // --------------------------
 // Header
 // --------------------------
@@ -341681,7 +341681,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-559: Sent CMD payload (PLC to RC) of "WriteAnalogOutput"
+// Table 6-581: Sent CMD payload (PLC to RC) of "WriteAnalogOutput"
 // --------------------------
 // Header
 // --------------------------
@@ -342240,7 +342240,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-560: Received CMD payload (RC to PLC) of "WriteAnalogOutput"
+// Table 6-582: Received CMD payload (RC to PLC) of "WriteAnalogOutput"
 // --------------------------
 // Header
 // --------------------------
@@ -343240,7 +343240,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-490: Sent CMD payload (PLC to RC) of "WriteDigitalOutputs"
+// Table 6-512: Sent CMD payload (PLC to RC) of "WriteDigitalOutputs"
 // --------------------------
 // Header
 // --------------------------
@@ -343820,7 +343820,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-491: Received CMD payload (RC to PLC) of "WriteDigitalOutputs"
+// Table 6-513: Received CMD payload (RC to PLC) of "WriteDigitalOutputs"
 // --------------------------
 // Header
 // --------------------------
@@ -344834,7 +344834,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-120: Sent CMD payload (PLC to RC) of "WriteFrameData"
+// Table 6-144: Sent CMD payload (PLC to RC) of "WriteFrameData"
 // --------------------------
 // Header
 // --------------------------
@@ -345389,7 +345389,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-121: Received CMD payload (RC to PLC) of "WriteFrameData"
+// Table 6-145: Received CMD payload (RC to PLC) of "WriteFrameData"
 // --------------------------
 // Header
 // --------------------------
@@ -346297,7 +346297,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-508: Sent CMD payload (PLC to RC) of "WriteIntegers"
+// Table 6-530: Sent CMD payload (PLC to RC) of "WriteIntegers"
 // --------------------------
 // Header
 // --------------------------
@@ -346869,7 +346869,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-509: Received CMD payload (RC to PLC) of "WriteIntegers"
+// Table 6-531: Received CMD payload (RC to PLC) of "WriteIntegers"
 // --------------------------
 // Header
 // --------------------------
@@ -347974,7 +347974,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-132: Sent CMD payload (PLC to RC) of "WriteLoadData"
+// Table 6-156: Sent CMD payload (PLC to RC) of "WriteLoadData"
 // --------------------------
 // Header
 // --------------------------
@@ -348570,7 +348570,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-133: Received CMD payload (RC to PLC) of "WriteLoadData"
+// Table 6-157: Received CMD payload (RC to PLC) of "WriteLoadData"
 // --------------------------
 // Header
 // --------------------------
@@ -349500,7 +349500,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-514: Sent CMD payload (PLC to RC) of "WriteReals"
+// Table 6-536: Sent CMD payload (PLC to RC) of "WriteReals"
 // --------------------------
 // Header
 // --------------------------
@@ -350084,7 +350084,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-515: Received CMD payload (RC to PLC) of "WriteReals"
+// Table 6-537: Received CMD payload (RC to PLC) of "WriteReals"
 // --------------------------
 // Header
 // --------------------------
@@ -350854,7 +350854,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-146: Sent CMD payload (PLC to RC) of "WriteRobotDefaultDynamics"
+// Table 6-170: Sent CMD payload (PLC to RC) of "WriteRobotDefaultDynamics"
 // --------------------------
 // Header
 // --------------------------
@@ -351395,7 +351395,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-147: Received CMD payload (RC to PLC) of "WriteRobotDefaultDynamics"
+// Table 6-171: Received CMD payload (RC to PLC) of "WriteRobotDefaultDynamics"
 // --------------------------
 // Header
 // --------------------------
@@ -352174,7 +352174,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-139: Sent CMD payload (PLC to RC) of "WriteRobotReferenceDynamics"
+// Table 6-163: Sent CMD payload (PLC to RC) of "WriteRobotReferenceDynamics"
 // --------------------------
 // Header
 // --------------------------
@@ -352723,7 +352723,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-140: Received CMD payload (RC to PLC) of "WriteRobotReferenceDynamics"
+// Table 6-164: Received CMD payload (RC to PLC) of "WriteRobotReferenceDynamics"
 // --------------------------
 // Header
 // --------------------------
@@ -354122,7 +354122,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-185: Sent CMD payload (PLC to RC) of "WriteRobotSWLimits"
+// Table 6-209: Sent CMD payload (PLC to RC) of "WriteRobotSWLimits"
 // --------------------------
 // Header
 // --------------------------
@@ -354951,7 +354951,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-186: Received CMD payload (RC to PLC) of "WriteRobotSWLimits"
+// Table 6-210: Received CMD payload (RC to PLC) of "WriteRobotSWLimits"
 // --------------------------
 // Header
 // --------------------------
@@ -356196,7 +356196,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-626: Sent CMD payload (PLC to RC) of "WriteSystemVariable"
+// Table 6-648: Sent CMD payload (PLC to RC) of "WriteSystemVariable"
 // --------------------------
 // Header
 // --------------------------
@@ -356973,7 +356973,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-627: Received CMD payload (RC to PLC) of "WriteSystemVariable"
+// Table 6-649: Received CMD payload (RC to PLC) of "WriteSystemVariable"
 // --------------------------
 // Header
 // --------------------------
@@ -358080,7 +358080,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-126: Sent CMD payload (PLC to RC) of "WriteToolData"
+// Table 6-150: Sent CMD payload (PLC to RC) of "WriteToolData"
 // --------------------------
 // Header
 // --------------------------
@@ -358664,7 +358664,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-127: Received CMD payload (RC to PLC) of "WriteToolData"
+// Table 6-151: Received CMD payload (RC to PLC) of "WriteToolData"
 // --------------------------
 // Header
 // --------------------------

@@ -217,7 +217,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-438: Sent CMD payload (PLC to RC) of "ActivateConveyorTracking"
+// Table 6-460: Sent CMD payload (PLC to RC) of "ActivateConveyorTracking"
 // --------------------------
 // Header
 // --------------------------
@@ -656,7 +656,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-439: Received CMD payload (RC to PLC) of "ActivateConveyorTracking"
+// Table 6-461: Received CMD payload (RC to PLC) of "ActivateConveyorTracking"
 // --------------------------
 // Header
 // --------------------------

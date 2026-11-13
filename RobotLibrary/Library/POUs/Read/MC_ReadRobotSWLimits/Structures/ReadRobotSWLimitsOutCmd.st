@@ -22,7 +22,7 @@
 // -------------------------------------------------------------------------
 TYPE ReadRobotSWLimitsOutCmd :
 STRUCT
-  /// DLimits for joints and external axes according to Table 6-173.
+  /// DLimits for joints and external axes according to Table 6-197.
   LimitValues        : SWLimits;
   /// The limits were changed on the RC since the last synchronization (ST-FIX F32: byte 106 of the response)
   DataChanged : BOOL;

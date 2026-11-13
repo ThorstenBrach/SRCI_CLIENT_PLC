@@ -303,7 +303,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-236: Sent CMD payload (PLC to RC) of "GroupJog"
+// Table 6-258: Sent CMD payload (PLC to RC) of "GroupJog"
 // --------------------------
 // Header
 // --------------------------
@@ -994,7 +994,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-237: Received CMD payload (RC to PLC) of "GroupJog"
+// Table 6-259: Received CMD payload (RC to PLC) of "GroupJog"
 // --------------------------
 // Header
 // --------------------------

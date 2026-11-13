@@ -34,7 +34,7 @@ STRUCT
   Timestamp              : IEC_TIMESTAMP;
   /// Message Type
   MsgType                : USINT;
-  /// Severity of returned message according to .Table 5-47.
+  /// Severity of returned message according to .Table 5-49.
   Severity               : SINT;
   /// ErrorCode
   ErrorCode              : DWORD;

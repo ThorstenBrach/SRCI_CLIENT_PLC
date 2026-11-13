@@ -24,9 +24,9 @@ TYPE RspHeader :
 STRUCT
   /// Parameter Sequence, used to identify sets of CMD parameter - For more information see chapter 5.6.4
   ParSeq               : USINT;
-  /// Actual state of the command - For more information and examples, see chapter 5.6.3.2
+  /// Actual state of the command - For more information and examples, see chapter 5.6.4.3
   State                : CmdMessageState;
-  /// Severity of returned message according to .Table 5-47.
+  /// Severity of returned message according to .Table 5-49.
   AlarmMessageSeverity : Severity;
   /// Message code for error/warning/info identification reported during execution of command according to
   /// • Error: Table 7-1

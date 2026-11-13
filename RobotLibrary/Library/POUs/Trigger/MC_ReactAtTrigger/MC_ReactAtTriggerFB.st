@@ -265,7 +265,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-604: Sent CMD payload (PLC to RC) of "ReactAtTrigger"
+// Table 6-626: Sent CMD payload (PLC to RC) of "ReactAtTrigger"
 // --------------------------
 // Header
 // --------------------------
@@ -633,7 +633,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-605: Received CMD payload (RC to PLC) of "ReactAtTrigger"
+// Table 6-627: Received CMD payload (RC to PLC) of "ReactAtTrigger"
 // --------------------------
 // Header
 // --------------------------

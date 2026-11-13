@@ -39,7 +39,7 @@ STRUCT
   /// Define the index number of the UCS that will be assigned to the conveyor.
   /// For more information refer to chapter 5.5.14
   FrameNo            : USINT;
-  /// Specifies encoder connection setup according to Table 6-713 (at least one option must be supported) 
+  /// Specifies encoder connection setup according to Table 6-743 (at least one option must be supported) 
   ConnectionMode     : USINT;
   /// Defines sensor positioning:
   /// • FALSE (default): Sensor mounted on flange

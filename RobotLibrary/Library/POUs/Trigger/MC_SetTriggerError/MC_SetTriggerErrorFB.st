@@ -305,7 +305,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-598: Sent CMD payload (PLC to RC) of "SetTriggerError"
+// Table 6-620: Sent CMD payload (PLC to RC) of "SetTriggerError"
 // --------------------------
 // Header
 // --------------------------

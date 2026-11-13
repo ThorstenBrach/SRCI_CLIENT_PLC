@@ -324,7 +324,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-585: Sent CMD payload (PLC to RC) of "SetTriggerLimit"
+// Table 6-607: Sent CMD payload (PLC to RC) of "SetTriggerLimit"
 // --------------------------
 // Header
 // --------------------------
@@ -840,7 +840,7 @@ VAR
  _idx          : DINT;
   /// Parameter count
  _parameterCnt : DINT;
-END_VAR// Table 6-586: Received CMD payload (RC to PLC) of "SetTriggerLimit"
+END_VAR// Table 6-608: Received CMD payload (RC to PLC) of "SetTriggerLimit"
 // --------------------------
 // Header
 // --------------------------

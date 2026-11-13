@@ -1257,7 +1257,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-335: Sent CMD payload (PLC to RC) of "MoveCircularRelative"
+// Table 6-357: Sent CMD payload (PLC to RC) of "MoveCircularRelative"
 // --------------------------
 // Header
 // --------------------------
@@ -2986,7 +2986,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-336: Received CMD payload (RC to PLC) of "MoveCircularRelative"
+// Table 6-358: Received CMD payload (RC to PLC) of "MoveCircularRelative"
 // --------------------------
 // Header
 // --------------------------

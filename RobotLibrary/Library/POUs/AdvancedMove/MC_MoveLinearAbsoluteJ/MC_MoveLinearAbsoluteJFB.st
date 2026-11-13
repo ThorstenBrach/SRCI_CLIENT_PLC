@@ -660,7 +660,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-317: Sent CMD payload (PLC to RC) of "MoveLinearAbsoluteJ"
+// Table 6-339: Sent CMD payload (PLC to RC) of "MoveLinearAbsoluteJ"
 // --------------------------
 // Header
 // --------------------------
@@ -1595,7 +1595,7 @@ VAR
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
-// Table 6-318: Received CMD payload (RC to PLC) of "MoveLinearAbsoluteJ"
+// Table 6-340: Received CMD payload (RC to PLC) of "MoveLinearAbsoluteJ"
 // --------------------------
 // Header
 // --------------------------

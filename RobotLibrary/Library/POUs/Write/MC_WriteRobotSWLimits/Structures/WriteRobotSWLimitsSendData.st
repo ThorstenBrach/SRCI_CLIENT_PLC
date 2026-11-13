@@ -22,7 +22,7 @@
 // -------------------------------------------------------------------------
 TYPE WriteRobotSWLimitsSendData EXTENDS CmdHeader: 
 STRUCT
-  /// Limits for joints and external axes according to Table 6-180.
+  /// Limits for joints and external axes according to Table 6-204.
   LimitValues            : SWLimits;
   /// Reset limits to RC specific factory settings
   ResetToFactoryDefaults : BOOL;;
