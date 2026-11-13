@@ -255,23 +255,7 @@ END_VAR
   END_IF
   
   
-  // Check ParCmd.WorkAreaData.DefinitionMode valid ? 
-  IF (( ParCmd.WorkAreaData.DefinitionMode <> DefinitionMode.Center ) AND
-      ( ParCmd.WorkAreaData.DefinitionMode <> DefinitionMode.Face   ))
-  THEN
-    // Parameter not valid
-    CheckParameterValid := FALSE;
-    // Set error
-    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
-    // Create log entry
-    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
-                            MessageType := MessageType.CMD,
-                            Severity    := Severity.ERROR,
-                            MessageCode := ErrorID,
-                            MessageText := 'Invalid Parameter ParCmd.WorkAreaData.DefinitionMode = {1}',
-                            Para1       := DEFINITION_MODE_TO_STRING(ParCmd.WorkAreaData.DefinitionMode));
-    RETURN;
-  END_IF
+  // ST-FIX F170: DefinitionMode is not part of the work area data since spec V1.5.6 (not sent) - no check
   
   
   // Check ParCmd.WorkAreaData.FrameNo valid ? 
@@ -2197,6 +2181,7 @@ END_VAR
   MyType := 'MC_WriteWorkAreaFB';
   
   ExecMode := ExecutionMode.PARALLEL;
+    ProcessingMode := ProcessingModeEnum.PARALLEL; // ST-FIX F170: spec 6.2.23 parallel only (was BUFFERED)
   Priority := PriorityLevel.NORMAL;
 
 END_METHOD

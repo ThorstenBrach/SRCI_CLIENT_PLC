@@ -88,11 +88,11 @@ STRUCT
   /// Input values below 1 to reduce velocity.
   /// Input values above 1 to increase velocity.
   /// See chapter 5.5.7 Robot dynamics
-  VelocityCoefficient: REAL;
+  VelocityCoefficient: REAL := 1.0; // ST-FIX F156: start value 1.0 = velocity of VelocityRate (spec 6.3.21 ff. names no default; 0 = minimal velocity)
   /// TCP velocity in % of the velocity set with VelocityRate to define the velocity for the linear motions. Always positive.
   /// • 0%: use the minimal velocity
   /// • 100%: use the velocity set with VelocityRate
-  ReductionRate      : REAL;
+  ReductionRate      : REAL := 100.0; // ST-FIX F156: start value 100 % = velocity of VelocityRate; not transmitted (spec 6.3.25 has it only in the application layer)
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5
   Manipulation       : BOOL;

@@ -357,46 +357,7 @@ END_VAR
     RETURN;
   END_IF
   
-  // ST-FIX F49: ParCmd.ProcessingMode was not checked
-  IF ( ( ParCmd.ProcessingMode <> ProcessingModeEnum.BUFFERED ) AND
-      ( ParCmd.ProcessingMode <> ProcessingModeEnum.ABORTING ) AND
-      ( ParCmd.ProcessingMode <> ProcessingModeEnum.PARALLEL ) AND
-      ( ParCmd.ProcessingMode <> ProcessingModeEnum.CONTINUOUS ) AND
-      ( ParCmd.ProcessingMode <> ProcessingModeEnum.DEACTIVATE ) AND
-      ( ParCmd.ProcessingMode <> ProcessingModeEnum.TRIGGER_BUFFERED ) AND
-      ( ParCmd.ProcessingMode <> ProcessingModeEnum.TRIGGER_ABORTING ) AND
-      ( ParCmd.ProcessingMode <> ProcessingModeEnum.TRIGGER_ONCE ) AND
-      ( ParCmd.ProcessingMode <> ProcessingModeEnum.TRIGGER_CONTINUOUS ) AND
-      ( ParCmd.ProcessingMode <> ProcessingModeEnum.TRIGGER_MULTIPLE ) )
-  THEN
-    CheckParameterValid := FALSE;
-    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_PROCESSINGMODE_NOT_DEFINED, Overwrite := TRUE );
-    // Create log entry
-    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
-                            MessageType := MessageType.CMD,
-                            Severity    := Severity.ERROR,
-                            MessageCode := ErrorID,
-                            MessageText := 'Invalid Parameter ParCmd.ProcessingMode = {1}',
-                            Para1       := PROCESSING_MODE_TO_STRING(ParCmd.ProcessingMode));
-    RETURN;
-  END_IF
-  
-  // ST-FIX F49: ParCmd.SequenceFlag was not checked
-  IF ( ( ParCmd.SequenceFlag <> SequenceFlagEnum.NO_SEQUENCE ) AND
-      ( ParCmd.SequenceFlag <> SequenceFlagEnum.PRIMARY_SEQUENCE ) AND
-      ( ParCmd.SequenceFlag <> SequenceFlagEnum.SECONDARY_SEQUENCE ) )
-  THEN
-    CheckParameterValid := FALSE;
-    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_SEQFLAG_NOT_ALLOWED, Overwrite := TRUE );
-    // Create log entry
-    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
-                            MessageType := MessageType.CMD,
-                            Severity    := Severity.ERROR,
-                            MessageCode := ErrorID,
-                            MessageText := 'Invalid Parameter ParCmd.SequenceFlag = {1}',
-                            Para1       := SEQUENCE_FLAG_TO_STRING(ParCmd.SequenceFlag));
-    RETURN;
-  END_IF
+  // ST-FIX F171: ParCmd.ProcessingMode / ParCmd.SequenceFlag are not used (the inputs are sent) - no check
 
 END_METHOD
 

@@ -227,6 +227,7 @@ END_VAR
     OutCmd.RASerialNumber       :=                              _response.RASerialNumber;
     OutCmd.RCFirmwareVersion    :=                              _response.RCFirmwareVersion;
     OutCmd.RCInterpreterVersion :=                              _response.RCInterpreterVersion;
+      OutCmd.RCInterpreterVersionNumber := _response.RCInterpreterVersionNumber; // ST-FIX F163
     OutCmd.AxisJointUsed        :=  ByteToAxisJointUsed        (_response.AxisJointUsed);           
     OutCmd.AxisExternalUsed     :=  ByteToAxisExternalUsed     (_response.AxisExternalUsed);
     OutCmd.AxisJointUnit        :=  ByteToAxisJointUnit        (_response.AxisJointUnit);
@@ -583,12 +584,14 @@ END_VAR
     // This adaption was made because of Stäubli - check with other robot brands...
     
     // Get _response.RCInterpreterVersion
-   _response.RCInterpreterVersion := '';
-   _response.RCInterpreterVersion := CONCAT(_response.RCInterpreterVersion, BYTE_TO_STRING(ResponseData.GetByte()));
-   _response.RCInterpreterVersion := CONCAT(_response.RCInterpreterVersion, '.');
-   _response.RCInterpreterVersion := CONCAT(_response.RCInterpreterVersion, BYTE_TO_STRING(ResponseData.GetByte()));
-   _response.RCInterpreterVersion := CONCAT(_response.RCInterpreterVersion, '.');
-   _response.RCInterpreterVersion := CONCAT(_response.RCInterpreterVersion, BYTE_TO_STRING(ResponseData.GetByte()));
+   // ST-FIX F163: the three numbers, the text is made of them
+     _response.RCInterpreterVersionNumber.MajorVersion := BYTE_TO_USINT(ResponseData.GetByte());
+     _response.RCInterpreterVersionNumber.MinorVersion := BYTE_TO_USINT(ResponseData.GetByte());
+     _response.RCInterpreterVersionNumber.PatchVersion := BYTE_TO_USINT(ResponseData.GetByte());
+     _response.RCInterpreterVersion := CONCAT(USINT_TO_STRING(_response.RCInterpreterVersionNumber.MajorVersion), '.');
+     _response.RCInterpreterVersion := CONCAT(_response.RCInterpreterVersion, USINT_TO_STRING(_response.RCInterpreterVersionNumber.MinorVersion));
+     _response.RCInterpreterVersion := CONCAT(_response.RCInterpreterVersion, '.');
+     _response.RCInterpreterVersion := CONCAT(_response.RCInterpreterVersion, USINT_TO_STRING(_response.RCInterpreterVersionNumber.PatchVersion));
   
     // inc parameter counter
    _parameterCnt := _parameterCnt + 1;

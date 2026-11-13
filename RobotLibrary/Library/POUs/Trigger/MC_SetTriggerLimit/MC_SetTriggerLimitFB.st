@@ -192,8 +192,8 @@ END_VAR
   
   
   // Check ParCmd.ReactionMode valid ? 
-  IF (( ParCmd.TriggerMode <> TriggerModeLimit.INVALID         ) AND
-      ( ParCmd.TriggerMode <> TriggerModeLimit.JOINT_CURRENT   ) AND
+  IF (// ST-FIX F173: INVALID is refused (was allowed)
+        ( ParCmd.TriggerMode <> TriggerModeLimit.JOINT_CURRENT   ) AND
       ( ParCmd.TriggerMode <> TriggerModeLimit.FORCE           ) AND
       ( ParCmd.TriggerMode <> TriggerModeLimit.FOLLOWING_ERROR ) AND
       ( ParCmd.TriggerMode <> TriggerModeLimit.TEMPERATURE     ))

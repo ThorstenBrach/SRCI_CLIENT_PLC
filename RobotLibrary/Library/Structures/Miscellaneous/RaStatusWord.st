@@ -57,22 +57,22 @@ STRUCT
   /// Bit 10 - Bit 12:
   /// Operation Mode: T1 Local, T2 Local, Auto, Auto Ext, T1 Ext, T2 Ext
   OperationMode            : OperationMode;
-  /// Bit 13:
+  /// not in the status word (telegram table 5-105), always FALSE - see UserData.CollisionDetectionEnabled (ST-FIX F176: bit numbers of the decoder DwordToRaStatusWord, telegram table 5-105)
   /// TRUE, while CollisionDetection is enabled (see chapter 6.5.35) 
   CollisionDetectedEnabled : BOOL;
-  /// Bit 14:
+  /// Bit 13: (ST-FIX F176: bit numbers of the decoder DwordToRaStatusWord, telegram table 5-105)
   /// TRUE, when a collision was detected while CollisionDetection is enabled
   CollisionDetected        : BOOL;
-  /// Bit 15:
+  /// Bit 14: (ST-FIX F176: bit numbers of the decoder DwordToRaStatusWord, telegram table 5-105)
   /// TRUE, when the RC request a restart of the RCinduced through the functions "WriteRobotSWLimits" or "WriteSystemVariable"
   RestartRequested         : BOOL;
-  /// Bit 16:
+  /// Bit 15: (ST-FIX F176: bit numbers of the decoder DwordToRaStatusWord, telegram table 5-105)
   /// RA is currently accelerating. Support of this value is returned via exchangeConfig.
   Accelerating             : BOOL;
-  /// Bit 17:
+  /// Bit 16: (ST-FIX F176: bit numbers of the decoder DwordToRaStatusWord, telegram table 5-105)
   /// RA is currently decelerating. Support of this value is returned via exchangeConfig.
   Decelerating             : BOOL;
-  /// Bit 18:
+  /// Bit 17: (bit 18 reserved) (ST-FIX F176: bit numbers of the decoder DwordToRaStatusWord, telegram table 5-105)
   /// RA is currently not accelerating nor decelerating. Support of this value is returned via exchangeConfig.
   ConstantVelocity         : BOOL;
   /// Bit 19

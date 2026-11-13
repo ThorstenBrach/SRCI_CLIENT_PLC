@@ -26,7 +26,7 @@ STRUCT
   /// • -1: Currently used load on RC
   /// •  0: Not possible to read
   /// •  1 (default)..254: Load data
-  LoadNo             : INT;
+  LoadNo             : INT := 1; // ST-FIX F156: spec 6.2.18: '1 (default)'
 END_STRUCT
 END_TYPE
 

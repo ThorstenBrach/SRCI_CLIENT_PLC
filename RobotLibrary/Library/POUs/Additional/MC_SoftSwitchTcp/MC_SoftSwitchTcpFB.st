@@ -932,7 +932,8 @@ END_VAR
     SysDepMemSet(pDest := ADR(OutCmd), Value := 0, DataLen := SIZEOF(OutCmd));         
   END_IF
   
-  IF ( State = CmdMessageState.DONE ) 
+  // ST-FIX F159: SoftMovement also while the command is active (was only DONE)
+    IF ( State = CmdMessageState.ACTIVE ) OR ( State = CmdMessageState.INTERRUPTED ) OR ( State = CmdMessageState.DONE ) 
   THEN
     // Update results
     OutCmd.SoftMovement := _response.SoftMovement;

@@ -23,7 +23,7 @@
 TYPE ReadActualPositionCyclicParCmd :
 STRUCT
   /// Set TRUE (default) to activate cyclic transmission of cartesian position without external axes
-  ReadCartesianPosition       : BOOL;
+  ReadCartesianPosition       : BOOL := TRUE; // ST-FIX F156: spec 6.1.6 table 6-41: TRUE (default)
   /// Set TRUE to activate cyclic transmission of external axes values of cartesian position -  Default: False
   ReadCartesianPositionExt    : BOOL;
   ///Index of tool of returned position
@@ -37,7 +37,7 @@ STRUCT
   /// • 1..254: User frames
   FrameNo                     : INT;
   /// Set TRUE (default) to activate cyclic transmission of joint position without external axes
-  ReadJointPosition           : BOOL;
+  ReadJointPosition           : BOOL := TRUE; // ST-FIX F156: spec 6.1.6 table 6-41: TRUE (default)
   /// Set TRUE to activate cyclic transmission of external axes values of joint position - Default: False
   ReadJointPositionExt        : BOOL;
 END_STRUCT

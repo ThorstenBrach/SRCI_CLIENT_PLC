@@ -43,7 +43,7 @@ STRUCT
   /// Only considered with "Mode" = 0, 2.
   Area_J6            : ARRAY[0..1] OF REAL;
   /// Define the first position for the load measurement.
-  /// Only considered with "Mode" = 0, 1.
+  /// Only considered with "Mode" = 0, 1, 3 (ST-FIX F176: TWO_POSITIONS uses Position_1 and Position_2; the spec names 0, 1).
   Position_1         : RobotJointPosition;
   /// Define the second position for the load measurement.
   /// Only considered with "Mode" = 3.

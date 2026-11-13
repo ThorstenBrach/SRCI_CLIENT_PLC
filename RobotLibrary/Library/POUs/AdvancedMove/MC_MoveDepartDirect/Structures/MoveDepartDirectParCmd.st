@@ -24,7 +24,7 @@ TYPE MoveDepartDirectParCmd :
 STRUCT
   /// Absolute target coordinates in the selected coordinate system (see input parameters ToolNo and FrameNo).
   TargetPosition     : RobotCartesianPosition;
-  /// Offset distance of auxiliary position from TargetPosition
+  /// Offset distance of auxiliary position from the actual position (ST-FIX F176: comment of Approach, spec 6.3.24)
   Offset             : AuxOffset;
   /// Defines type of reference coordinate system of the offset position
   ReferenceType      : ReferenceType;
@@ -78,13 +78,13 @@ STRUCT
   ConfigMode         : ArmConfigParameter;
   /// Defines the usage of the TurnNumber byte inside the position.
   TurnMode           : TurnMode;
-  /// Factor by which VelocityRate is multiplied to define the velocity for the second segment of the motion. Always positive.
+  /// Factor by which VelocityRate is multiplied to define the velocity for the first segment of the motion (ST-FIX F176: was 'second', spec 6.3.24). Always positive.
   /// • 0: use the minimal velocity
   /// • 1: use the velocity set with VelocityRate 
   /// Input values below 1 to reduce velocity, 
   /// Input values above 1 to increase velocity.
   /// See chapter 5.5.7 Robot dynamics
-  VelocityCoefficient: REAL;
+  VelocityCoefficient: REAL := 1.0; // ST-FIX F156: start value 1.0 = velocity of VelocityRate (spec 6.3.21 ff. names no default; 0 = minimal velocity)
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5
   Manipulation       : BOOL;

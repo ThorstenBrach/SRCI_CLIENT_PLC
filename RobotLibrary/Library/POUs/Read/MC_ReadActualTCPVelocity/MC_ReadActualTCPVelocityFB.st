@@ -188,10 +188,7 @@ END_VAR
       ( ProcessingMode <> ProcessingModeEnum.ABORTING           ) AND  
       ( ProcessingMode <> ProcessingModeEnum.PARALLEL           ) AND
       ( ProcessingMode <> ProcessingModeEnum.CONTINUOUS         ) AND
-      ( ProcessingMode <> ProcessingModeEnum.DEACTIVATE         ) AND
-      ( ProcessingMode <> ProcessingModeEnum.TRIGGER_ONCE       ) AND
-      ( ProcessingMode <> ProcessingModeEnum.TRIGGER_CONTINUOUS ) AND
-      ( ProcessingMode <> ProcessingModeEnum.TRIGGER_MULTIPLE   ))  
+      ( ProcessingMode <> ProcessingModeEnum.DEACTIVATE         )) // ST-FIX F158: no trigger modes, the payload has no ListenerID  
   THEN
     // Parameter not valid
     CheckParameterValid := FALSE;

@@ -729,7 +729,7 @@ END_VAR
   
       
     // Check ParCmd.SplineData[x].MoveTime valid ? 
-    IF  ( ParCmd.SplineData[_idx].MoveTime < T#0S )
+    IF  ( ParCmd.SplineData[_idx].MoveTime < T#0S ) OR ( ParCmd.SplineData[_idx].MoveTime > T#65535MS ) (* ST-FIX F162: sent as UINT [ms] *)
     THEN
       // Parameter not valid
       CheckParameterValid := FALSE;

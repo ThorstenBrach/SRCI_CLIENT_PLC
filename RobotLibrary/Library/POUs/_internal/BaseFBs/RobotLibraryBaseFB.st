@@ -118,7 +118,42 @@ VAR
   _messageSource : STRING;
 END_VAR
 
-  OnCall               (AxesGroup := AxesGroup);
+            
+          
+VAR
+  /// ST-FIX F116: axes group of the running command
+  _axesGroupAdr    : POINTER TO AxesGroup;
+  /// ST-FIX F116: _axesGroupAdr is valid
+  _axesGroupStored : BOOL;
+END_VAR
+
+  // ST-FIX F116: the AxesGroup input must not change while a command of this block is running
+    IF ( _uniqueID <> 0 ) AND ( _axesGroupStored ) AND ( NOT Error )
+    THEN
+      IF ( _axesGroupAdr <> ADR(AxesGroup) )
+      THEN
+        _axesGroupAdr^.Acyclic.ActiveCommandRegister.RemoveCmd( UniqueID := _uniqueID );
+        SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_AXESGROUP_CHANGED, Overwrite := TRUE );
+        // Create log entry (the command keeps running on the RC of the first axes group)
+        CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
+                                MessageType := MessageType.CMD,
+                                Severity    := Severity.ERROR,
+                                MessageCode := ErrorID,
+                                MessageText := 'AxesGroup of {1} changed while the command was running',
+                                Para1       := MyType);
+        OnUpdateStateFlags( State := CmdMessageState.ERROR );
+      END_IF
+    END_IF
+    IF ( _uniqueID = 0 )
+    THEN
+      _axesGroupStored := FALSE;
+    ELSIF ( NOT _axesGroupStored )
+    THEN
+      _axesGroupAdr    := ADR(AxesGroup);
+      _axesGroupStored := TRUE;
+    END_IF
+  
+    OnCall               (AxesGroup := AxesGroup);
   OnExecRun            (AxesGroup := AxesGroup);
   // ST-FIX F53: no response of the RC within _timeoutCmd after the command was added
   // -> error (before: _timerCmd was started but never evaluated, the FB stayed Busy)
@@ -346,7 +381,7 @@ END_VAR
   // ST-FIX F74: every message of the command - also the client-side ones (e.g. parameter errors,
   // before: only with the severity of the last response of the RC) - goes into the message
   // buffer, with ACR entry and command type
-  IF ( _error_R.Q ) AND ( LogLevel < Severity.ERROR )
+  IF ( _error_R.Q ) AND ( LogLevel <= Severity.ERROR ) (* ST-FIX F164: was < *)
   THEN
     _alarmMessage.Severity    := Severity.ERROR;
     IF ( ErrorID = _rspHeader.AlarmMessageCode ) AND ( _rspHeader.AlarmMessageSeverity > Severity.ERROR )
@@ -361,7 +396,7 @@ END_VAR
     _alarmMessage.MessageText := CONCAT(_messageSource, CONCAT(' : ', MESSAGE_CODE_TO_STRING(ErrorID))); // ST-FIX F105
     AxesGroup.MessageLog.AddMessageLog( MessageLog := _alarmMessage );
   END_IF
-  IF ( _warning_R.Q ) AND ( LogLevel < Severity.WARNING )
+  IF ( _warning_R.Q ) AND ( LogLevel <= Severity.WARNING ) (* ST-FIX F164: was < *)
   THEN
     _alarmMessage.Severity    := Severity.WARNING;
     IF ( WarningID = _rspHeader.AlarmMessageCode ) AND ( _rspHeader.AlarmMessageSeverity > Severity.WARNING )
@@ -376,7 +411,7 @@ END_VAR
     _alarmMessage.MessageText := CONCAT(_messageSource, CONCAT(' : ', MESSAGE_CODE_TO_STRING(WarningID))); // ST-FIX F105
     AxesGroup.MessageLog.AddMessageLog( MessageLog := _alarmMessage );
   END_IF
-  IF ( _info_R.Q ) AND ( LogLevel < Severity.INFO )
+  IF ( _info_R.Q ) AND ( LogLevel <= Severity.INFO ) (* ST-FIX F164: was < *)
   THEN
     _alarmMessage.Severity    := Severity.INFO;
     IF ( InfoID = _rspHeader.AlarmMessageCode ) AND ( _rspHeader.AlarmMessageSeverity > Severity.INFO )

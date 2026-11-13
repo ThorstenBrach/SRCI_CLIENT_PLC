@@ -912,7 +912,7 @@ END_VAR
     // Successfully completed
     CmdMessageState.DONE                : Busy               := FALSE;
     // Aborted before completion
-    CmdMessageState.ABORTED             : CommandAborted     := FALSE;
+    CmdMessageState.ABORTED             : CommandAborted     := TRUE; // ST-FIX F157: was FALSE
                                           Busy               := FALSE;
     // Encountered an error during execution
     CmdMessageState.ERROR               : Error              := TRUE;

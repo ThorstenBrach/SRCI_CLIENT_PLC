@@ -259,7 +259,7 @@ END_VAR
   
   
   // Check ParCmd.MoveTime valid ? 
-  IF ( ParCmd.MoveTime < T#0S ) // ST-FIX F44: 0 = not used (default)
+  IF ( ParCmd.MoveTime < T#0S ) OR ( ParCmd.MoveTime > T#65535MS ) (* ST-FIX F162: sent as UINT [ms] *) // ST-FIX F44: 0 = not used (default)
   THEN
     // Parameter not valid
     CheckParameterValid := FALSE;

@@ -28,7 +28,7 @@ STRUCT
   ReactionMode       : CollisionReactionMode;
   /// Set TRUE to activate and FALSE to deactivate "CollisionDetection".
   /// Default: TRUE
-  ActivateMonitoring : BOOL;
+  ActivateMonitoring : BOOL := TRUE; // ST-FIX F156: spec 6.5.35: TRUE (default)
   /// Defines the type of threshold setting (at least one option must be supported)
   ThresholdMode      : ThresholdMode;
   /// Defines the level of sensitivity of all axes.
@@ -36,7 +36,7 @@ STRUCT
   ///          At minimum value "0" there is no sensitivity. The lower the value, the lower the sensitivity at the collision detection.
   /// • 100 (default): The value is aligned with the robot vendor-specific default value.
   /// • 101..200: Sensitivity higher than robot vendor default. At maximum value "200" highest possible sensitivity at the collision detection.
-  Sensitivity        : REAL;
+  Sensitivity        : REAL := 100.0; // ST-FIX F156: spec 6.5.35: 100 (default) = vendor default
   /// Defines the level of sensitivity of the respective axis.
   /// Values:
   /// • 0..99: Sensitivity lower than robot vendor default. At minimum value "0" there is no sensitivity and collision detection for the respective axis. 
@@ -51,7 +51,7 @@ STRUCT
   /// • [4] J5 Fifth joint of the robot.
   /// • [5] J6 Six joint of the robot.
   /// • [6] J7 Seventh joint of the robot, if willbe used.
-  SensitivityAxis    : ARRAY[0..6] OF REAL;
+  SensitivityAxis    : ARRAY[0..6] OF REAL := [7(100.0)]; // ST-FIX F156: spec 6.5.35: 100 (default) = vendor default
   /// Relates to "ThresholdMode" Manual. Defines the threshold of the torque for each robot axis. If the threshold is exceeded, the RA stops.
   /// Index:
   /// • [0] J1 First joint of the robot.

@@ -195,7 +195,7 @@ END_VAR
       ( ParCmd.TriggerMode_1 <> TriggerCondition.TARGET_POSITION_TCP_VELOCITY_PERCENT  ) AND
       ( ParCmd.TriggerMode_1 <> TriggerCondition. START_POSITION_TCP_VELOCITY_PERCENT  ) AND
       ( ParCmd.TriggerMode_1 <> TriggerCondition.TARGET_POSITION_TCP_VELOCITY_ABSOLUTE ) AND
-      ( ParCmd.TriggerMode_1 <> TriggerCondition. START_POSITION_TCP_VELOCIT_ABSOLUTE  ) AND    
+      ( ParCmd.TriggerMode_1 <> TriggerCondition. START_POSITION_TCP_VELOCITY_ABSOLUTE (* ST-FIX F174 *)  ) AND    
       ( ParCmd.TriggerMode_1 <> TriggerCondition.TARGET_POSITION_TIME_MS               ) AND
       ( ParCmd.TriggerMode_1 <> TriggerCondition. START_POSITION_TIME_MS               ))
   THEN                                                        
@@ -243,7 +243,7 @@ END_VAR
       ( ParCmd.TriggerMode_2 <> TriggerCondition.TARGET_POSITION_TCP_VELOCITY_PERCENT  ) AND
       ( ParCmd.TriggerMode_2 <> TriggerCondition. START_POSITION_TCP_VELOCITY_PERCENT  ) AND
       ( ParCmd.TriggerMode_2 <> TriggerCondition.TARGET_POSITION_TCP_VELOCITY_ABSOLUTE ) AND
-      ( ParCmd.TriggerMode_2 <> TriggerCondition. START_POSITION_TCP_VELOCIT_ABSOLUTE  ) AND    
+      ( ParCmd.TriggerMode_2 <> TriggerCondition. START_POSITION_TCP_VELOCITY_ABSOLUTE (* ST-FIX F174 *)  ) AND    
       ( ParCmd.TriggerMode_2 <> TriggerCondition.TARGET_POSITION_TIME_MS               ) AND
       ( ParCmd.TriggerMode_2 <> TriggerCondition. START_POSITION_TIME_MS               ))
   THEN                                                        

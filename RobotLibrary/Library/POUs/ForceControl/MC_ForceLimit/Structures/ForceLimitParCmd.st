@@ -49,7 +49,7 @@ STRUCT
   /// • [4]: Rotation around Y-Axis (RY)
   /// • [5]: Rotation around Z- Axis (RZ)
   ForceLimit        : ARRAY[0..5] OF REAL;
-  /// Specifies encoder connection setup according to Table 6-713 (at least one option must be supported) 
+  /// Specifies the sensor connection (0: RC connected, 1: PLC connected) according to Table 6-743 (ST-FIX F176: was 'encoder', Table 6-713) (at least one option must be supported) 
   ConnectionMode    : ConnectionMode;
   /// Position of sensor relative to flange (FixedSensor FALSE) or relative to WCS (FixedSensor TRUE)
   /// • [0]: X-Axis

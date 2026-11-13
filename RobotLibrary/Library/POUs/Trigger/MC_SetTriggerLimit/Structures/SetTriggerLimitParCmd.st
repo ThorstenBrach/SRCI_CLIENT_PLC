@@ -36,7 +36,7 @@ STRUCT
   /// • [0]: Following Error in mm.
   /// • [1..11]: Undefined and not relevant.
   /// For all array entries default: 999999
-  Data_1                 : ARRAY[0..11] OF REAL;
+  Data_1                 : ARRAY[0..11] OF REAL := [12(999999.0)]; // ST-FIX F156: spec 6.5.2: 'for all array entries default: 999999' (axis not considered)
   /// If the respective actual data values from the RC are under the defined limit, the Action function will be stopped.
   /// For "TriggerMode" 1, 2 and 4 the tolerance limits must be entered as follows:
   /// • [0..5]: relates to axes 1 to 6.
@@ -45,7 +45,7 @@ STRUCT
   /// • [0]: Following Error in mm.
   /// • [1..11]: Undefined and not relevant.
   /// For all array entries default: 999999
-  Data_2                 : ARRAY[0..11] OF REAL;
+  Data_2                 : ARRAY[0..11] OF REAL := [12(999999.0)]; // ST-FIX F156: spec 6.5.2: 'for all array entries default: 999999' (axis not considered)
   /// ID of associated trigger function:
   /// • 0: Immediately (default) - Start executing this function immediately.
   /// • >0: Trigger -  Start executing, when the trigger function with the identical EmitterID is triggered.

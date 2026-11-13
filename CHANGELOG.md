@@ -4,6 +4,52 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [V1.5.6.0] - 2026-11-13
+
+All changes were checked against the specification V1.5.9 first (chapter and page per finding in
+SRCI_PY `docs/ST_FINDINGS.md`), developed in SRCI_PY with tests against the SDK simulator and in the
+TcUnit project SRCI_PLC_TEST_SUITE (3746 tests, all green on 2026-11-13).
+
+### Changed (behaviour - please check your programs)
+ - ST-FIX F117 / F155 / F156: start values from the parameter tables of the specification:
+   ChangeSpeedOverride and GroupJog `Override` 10 % (was 5 %); ReadFrameData / ReadToolData /
+   ReadLoadData number 1 (was 0); ReadActualPositionCyclic `ReadCartesianPosition` and
+   `ReadJointPosition` TRUE (was FALSE - set the flag of a cyclic area you did not configure to FALSE);
+   `RobotWorkAreaData.AreaType` BOX (new alias `AreaTypeEnum`, the member has the name of the type);
+   spline `BlendingParameter` [10, 0]; superimposed Acceleration/Deceleration/JerkDiffRate -1;
+   SetTriggerLimit `Data_1/Data_2` 999999; ForceControl `TargetValue` -99999.9999; BrakeTest J1..J6
+   active; CollisionDetection `ActivateMonitoring` TRUE, `Sensitivity` 100; Approach/Depart/PickPlace
+   `VelocityCoefficient` 1.0, PickPlaceDirect `ReductionRate` 100
+ - ST-FIX F126: WriteRobotDefaultDynamics / WriteRobotReferenceDynamics start with -1 (= do not
+   change) in the ParCmd only; the data sets of the RobotTask keep 0.0
+ - ST-FIX F158: ReadActualTCPVelocity refuses the trigger processing modes (no ListenerID in the payload)
+ - ST-FIX F162: MoveTime above 65.535 s is ERR_INVALID_PAR_CMD (was wrapped silently)
+ - ST-FIX F168: a write of the start-up synchronization refused by the RC is a warning, the start-up goes on
+ - ST-FIX F170: WriteWorkArea runs parallel only; DefinitionMode is not checked (removed in spec V1.5.6)
+ - ST-FIX F173: SetTriggerLimit refuses TriggerMode INVALID
+ - ST-FIX F174: `TriggerCondition.START_POSITION_TCP_VELOCIT_ABSOLUTE` renamed to `START_POSITION_TCP_VELOCITY_ABSOLUTE`
+
+### Fixed
+ - ST-FIX F116: `ERR_AXESGROUP_CHANGED` when the AxesGroup input changes while a command runs
+ - ST-FIX F125: warning 16#7303 when the cyclic read is disabled while the RC still sends the data
+ - ST-FIX F157: SyncToConveyor sets `CommandAborted`
+ - ST-FIX F159: SoftSwitchTcp `SoftMovement` also while the command is active
+ - ST-FIX F160: CallSubprogram `ReturnData` together with `Valid` (continuous modes while active)
+ - ST-FIX F161: ReturnToPrimary invalid `DistanceLimit` is ERR_INVALID_PAR_CMD (was ERR_JERK_INVALID)
+ - ST-FIX F163: `RCInterpreterVersion` as numbers (`ReadRobotDataOutCmd.RCInterpreterVersionNumber`, text STRING(11))
+ - ST-FIX F164: LogLevel stores block messages of the same level
+ - ST-FIX F165: `Synchronizing` flags reset after the start-up synchronization
+ - ST-FIX F166: `PLCLibraryVersion` 1.5.6
+ - ST-FIX F169: `UserData.CollisionDetectionEnabled` from ExchangeConfiguration
+ - ST-FIX F171 / F172: no checks of unsent CollisionDetection ParCmd fields; RedefineTrackingPos indexes without 0..5 limit
+ - ST-FIX F176: comments (Depart, kg·m², LoadMeasurement Position_1, ForceLimit ConnectionMode, RaStatusWord bits)
+
+### Known issues
+ - F113: a new rising edge of `Execute` while a motion block is `Busy` is ignored (later)
+ - F167: FreeDrive runs with SEQUENCE_ABORT_OTHERS_PRIMARY; the specification (6.5.36) wants the
+   secondary sequence, the SDK does not support it yet
+ - F175: `ConveyorNo` SINT - the telegram table names SINT, the other tables USINT
+
 ## [V1.5.5.0] - 2026-11-08
 
 Fixes of two findings of the acceptance tests at a real robot (JAKA MiniCobo, firmware 3.3.15), tested

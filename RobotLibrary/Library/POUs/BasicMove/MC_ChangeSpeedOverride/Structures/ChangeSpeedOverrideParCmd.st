@@ -26,7 +26,7 @@ STRUCT
   /// • 0% No movement of the robot
   /// • 10% default
   /// • ≤100%: use input parameter value
-  Override        : REAL := 5;
+  Override        : REAL := 10.0; // ST-FIX F117: spec 6.2.3: default override 10 % (the library had 5.0)
 END_STRUCT
 END_TYPE
 

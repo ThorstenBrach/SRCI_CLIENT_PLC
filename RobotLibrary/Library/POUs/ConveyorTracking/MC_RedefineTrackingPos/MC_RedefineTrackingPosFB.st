@@ -250,23 +250,7 @@ END_VAR
   END_IF
   
   
-  // Check ParCmd.StartIndexInitPosition valid ? 
-  IF (( ParCmd.StartIndexInitPosition < 0 ) OR  
-      ( ParCmd.StartIndexInitPosition > 5 ))
-  THEN
-    // Parameter not valid
-    CheckParameterValid := FALSE;
-    // Set error
-    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
-    // Create log entry
-    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
-                            MessageType := MessageType.CMD,
-                            Severity    := Severity.ERROR,
-                            MessageCode := ErrorID,
-                            MessageText := 'Invalid Parameter ParCmd.StartIndexInitPosition = {1}',
-                            Para1       :=  USINT_TO_STRING(ParCmd.StartIndexInitPosition));
-    RETURN;                          
-  END_IF
+  // ST-FIX F172: ParCmd.StartIndexInitPosition USINT, the range is checked by the RC (spec 6.3.27 has no limit 0..5)
   
   
   // Check ParCmd.FrameNo valid ? 
@@ -297,23 +281,7 @@ END_VAR
   END_IF
   
   
-  // Check ParCmd.IndexTrackingOffset valid ? 
-  IF (( ParCmd.IndexTrackingOffset < 0 ) OR  
-      ( ParCmd.IndexTrackingOffset > 5 ))
-  THEN
-    // Parameter not valid
-    CheckParameterValid := FALSE;
-    // Set error
-    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD, Overwrite := TRUE );
-    // Create log entry
-    CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
-                            MessageType := MessageType.CMD,
-                            Severity    := Severity.ERROR,
-                            MessageCode := ErrorID,
-                            MessageText := 'Invalid Parameter ParCmd.IndexTrackingOffset = {1}',
-                            Para1       :=  USINT_TO_STRING(ParCmd.IndexTrackingOffset));
-    RETURN;                          
-  END_IF
+  // ST-FIX F172: ParCmd.IndexTrackingOffset USINT, the range is checked by the RC (spec 6.3.27 has no limit 0..5)
   
   
   // Check ParCmd.ListenerID valid ? 

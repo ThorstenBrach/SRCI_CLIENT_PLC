@@ -33,7 +33,9 @@ STRUCT
   /// Robot firmware version in manufacturer -specific format
   RCFirmwareVersion    : STRING(12);
   /// 
-  RCInterpreterVersion : STRING(5);
+  RCInterpreterVersion : STRING(11); // ST-FIX F163: three numbers 0..255 as text 'M.m.p' (STRING(5) cut two-digit parts)
+  /// Version of the SRCI interpreter on the RC as numbers (spec 6.1.2 table 6-11: Major, Minor, Patch) (ST-FIX F163: the text RCInterpreterVersion was decoded from single characters)
+  RCInterpreterVersionNumber : VersionStruct;
   /// Reserve
   Reserve              : BYTE;
   /// TRUE = Axis used in Robot FALSE = Axis NOT used. See Table 6-13 for bit assignment

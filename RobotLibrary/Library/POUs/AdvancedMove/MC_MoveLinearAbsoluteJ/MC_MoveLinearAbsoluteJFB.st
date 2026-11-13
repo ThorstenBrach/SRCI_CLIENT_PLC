@@ -581,7 +581,7 @@ END_VAR
   
   
   // Check ParCmd.MoveTime valid ? 
-  IF  ( ParCmd.MoveTime < T#0S )
+  IF  ( ParCmd.MoveTime < T#0S ) OR ( ParCmd.MoveTime > T#65535MS ) (* ST-FIX F162: sent as UINT [ms] *)
   THEN
     // Parameter not valid
     CheckParameterValid := FALSE;

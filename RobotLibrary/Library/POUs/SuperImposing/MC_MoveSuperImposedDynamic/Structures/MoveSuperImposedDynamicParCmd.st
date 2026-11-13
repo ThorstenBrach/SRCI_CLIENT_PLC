@@ -36,19 +36,19 @@ STRUCT
   ///  •   0% Use internal minimal acceleration
   ///  • 100% Use maximal reference acceleration
   /// See chapter 5.5.7 Robot dynamics
-  AccelerationDiffRate: REAL;
+  AccelerationDiffRate: REAL := -1.0; // ST-FIX F156: spec 6.3.30 / 6.3.31: '<0 %: use default (default)'
   /// Value of the maximum deceleration difference of the additional motion (not necessary reached).
   /// •  <0% Use default deceleration (default)
   /// •   0% Use internal minimal deceleration
   /// • 100% Use maximal reference deceleration
   /// See chapter 5.5.7 Robot dynamics
-  DecelerationDiffRate: REAL;
+  DecelerationDiffRate: REAL := -1.0; // ST-FIX F156: spec 6.3.30 / 6.3.31: '<0 %: use default (default)'
   /// Value of the maximum jerk difference of the additional motion (not necessary reached).
   /// •  <0% Use default jerk (default) 
   /// •   0% Use internal minimal jerk
   /// • 100% Use maximal reference jerk
   /// See chapter 5.5.7 Robot dynamics
-  JerkDiffRate        : REAL;
+  JerkDiffRate        : REAL := -1.0; // ST-FIX F156: spec 6.3.30 / 6.3.31: '<0 %: use default (default)'
   /// Index of tool
   /// •      0: Flange (default)
   /// • 1..254: Tool frames

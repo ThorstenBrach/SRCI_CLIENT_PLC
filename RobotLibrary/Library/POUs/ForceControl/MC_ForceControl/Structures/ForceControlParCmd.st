@@ -42,7 +42,7 @@ STRUCT
   /// • [4]: Rotation around Y-Axis (RY)
   /// • [5]: Rotation around Z- Axis (RZ)
   /// Set TargetValue <>-99999.9999 (default) to define setpoint
-  TargetValue        : ARRAY[0..5] OF REAL;
+  TargetValue        : ARRAY[0..5] OF REAL := [6(-99999.9999)]; // ST-FIX F156: spec 6.5.24: '-99999.9999 (default)' = no setpoint for this direction
   /// Index of tool
   /// •      0: Flange (default)
   /// • 1..254: Tool frames

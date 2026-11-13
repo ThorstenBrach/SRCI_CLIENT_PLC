@@ -26,7 +26,7 @@ STRUCT
   /// • TRUE (default): Axis activated.
   /// • FALSE: Axis deactivated.
   /// See Table 6-735 for bit assignment.
-  RobotAxesActive    : RobotAxesFlags;
+  RobotAxesActive    : RobotAxesFlags := ( AxisJ1 := TRUE, AxisJ2 := TRUE, AxisJ3 := TRUE, AxisJ4 := TRUE, AxisJ5 := TRUE, AxisJ6 := TRUE); // ST-FIX F156: spec 6.5.27: 'TRUE (default): axis activated' for J1..J6
   /// Defines which of the external robot axis should be activated for the brake test.
   /// • TRUE: Axis activated.
   /// • FALSE (default): Axis deactivated.

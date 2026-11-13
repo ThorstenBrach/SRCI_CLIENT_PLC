@@ -30,7 +30,7 @@ STRUCT
   /// Additional parameter for the blending mode, to define i.e. velocity limit (%) or blending radius
   /// • [0]: default 10
   /// • [1]: default 0
-  BlendingParameter  : ARRAY [0..1] OF REAL;
+  BlendingParameter  : ARRAY [0..1] OF REAL := [10, 0]; // ST-FIX F156: spec 6.5.32: [0] default 10, [1] default 0 (like the other motion blocks)
   /// Parameter is used if it is greater than 0 (default):
   /// • Velocity input is ignored
   /// • Parameter defines the time for the movement to reach the target position 

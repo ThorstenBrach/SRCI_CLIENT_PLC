@@ -324,7 +324,7 @@ END_VAR
     // Parameter not valid
     CheckParameterValid := FALSE;
     // Set error
-    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_JERK_INVALID, Overwrite := TRUE );
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_INVALID_PAR_CMD (* ST-FIX F161: was ERR_JERK_INVALID *), Overwrite := TRUE );
     // Create log entry
     CreateLogMessagePara1 ( Timestamp   := AxesGroup.State.SystemTime,
                             MessageType := MessageType.CMD,
@@ -356,7 +356,7 @@ END_VAR
   
   
   // Check ParCmd.MoveTime valid ? 
-  IF  ( ParCmd.MoveTime < T#0S )
+  IF  ( ParCmd.MoveTime < T#0S ) OR ( ParCmd.MoveTime > T#65535MS ) (* ST-FIX F162: sent as UINT [ms] *)
   THEN
     // Parameter not valid
     CheckParameterValid := FALSE;

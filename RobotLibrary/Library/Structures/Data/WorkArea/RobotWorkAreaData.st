@@ -25,7 +25,7 @@ STRUCT
   /// Timestamp
   Timestamp          : IEC_TIMESTAMP;
   /// Defines type of work area 
-  AreaType           : AreaType;
+  AreaType           : AreaType := AreaTypeEnum.BOX; // ST-FIX F156: spec 5.5.8 table 5-34: 1 Box (default); alias AreaTypeEnum because the member has the name of the type
   /// Defines violation condition 
   /// • FALSE (default) : Robot must not leave defined area
   /// • TRUE            : Robot must not enter defined area

@@ -26,7 +26,7 @@ STRUCT
   /// • -1: Currently used frame on RC
   /// • 0: WCS
   /// • 1 (default)..254: UCS (User frames)
-  FrameNo            : INT;
+  FrameNo            : INT := 1; // ST-FIX F156: spec 6.2.16: '1 (default)'
 END_STRUCT
 END_TYPE
 

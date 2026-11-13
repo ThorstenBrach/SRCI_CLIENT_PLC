@@ -825,7 +825,11 @@ END_VAR
     OutCmd.InstanceID := UDINT_TO_DINT(_uniqueID);
   END_IF
   
-  IF ( State = CmdMessageState.DONE )
+  // ST-FIX F160: results also while a continuous subprogram is active (as Valid)
+    IF ( State = CmdMessageState.DONE ) OR (( State = CmdMessageState.ACTIVE ) AND
+       (( ProcessingMode = ProcessingModeEnum.CONTINUOUS         ) OR
+        ( ProcessingMode = ProcessingModeEnum.TRIGGER_CONTINUOUS ) OR
+        ( ProcessingMode = ProcessingModeEnum.TRIGGER_MULTIPLE   )))
   THEN
     // Update results
     OutCmd.OriginID          := _response.OriginID;
@@ -974,7 +978,11 @@ END_VAR
   END_CASE
   
   // ST-FIX F25: output data are valid while the command is active (continuous) or done
-  Valid := ( State = CmdMessageState.ACTIVE ) OR ( State = CmdMessageState.DONE );
+  // ST-FIX F160: while ACTIVE only in the continuous modes (results of a running subprogram)
+    Valid := (( State = CmdMessageState.ACTIVE ) AND
+              (( ProcessingMode = ProcessingModeEnum.CONTINUOUS         ) OR
+               ( ProcessingMode = ProcessingModeEnum.TRIGGER_CONTINUOUS ) OR
+               ( ProcessingMode = ProcessingModeEnum.TRIGGER_MULTIPLE   ))) OR ( State = CmdMessageState.DONE );
 
 END_METHOD
 

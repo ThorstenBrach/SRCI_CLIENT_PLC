@@ -473,9 +473,18 @@ END_VAR
          END_IF
   
     02:  IF (NOT Enable)
-         THEN
-           Reset();  
-         END_IF
+           THEN
+             Reset();
+             // ST-FIX F125: the RC keeps sending the optional cyclic data until the RobotTask is
+             // initialized again -> warning
+             IF (( _parCmd.ReadCartesianPosition    ) AND ( AxesGroup.CyclicOptional.RobToPlc.CartesianPosition.Active    )) OR
+                (( _parCmd.ReadCartesianPositionExt ) AND ( AxesGroup.CyclicOptional.RobToPlc.CartesianPositionExt.Active )) OR
+                (( _parCmd.ReadJointPosition        ) AND ( AxesGroup.CyclicOptional.RobToPlc.JointPosition.Active        )) OR
+                (( _parCmd.ReadJointPositionExt     ) AND ( AxesGroup.CyclicOptional.RobToPlc.JointPositionExt.Active     ))
+             THEN
+               SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_CYCLIC_DATA_DISABLED_STILL_ACTIVE, Overwrite := TRUE );
+             END_IF
+           END_IF
   
   ELSE
     // invalid step

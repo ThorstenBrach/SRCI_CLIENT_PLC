@@ -26,7 +26,7 @@ STRUCT
   /// • -1: Currently used tool on RC
   /// •  0: Flange -  Not possible to change
   /// • 1 (default)..254: Tool Frame
-  ToolNo             : INT;
+  ToolNo             : INT := 1; // ST-FIX F156: spec 6.2.17: '1 (default)'
 END_STRUCT
 END_TYPE
 

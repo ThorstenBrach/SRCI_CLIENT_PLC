@@ -73,7 +73,7 @@ STRUCT
   /// Input values below 1 to reduce velocity.
   /// Input values above 1 to increase velocity.
   /// See chapter 5.5.7 Robot dynamics
-  VelocityCoefficient: REAL;
+  VelocityCoefficient: REAL := 1.0; // ST-FIX F156: start value 1.0 = velocity of VelocityRate (spec 6.3.21 ff. names no default; 0 = minimal velocity)
   /// Parameter is used if it is greater than 0 (default)
   /// • Velocity input is ignored
   /// • Parameter defines the time for the movement to reach the target position

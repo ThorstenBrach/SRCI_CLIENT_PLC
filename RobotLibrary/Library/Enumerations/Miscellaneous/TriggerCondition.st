@@ -42,7 +42,7 @@ TYPE TriggerCondition :
   /// 3: TCP velocity in % of reference velocity - point reference is start position
   START_POSITION_TCP_VELOCITY_PERCENT := 3,
   /// 4: TCP velocity in mm/s - point reference is start position
-  START_POSITION_TCP_VELOCIT_ABSOLUTE := 4,
+  START_POSITION_TCP_VELOCITY_ABSOLUTE := 4, // ST-FIX F174: typo in the element name (spec 6.5.17: '4: TCP velocity in mm/s')
   /// 5: Time in ms - point reference is start position
   START_POSITION_TIME_MS := 5
 )SINT;

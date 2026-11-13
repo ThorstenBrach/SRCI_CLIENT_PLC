@@ -3308,6 +3308,8 @@ END_VAR
        THEN
          // Update bit for data in sync
          AxesGroup.State.SyncStatePlc.InSync.Frame := (AxesGroup.State.SyncStatePlc.UnSyncNo.Frame = 0);
+           // ST-FIX F165: synchronization of the start-up phase finished
+           AxesGroup.State.Synchronizing.Frame := FALSE;
          // set timeout
          SetTimeout(PT := _rTimeout, rTimer := _rTimer);
          // inc step counter
@@ -3476,7 +3478,14 @@ END_VAR
          // check error ? 
          IF (_writeFrameData.Error)
          THEN
-           SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_FRAME_SYNC_FAILED_BY_ERROR_OF_READ_OR_WRITE_CMD, Overwrite := TRUE);           
+           SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_FRAME_SYNC_FAILED_BY_ERROR_OF_READ_OR_WRITE_CMD, Overwrite := TRUE);
+             // ST-FIX F168: refused by the RC -> warning, go on with the next entry
+            _writeFrameData.Execute := FALSE;
+            _frameData[_rSyncIdx] := FrameData[_rSyncIdx];
+            AxesGroup.State.DataChanged.Frame[_rSyncIdx] := FALSE;
+            AxesGroup.State.SyncStatePlc.UnSyncNo.Frame := AxesGroup.State.SyncStatePlc.UnSyncNo.Frame - 1;
+             SetTimeout(PT := _rTimeout, rTimer := _rTimer);
+            _rStep := _rStep - 2;           
          END_IF  
          
          // timeout exceeded ? 
@@ -4107,6 +4116,8 @@ END_VAR
        THEN
          // Update bit for data in sync
          AxesGroup.State.SyncStatePlc.InSync.Load := (AxesGroup.State.SyncStatePlc.UnSyncNo.Load = 0);
+           // ST-FIX F165: synchronization of the start-up phase finished
+           AxesGroup.State.Synchronizing.Load := FALSE;
          // set timeout
          SetTimeout(PT := _rTimeout, rTimer := _rTimer);
          // inc step counter
@@ -4279,7 +4290,14 @@ END_VAR
          // check error ? 
          IF (_writeLoadData.Error)
          THEN
-           SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_LOAD_SYNC_FAILED_BY_ERROR_OF_READ_OR_WRITE_CMD, Overwrite := TRUE);           
+           SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_LOAD_SYNC_FAILED_BY_ERROR_OF_READ_OR_WRITE_CMD, Overwrite := TRUE);
+             // ST-FIX F168: refused by the RC -> warning, go on with the next entry
+            _writeLoadData.Execute := FALSE;
+            _loadData[_rSyncIdx] := LoadData[_rSyncIdx];
+            AxesGroup.State.DataChanged.Load[_rSyncIdx] := FALSE;
+            AxesGroup.State.SyncStatePlc.UnSyncNo.Load := AxesGroup.State.SyncStatePlc.UnSyncNo.Load - 1;
+             SetTimeout(PT := _rTimeout, rTimer := _rTimer);
+            _rStep := _rStep - 2;           
          END_IF  
          
          // timeout exceeded ? 
@@ -4877,6 +4895,8 @@ END_VAR
        THEN
          // Update bit for data in sync
          AxesGroup.State.SyncStatePlc.InSync.DefaultDynamics := NOT AxesGroup.State.DataChanged.DefaultDynamics ;
+           // ST-FIX F165: synchronization of the start-up phase finished
+           AxesGroup.State.Synchronizing.DefaultDynamics := FALSE;
          // set timeout
          SetTimeout(PT := _rTimeout, rTimer := _rTimer);
          // inc step counter
@@ -5022,7 +5042,13 @@ END_VAR
          // check error ? 
          IF (_writeRobotDefaultDynamics.Error)
          THEN
-           SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_DEFAULT_DYNAMICS_SYNC_FAILED_BY_ERROR_OF_READ_OR_WRITE_CMD, Overwrite := TRUE);           
+           SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_DEFAULT_DYNAMICS_SYNC_FAILED_BY_ERROR_OF_READ_OR_WRITE_CMD, Overwrite := TRUE);
+             // ST-FIX F168: refused by the RC -> warning, go on with the next entry
+            _writeRobotDefaultDynamics.Execute := FALSE;
+            _defaultDynamics := DefaultDynamics;
+            AxesGroup.State.DataChanged.DefaultDynamics := FALSE;
+             SetTimeout(PT := _rTimeout, rTimer := _rTimer);
+            _rStep := _rStep - 2;           
          END_IF  
          
          // timeout exceeded ? 
@@ -5546,6 +5572,8 @@ END_VAR
        THEN
          // Update bit for data in sync
          AxesGroup.State.SyncStatePlc.InSync.ReferenceDynamics := NOT AxesGroup.State.DataChanged.ReferenceDynamics ;
+           // ST-FIX F165: synchronization of the start-up phase finished
+           AxesGroup.State.Synchronizing.ReferenceDynamics := FALSE;
          // set timeout
          SetTimeout(PT := _rTimeout, rTimer := _rTimer);
          // inc step counter
@@ -5691,7 +5719,13 @@ END_VAR
          // check error ? 
          IF (_writeRobotReferenceDynamics.Error)
          THEN
-           SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_REFERENCE_DYNAMICS_SYNC_FAILED_BY_ERROR_OF_READ_OR_WRITE_CMD, Overwrite := TRUE);           
+           SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_REFERENCE_DYNAMICS_SYNC_FAILED_BY_ERROR_OF_READ_OR_WRITE_CMD, Overwrite := TRUE);
+             // ST-FIX F168: refused by the RC -> warning, go on with the next entry
+            _writeRobotReferenceDynamics.Execute := FALSE;
+            _referenceDynamics := ReferenceDynamics;
+            AxesGroup.State.DataChanged.ReferenceDynamics := FALSE;
+             SetTimeout(PT := _rTimeout, rTimer := _rTimer);
+            _rStep := _rStep - 2;           
          END_IF  
          
          // timeout exceeded ? 
@@ -6229,6 +6263,8 @@ END_VAR
        THEN
          // Update bit for data in sync
          AxesGroup.State.SyncStatePlc.InSync.SwLimits := NOT AxesGroup.State.DataChanged.SwLimits ;
+           // ST-FIX F165: synchronization of the start-up phase finished
+           AxesGroup.State.Synchronizing.SwLimits := FALSE;
          // set timeout
          SetTimeout(PT := _rTimeout, rTimer := _rTimer);
          // inc step counter
@@ -6375,7 +6411,13 @@ END_VAR
          // check error ? 
          IF (_writeRobotSWLimits.Error)
          THEN
-           SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_SW_LIMITS_SYNC_FAILED_BY_ERROR_OF_READ_OR_WRITE_CMD, Overwrite := TRUE);           
+           SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_SW_LIMITS_SYNC_FAILED_BY_ERROR_OF_READ_OR_WRITE_CMD, Overwrite := TRUE);
+             // ST-FIX F168: refused by the RC -> warning, go on with the next entry
+            _writeRobotSWLimits.Execute := FALSE;
+            _swLimits := SwLimits;
+            AxesGroup.State.DataChanged.SwLimits := FALSE;
+             SetTimeout(PT := _rTimeout, rTimer := _rTimer);
+            _rStep := _rStep - 2;           
          END_IF  
          
          // timeout exceeded ? 
@@ -6943,6 +6985,8 @@ END_VAR
        THEN
          // Update bit for data in sync
          AxesGroup.State.SyncStatePlc.InSync.Tool := (AxesGroup.State.SyncStatePlc.UnSyncNo.Tool = 0);
+           // ST-FIX F165: synchronization of the start-up phase finished
+           AxesGroup.State.Synchronizing.Tool := FALSE;
          // set timeout
          SetTimeout(PT := _rTimeout, rTimer := _rTimer);
          // inc step counter
@@ -7111,7 +7155,14 @@ END_VAR
          // check error ? 
          IF (_writeToolData.Error)
          THEN
-           SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_TOOL_SYNC_FAILED_BY_ERROR_OF_READ_OR_WRITE_CMD, Overwrite := TRUE);           
+           SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_TOOL_SYNC_FAILED_BY_ERROR_OF_READ_OR_WRITE_CMD, Overwrite := TRUE);
+             // ST-FIX F168: refused by the RC -> warning, go on with the next entry
+            _writeToolData.Execute := FALSE;
+            _toolData[_rSyncIdx] := ToolData[_rSyncIdx];
+            AxesGroup.State.DataChanged.Tool[_rSyncIdx] := FALSE;
+            AxesGroup.State.SyncStatePlc.UnSyncNo.Tool := AxesGroup.State.SyncStatePlc.UnSyncNo.Tool - 1;
+             SetTimeout(PT := _rTimeout, rTimer := _rTimer);
+            _rStep := _rStep - 2;           
          END_IF  
          
          // timeout exceeded ? 
@@ -7740,6 +7791,8 @@ END_VAR
        THEN
          // Update bit for data in sync
          AxesGroup.State.SyncStatePlc.InSync.WorkArea := (AxesGroup.State.SyncStatePlc.UnSyncNo.WorkArea = 0);
+           // ST-FIX F165: synchronization of the start-up phase finished
+           AxesGroup.State.Synchronizing.WorkAreas := FALSE;
          // set timeout
          SetTimeout(PT := _rTimeout, rTimer := _rTimer);
          // inc step counter
@@ -7909,7 +7962,14 @@ END_VAR
          // check error ? 
          IF (_writeWorkArea.Error)
          THEN
-           SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_WORK_AREA_SYNC_FAILED_BY_ERROR_OF_READ_OR_WRITE_CMD, Overwrite := TRUE);           
+           SetWarning( WarningID := RobotLibraryWarningIdEnum.WARN_WORK_AREA_SYNC_FAILED_BY_ERROR_OF_READ_OR_WRITE_CMD, Overwrite := TRUE);
+             // ST-FIX F168: refused by the RC -> warning, go on with the next entry
+            _writeWorkArea.Execute := FALSE;
+            _workAreas[_rSyncIdx] := WorkAreas[_rSyncIdx];
+            AxesGroup.State.DataChanged.WorkArea[_rSyncIdx] := FALSE;
+            AxesGroup.State.SyncStatePlc.UnSyncNo.WorkArea := AxesGroup.State.SyncStatePlc.UnSyncNo.WorkArea - 1;
+             SetTimeout(PT := _rTimeout, rTimer := _rTimer);
+            _rStep := _rStep - 2;           
          END_IF  
          
          // timeout exceeded ? 
@@ -8427,9 +8487,7 @@ END_VAR
   UserData.RASerialNumber                    := AxesGroup.State.RobotData.RASerialNumber;
   UserData.RCFirmwareVersion                 := AxesGroup.State.RobotData.RCFirmwareVersion;
   
-  UserData.RCInterpreterVersion.MajorVersion := STRING_TO_USINT(MID(AxesGroup.State.RobotData.RCInterpreterVersion, LEN := 1, POS := 1));
-  UserData.RCInterpreterVersion.MinorVersion := STRING_TO_USINT(MID(AxesGroup.State.RobotData.RCInterpreterVersion, LEN := 1, POS := 2));
-  UserData.RCInterpreterVersion.PatchVersion := STRING_TO_USINT(MID(AxesGroup.State.RobotData.RCInterpreterVersion, LEN := 1, POS := 3));
+  UserData.RCInterpreterVersion := AxesGroup.State.RobotData.RCInterpreterVersionNumber; // ST-FIX F163: was characters 1/2/3 of the text
   
   UserData.AxisJointUsed                     := AxesGroup.State.RobotData.AxisJointUsed;
   UserData.AxisExternalUsed                  := AxesGroup.State.RobotData.AxisExternalUsed;
@@ -8463,7 +8521,7 @@ END_VAR
   UserData.Interrupted                       := AxesGroup.Cyclic.RobToPlc.StatusRobotArm.RaSequenceState = RaSequenceState.INTERRUPTED;
   UserData.IsBlending                        := AxesGroup.Cyclic.RobToPlc.StatusRobotArm.IsBlending;  
   UserData.OperationMode                     := AxesGroup.Cyclic.RobToPlc.StatusRobotArm.OperationMode;
-  UserData.CollisionDetectionEnabled         := AxesGroup.Cyclic.RobToPlc.StatusRobotArm.CollisionDetectedEnabled;
+  UserData.CollisionDetectionEnabled         := AxesGroup.Parameter.Rob.Parameter.CollisionDetectionEnabled; // ST-FIX F169: the status word bit is always FALSE
   UserData.CollisionDetected                 := AxesGroup.Cyclic.RobToPlc.StatusRobotArm.CollisionDetected;
   UserData.RestartRequested                  := AxesGroup.Cyclic.RobToPlc.StatusRobotArm.RestartRequested;
   UserData.Accelerating                      := AxesGroup.Cyclic.RobToPlc.StatusRobotArm.Accelerating;
