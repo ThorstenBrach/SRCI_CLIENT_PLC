@@ -164,7 +164,7 @@ END_VAR
                             Severity    := Severity.ERROR,
                             MessageCode := ErrorID,
                             MessageText := 'Invalid Parameter ParCmd.ConveyorNo = {1}',
-                            Para1       :=  SINT_TO_STRING(ParCmd.ConveyorNo));
+                            Para1       :=  USINT_TO_STRING(ParCmd.ConveyorNo));
     RETURN;                          
   END_IF
   
@@ -238,7 +238,7 @@ END_VAR
   _command.ParSeq         := _command.ParSeq;
   _command.Priority       :=  Priority;
   _command.ConveyorNo     := _parCmd.ConveyorNo;
-  _command.ConnectionMode := _parCmd.ConnectionMode;
+  _command.ConnectionMode := SINT_TO_USINT(_parCmd.ConnectionMode); // ST-FIX F175: like ForceLimit
   
   
   // copy command data to header
@@ -251,7 +251,7 @@ END_VAR
   IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
   THEN
     // add command.ConveyorNo
-    CreateCommandPayload.AddSint(_command.ConveyorNo);
+    CreateCommandPayload.AddUsint(_command.ConveyorNo); // ST-FIX F175: USINT (SINT in table 6-460 is a copy error)
     // inc parameter counter
    _parameterCnt := _parameterCnt + 1;  
   END_IF
@@ -261,7 +261,7 @@ END_VAR
   IF ( CheckAddParameter(CreateCommandPayload.PayloadPtr))
   THEN
     // add command.ConnectionMode
-    CreateCommandPayload.AddSint(_command.ConnectionMode);
+    CreateCommandPayload.AddUsint(_command.ConnectionMode); // ST-FIX F175: USINT (SINT in table 6-460 is a copy error)
     // inc parameter counter
    _parameterCnt := _parameterCnt + 1;  
   END_IF
@@ -301,7 +301,7 @@ END_VAR
                           Severity    := Severity.DEBUG,
                           MessageCode := 0,
                           MessageText := 'Command.ConveyorNo = {1}',
-                          Para1       :=  SINT_TO_STRING(_command.ConveyorNo));
+                          Para1       :=  USINT_TO_STRING(_command.ConveyorNo));
                           
   
   // Return if no parameter is remaining...
@@ -314,7 +314,7 @@ END_VAR
                           Severity    := Severity.DEBUG,
                           MessageCode := 0,
                           MessageText := 'Command.ConnectionMode = {1}',
-                          Para1       :=  CONNECTION_MODE_TO_STRING(_command.ConnectionMode));
+                          Para1       :=  CONNECTION_MODE_TO_STRING(USINT_TO_SINT(_command.ConnectionMode)));
 
 END_METHOD
 

@@ -23,7 +23,8 @@
 TYPE TelegramRobToPlcCyclicOptionalSubProgramData :
 STRUCT
   /// Sub program data
-  Data : ARRAY [0..25] OF BYTE; {warning 'Add constant for DataMax'}
+  /// ST-FIX F179: size from RobotLibraryConstants.CYCLIC_SUB_PROGRAM_DATA_MAX (was 0..25 with a warning pragma)
+  Data : ARRAY [0..RobotLibraryConstants.CYCLIC_SUB_PROGRAM_DATA_MAX] OF BYTE;
 END_STRUCT
 END_TYPE
 

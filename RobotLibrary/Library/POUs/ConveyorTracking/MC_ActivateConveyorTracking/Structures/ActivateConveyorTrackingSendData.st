@@ -23,9 +23,9 @@
 TYPE ActivateConveyorTrackingSendData EXTENDS CmdHeader:   
 STRUCT
   /// Index of assigned conveyor
-  ConveyorNo     : SINT;
+  ConveyorNo     : USINT; // ST-FIX F175: ConveyorNo / ConnectionMode are USINT (6.3.26 application layer and CML; the SINT of the telegram table 6-460 is a copy error, all other conveyor telegrams have USINT)
   /// Specifies encoder connection setup (at least one option must be supported)
-  ConnectionMode : SINT;
+  ConnectionMode : USINT; // ST-FIX F175: ConveyorNo / ConnectionMode are USINT (6.3.26 application layer and CML; the SINT of the telegram table 6-460 is a copy error, all other conveyor telegrams have USINT)
 END_STRUCT
 END_TYPE
 

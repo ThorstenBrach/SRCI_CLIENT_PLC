@@ -3,7 +3,7 @@
 //  SRCI Robot Library                                                
 // ------------------------------------------------------------------------- 
 //                                                                           
-//  Object:      UnitMeasurementParCmd                                       
+//  Object:      WriteCallSubprogramCyclicParCmd                                       
 //  Author:      Thorsten Brach                                                
 //  Date:        2024-08-11
 //
@@ -23,7 +23,8 @@
 TYPE WriteCallSubprogramCyclicParCmd :
 STRUCT
   /// Cyclic input data of subprogram
-  Data : ARRAY[0..25] OF BYTE;
+  /// ST-FIX F179: size from RobotLibraryConstants.CYCLIC_SUB_PROGRAM_DATA_MAX
+  Data : ARRAY[0..RobotLibraryConstants.CYCLIC_SUB_PROGRAM_DATA_MAX] OF BYTE;
 END_STRUCT
 END_TYPE
 

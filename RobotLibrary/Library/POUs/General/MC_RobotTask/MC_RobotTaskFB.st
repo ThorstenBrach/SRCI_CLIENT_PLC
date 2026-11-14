@@ -2400,7 +2400,7 @@ END_VAR
     First := FALSE;
   END_IF
   
-  _aliveCheck ( IN  := (_aliveValue = LifeSign) , PT := ParCfg.Com.LifeSignTimeOut + ParCfg.Plc.CycleTime);
+  _aliveCheck ( IN  := Enable AND (_aliveValue = LifeSign) (* ST-FIX F181: only while enabled *), PT := ParCfg.Com.LifeSignTimeOut + ParCfg.Plc.CycleTime);
   _alive_R    ( CLK := _aliveBit);
   _alive_F    ( CLK := _aliveBit);
   
@@ -2981,7 +2981,7 @@ END_VAR
   THEN
     Initialized  := FALSE;
     Synchronized := FALSE;
-    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_TELEGRAM_SEQ_TIMEOUT_0x80A8_0x80A8, Overwrite := TRUE );
+    SetError( ErrorID := RobotLibraryErrorIdEnum.ERR_TELEGRAM_SEQ_TIMEOUT_0x80A8 (* ST-FIX F180: correct name *), Overwrite := TRUE );
     CreateLogMessage ( Timestamp   := SystemTime,
                        MessageType := MessageType.CMD,
                        Severity    := Severity.FATAL_ERROR,
@@ -9127,7 +9127,7 @@ END_VAR
   // AxesGroup.OptionalCyclic.RobToPlc.SubProgramData {{{
   IF ( AxesGroup.CyclicOptional.RobToPlc.SubProgramData.Active )
   THEN
-    FOR _idx := 0 TO UPPER_BOUND(Telegram.RobToPlc.CyclicOptional.SubProgramData.Data, 1)
+    FOR _idx := 0 TO  RobotLibraryConstants.CYCLIC_SUB_PROGRAM_DATA_MAX (* ST-FIX F179 *) 
     DO
       Telegram.RobToPlc.CyclicOptional.SubProgramData.Data[_idx] := RecvData.GetByte(); 
     END_FOR

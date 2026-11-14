@@ -62,8 +62,7 @@ STRUCT
   /// • Parameter defines the time for the movement to reach the target position
   /// Error is sent by the RC if the time cannot be kept
   MoveTime           : TIME;
-  /// Defines the usage of the config byte inside the position according to Table 5-17
-  ConfigMode         : ArmConfigParameter;
+  // ST-FIX F178: MoveAxesAbsolute has no ConfigMode (6.3.4, joint position); the field was never checked nor sent (copy of MoveDirectAbsolute)
   /// Set TRUE to allow manipulation of this move command through superimposing functions.
   /// For more information see chapter 5.5.9.5
   Manipulation       : BOOL;

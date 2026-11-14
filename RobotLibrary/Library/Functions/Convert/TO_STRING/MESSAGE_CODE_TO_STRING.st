@@ -1283,7 +1283,7 @@ END_VAR
    
       MESSAGE_CODE_TO_STRING := 'Client Acyclic area server to client too small';
   
-    RobotLibraryErrorIdEnum.ERR_LIFESIGN_TIMEOUT_0x8005 :
+    RobotLibraryErrorIdEnum.ERR_LIFESIGN_TIMEOUT_0x8004 :
    
       MESSAGE_CODE_TO_STRING := 'Client Lifesign timeout';
   
@@ -1335,7 +1335,7 @@ END_VAR
    
       MESSAGE_CODE_TO_STRING := 'Client The robot interface was reset after being initialized';
   
-    RobotLibraryErrorIdEnum.ERR_TELEGRAM_SEQ_TIMEOUT_0x80A8_0x80A8 :
+    RobotLibraryErrorIdEnum.ERR_TELEGRAM_SEQ_TIMEOUT_0x80A8 :
    
       MESSAGE_CODE_TO_STRING := 'Client Telegram sequence timeout';
   

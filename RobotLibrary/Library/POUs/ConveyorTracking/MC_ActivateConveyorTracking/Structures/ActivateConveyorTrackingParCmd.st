@@ -23,7 +23,7 @@
 TYPE ActivateConveyorTrackingParCmd :
 STRUCT
   /// Index of assigned conveyor
-  ConveyorNo         : SINT;
+  ConveyorNo         : USINT; // ST-FIX F175: ConveyorNo / ConnectionMode are USINT (6.3.26 application layer and CML; the SINT of the telegram table 6-460 is a copy error, all other conveyor telegrams have USINT)
   /// Specifies encoder connection setup (at least one option must be supported)
   ConnectionMode     : ConnectionMode;
   /// Relates to "ConnectionMode" 1 – "PLC connected": Value of the encoder connected to the conveyor belt

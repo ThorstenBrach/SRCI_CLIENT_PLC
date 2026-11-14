@@ -23,7 +23,8 @@
 TYPE RobotSubProgramData :
 STRUCT
   /// Sub program data
-  Data : ARRAY [0..25] OF BYTE;
+  /// ST-FIX F179: size from RobotLibraryConstants.CYCLIC_SUB_PROGRAM_DATA_MAX
+  Data : ARRAY [0..RobotLibraryConstants.CYCLIC_SUB_PROGRAM_DATA_MAX] OF BYTE;
 END_STRUCT
 END_TYPE
 

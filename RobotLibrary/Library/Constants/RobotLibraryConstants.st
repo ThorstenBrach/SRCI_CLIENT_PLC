@@ -52,6 +52,9 @@ VAR_GLOBAL CONSTANT
   /// ST-FIX F108: characters of a log line per ReadServerLog response (SRCI SDK 1.1: 179;
   /// spec table 6-124: 187)
   SERVER_LOG_CONTENT_MAX  : DINT := 179;
+  /// Upper index of the cyclic sub program data: 26 bytes (spec table 5-88, 6-711)
+  /// ST-FIX F179: one constant for all arrays of the cyclic sub program data
+  CYCLIC_SUB_PROGRAM_DATA_MAX : DINT := 25;
  END_VAR
 
 

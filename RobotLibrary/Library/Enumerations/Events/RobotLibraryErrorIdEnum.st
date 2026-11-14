@@ -1041,7 +1041,7 @@ TYPE RobotLibraryErrorIdEnum :
   ERR_ACYCLIC_AREA_TO_SMALL_ROB_TO_PLC := 16#8003,
 
   /// Client Lifesign timeout
-  ERR_LIFESIGN_TIMEOUT_0x8005 := 16#8004,
+  ERR_LIFESIGN_TIMEOUT_0x8004 := 16#8004, // ST-FIX F180: one name per value - the misnamed elements ERR_LIFESIGN_TIMEOUT_0x8005 (16#8004) and ERR_TELEGRAM_SEQ_TIMEOUT_0x80A8_0x80A8 get the names of their F75 aliases, the aliases are removed (C0125)
 
   /// Client Telegram sequence timeout
   ERR_TELEGRAM_SEQ_TIMEOUT_0x8005 := 16#8005,
@@ -1080,7 +1080,7 @@ TYPE RobotLibraryErrorIdEnum :
   ERR_INTERFACE_WAS_RESET_AFTER_INIT_0x80A7  := 16#80A7,
 
   /// Client Telegram sequence timeout
-  ERR_TELEGRAM_SEQ_TIMEOUT_0x80A8_0x80A8  := 16#80A8,
+  ERR_TELEGRAM_SEQ_TIMEOUT_0x80A8  := 16#80A8, // ST-FIX F180: one name per value - the misnamed elements ERR_LIFESIGN_TIMEOUT_0x8005 (16#8004) and ERR_TELEGRAM_SEQ_TIMEOUT_0x80A8_0x80A8 get the names of their F75 aliases, the aliases are removed (C0125)
 
   /// Client The telegram number changed after initialization
   ERR_TELEGRAM_NO_CHANGED_AFTER_INIT_0x80A9 := 16#80A9,
@@ -1182,11 +1182,7 @@ TYPE RobotLibraryErrorIdEnum :
   /// ST-FIX F75: table 7-1 (missing in the library)
   ERR_INVALID_PARAM_SERVER_LOG_CONTEXT_FILTER_UNKNOWN := 16#8D97,
   /// ST-FIX F75: table 7-1 (missing in the library)
-  ERR_INVALID_PARAM_CIRCMODE_UNKNOWN := 16#8D98,
-  /// ST-FIX F75: name with the correct value (alias)
-  ERR_LIFESIGN_TIMEOUT_0x8004 := 16#8004,
-  /// ST-FIX F75: name with the correct value (alias)
-  ERR_TELEGRAM_SEQ_TIMEOUT_0x80A8 := 16#80A8
+  ERR_INVALID_PARAM_CIRCMODE_UNKNOWN := 16#8D98
 
 )WORD;
 END_TYPE

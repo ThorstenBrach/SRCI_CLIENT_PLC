@@ -4,11 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [V1.5.6.0] - 2026-11-13
+## [V1.5.6.0] - 2026-11-14
 
 All changes were checked against the specification V1.5.9 first (chapter and page per finding in
 SRCI_PY `docs/ST_FINDINGS.md`), developed in SRCI_PY with tests against the SDK simulator and in the
-TcUnit project SRCI_PLC_TEST_SUITE (3746 tests, all green on 2026-11-13).
+TcUnit project SRCI_PLC_TEST_SUITE (3743 tests, all green on 2026-11-14).
 
 ### Changed (behaviour - please check your programs)
  - ST-FIX F117 / F155 / F156: start values from the parameter tables of the specification:
@@ -28,8 +28,12 @@ TcUnit project SRCI_PLC_TEST_SUITE (3746 tests, all green on 2026-11-13).
  - ST-FIX F170: WriteWorkArea runs parallel only; DefinitionMode is not checked (removed in spec V1.5.6)
  - ST-FIX F173: SetTriggerLimit refuses TriggerMode INVALID
  - ST-FIX F174: `TriggerCondition.START_POSITION_TCP_VELOCIT_ABSOLUTE` renamed to `START_POSITION_TCP_VELOCITY_ABSOLUTE`
+ - ST-FIX F175: ActivateConveyorTracking `ConveyorNo` / `ConnectionMode` USINT (SINT in table 6-460 is a copy error of the specification)
+ - ST-FIX F178: `MoveAxesAbsoluteParCmd.ConfigMode` removed (not in the specification, never sent)
+ - ST-FIX F180: `RobotLibraryErrorIdEnum` one name per value: `ERR_LIFESIGN_TIMEOUT_0x8005` -> `ERR_LIFESIGN_TIMEOUT_0x8004`, `ERR_TELEGRAM_SEQ_TIMEOUT_0x80A8_0x80A8` -> `ERR_TELEGRAM_SEQ_TIMEOUT_0x80A8` (the F75 aliases are removed, warning C0125)
 
 ### Fixed
+ - ST-FIX F181: no false lifesign timeout 16#80A5 after a short disable of the RobotTask: the alive check of the RC lifesign runs only while Enable (MC_RobotTaskFB.HandleAliveBit)
  - ST-FIX F116: `ERR_AXESGROUP_CHANGED` when the AxesGroup input changes while a command runs
  - ST-FIX F125: warning 16#7303 when the cyclic read is disabled while the RC still sends the data
  - ST-FIX F157: SyncToConveyor sets `CommandAborted`
@@ -44,12 +48,16 @@ TcUnit project SRCI_PLC_TEST_SUITE (3746 tests, all green on 2026-11-13).
  - ST-FIX F171 / F172: no checks of unsent CollisionDetection ParCmd fields; RedefineTrackingPos indexes without 0..5 limit
  - ST-FIX F176: comments (Depart, kg·m², LoadMeasurement Position_1, ForceLimit ConnectionMode, RaStatusWord bits)
  - F177: spec references in the comments (table and chapter numbers) updated to V1.5.9 (312 lines, comments only)
+ - ST-FIX F179: new constant `RobotLibraryConstants.CYCLIC_SUB_PROGRAM_DATA_MAX` (25) for the five arrays of the cyclic sub program data (26 bytes, layout unchanged); ParseRecvPayloadCyclicOptional loops up to the constant (UPPER_BOUND is not allowed for a fixed array in the library build)
+
+### Examples
+ - Beckhoff and Codesys examples adapted: MoveAxesAbsolute without ConfigMode (F178); Example_DynamicSpline and
+   Example_OpenBrake use `Enable` (both are enable blocks since F33/F45 and F42)
 
 ### Known issues
  - F113: a new rising edge of `Execute` while a motion block is `Busy` is ignored (later)
  - F167: FreeDrive runs with SEQUENCE_ABORT_OTHERS_PRIMARY; the specification (6.5.36) wants the
    secondary sequence, the SDK does not support it yet
- - F175: `ConveyorNo` SINT - the telegram table names SINT, the other tables USINT
 
 ## [V1.5.5.0] - 2026-11-08
 
