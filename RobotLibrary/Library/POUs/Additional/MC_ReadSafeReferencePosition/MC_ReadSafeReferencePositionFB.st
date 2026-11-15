@@ -403,12 +403,11 @@ VAR_INPUT
   Timestamp    : SystemTime;
 END_VAR
 VAR
-  /// internal index for loops
- _idx          : DINT;
   /// Parameter count
  _parameterCnt : DINT;
 END_VAR
 // Table 6-832: Received CMD payload (RC to PLC) of "ReadSafeReferencePosition"
+// ST-FIX F183: no ActualCartesianPosition.E2..E6 - E1..E6 follow J6 directly (byte 30)
 // --------------------------
 // Header
 // --------------------------
@@ -445,50 +444,30 @@ END_VAR
 // Byte 27 :       - ActualJointPosition.J6 HW LB
 // Byte 28 :       - ActualJointPosition.J6 LW HB
 // Byte 29 :       - ActualJointPosition.J6 LW LB
-// Byte 30 : REAL  - ActualCartesianPosition.E2 HW HB
-// Byte 31 :       - ActualCartesianPosition.E2 HW LB
-// Byte 32 :       - ActualCartesianPosition.E2 LW HB
-// Byte 33 :       - ActualCartesianPosition.E2 LW LB
-// Byte 34 : REAL  - ActualCartesianPosition.E3 HW HB
-// Byte 35 :       - ActualCartesianPosition.E3 HW LB
-// Byte 36 :       - ActualCartesianPosition.E3 LW HB
-// Byte 37 :       - ActualCartesianPosition.E3 LW LB
-// Byte 38 : REAL  - ActualCartesianPosition.E4 HW HB
-// Byte 39 :       - ActualCartesianPosition.E4 HW LB
-// Byte 40 :       - ActualCartesianPosition.E4 LW HB
-// Byte 41 :       - ActualCartesianPosition.E4 LW LB
-// Byte 42 : REAL  - ActualCartesianPosition.E5 HW HB
-// Byte 43 :       - ActualCartesianPosition.E5 HW LB
-// Byte 44 :       - ActualCartesianPosition.E5 LW HB
-// Byte 45 :       - ActualCartesianPosition.E5 LW LB
-// Byte 46 : REAL  - ActualCartesianPosition.E6 HW HB
-// Byte 47 :       - ActualCartesianPosition.E6 HW LB
-// Byte 48 :       - ActualCartesianPosition.E6 LW HB
-// Byte 49 :       - ActualCartesianPosition.E6 LW LB
-// Byte 50 : REAL  - ActualJointPosition.E1 HW HB
-// Byte 51 :       - ActualJointPosition.E1 HW LB
-// Byte 52 :       - ActualJointPosition.E1 LW HB
-// Byte 53 :       - ActualJointPosition.E1 LW LB
-// Byte 54 : REAL  - ActualJointPosition.E2 HW HB
-// Byte 55 :       - ActualJointPosition.E2 HW LB
-// Byte 56 :       - ActualJointPosition.E2 LW HB
-// Byte 57 :       - ActualJointPosition.E2 LW LB
-// Byte 58 : REAL  - ActualJointPosition.E3 HW HB
-// Byte 59 :       - ActualJointPosition.E3 HW LB
-// Byte 60 :       - ActualJointPosition.E3 LW HB
-// Byte 61 :       - ActualJointPosition.E3 LW LB
-// Byte 62 : REAL  - ActualJointPosition.E4 HW HB
-// Byte 63 :       - ActualJointPosition.E4 HW LB
-// Byte 64 :       - ActualJointPosition.E4 LW HB
-// Byte 65 :       - ActualJointPosition.E4 LW LB
-// Byte 66 : REAL  - ActualJointPosition.E5 HW HB
-// Byte 67 :       - ActualJointPosition.E5 HW LB
-// Byte 68 :       - ActualJointPosition.E5 LW HB
-// Byte 69 :       - ActualJointPosition.E5 LW LB
-// Byte 70 : REAL  - ActualJointPosition.E6 HW HB
-// Byte 71 :       - ActualJointPosition.E6 HW LB
-// Byte 72 :       - ActualJointPosition.E6 LW HB
-// Byte 73 :       - ActualJointPosition.E6 LW LB
+// Byte 30 : REAL  - ActualJointPosition.E1 HW HB
+// Byte 31 :       - ActualJointPosition.E1 HW LB
+// Byte 32 :       - ActualJointPosition.E1 LW HB
+// Byte 33 :       - ActualJointPosition.E1 LW LB
+// Byte 34 : REAL  - ActualJointPosition.E2 HW HB
+// Byte 35 :       - ActualJointPosition.E2 HW LB
+// Byte 36 :       - ActualJointPosition.E2 LW HB
+// Byte 37 :       - ActualJointPosition.E2 LW LB
+// Byte 38 : REAL  - ActualJointPosition.E3 HW HB
+// Byte 39 :       - ActualJointPosition.E3 HW LB
+// Byte 40 :       - ActualJointPosition.E3 LW HB
+// Byte 41 :       - ActualJointPosition.E3 LW LB
+// Byte 42 : REAL  - ActualJointPosition.E4 HW HB
+// Byte 43 :       - ActualJointPosition.E4 HW LB
+// Byte 44 :       - ActualJointPosition.E4 LW HB
+// Byte 45 :       - ActualJointPosition.E4 LW LB
+// Byte 46 : REAL  - ActualJointPosition.E5 HW HB
+// Byte 47 :       - ActualJointPosition.E5 HW LB
+// Byte 48 :       - ActualJointPosition.E5 LW HB
+// Byte 49 :       - ActualJointPosition.E5 LW LB
+// Byte 50 : REAL  - ActualJointPosition.E6 HW HB
+// Byte 51 :       - ActualJointPosition.E6 HW LB
+// Byte 52 :       - ActualJointPosition.E6 LW HB
+// Byte 53 :       - ActualJointPosition.E6 LW LB
 // --------------------------
 
   // call base implementation to parse the header from payload buffer
@@ -584,18 +563,7 @@ END_VAR
   END_IF
   
   
-  // bytes 30..49 (spec table 6-832: ActualCartesianPosition.E2..E6)
-  FOR _idx := 2 TO 6
-  DO
-    // Check payload remaining ?
-    IF ( ResponseData.IsPayloadRemaining)
-    THEN
-      // Get Response.CartesianPositionExt[x]
-     _response.CartesianPositionExt[_idx] := ResponseData.GetReal();
-      // inc parameter counter
-     _parameterCnt := _parameterCnt + 1;
-    END_IF
-  END_FOR
+  // ST-FIX F183: no ActualCartesianPosition.E2..E6 - E1..E6 follow J6 directly (byte 30)
   
   
   // Check payload remaining ?
@@ -671,10 +639,6 @@ VAR_INPUT
   Timestamp    : SystemTime;
   /// Parameter count
   ParameterCnt : DINT;
-END_VAR
-VAR
-  /// internal index for loops
- _idx : DINT;
 END_VAR
 
   // Create log entry for Parameter start
@@ -790,22 +754,7 @@ END_VAR
                           Para1       :=  REAL_TO_STRING(_response.Position.J6));
   
   
-  // Create log entries for CartesianPositionExt[x]
-  FOR _idx := 2 TO 6
-  DO
-    // Return if no parameter is remaining...
-    IF ( ParameterCnt = 0 ) THEN RETURN; END_IF
-    // dec remaining parameter(s)
-    ParameterCnt := ParameterCnt - 1;
-    // Create log entry for CartesianPositionExt[x]
-    CreateLogMessagePara2 ( Timestamp   := Timestamp,
-                            MessageType := MessageType.CMD,
-                            Severity    := Severity.DEBUG,
-                            MessageCode := 0,
-                            MessageText := 'Response.CartesianPositionExt[{2}] = {1}',
-                            Para1       :=  REAL_TO_STRING(_response.CartesianPositionExt[_idx]),
-                            Para2       :=  DINT_TO_STRING(_idx));
-  END_FOR
+  // ST-FIX F183: no log entries for the removed CartesianPositionExt
   
   
   // Return if no parameter is remaining...

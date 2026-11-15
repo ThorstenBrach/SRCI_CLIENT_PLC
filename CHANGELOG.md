@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [V1.5.7.0] - 2026-11-15
+
+Telegram layout of two safety functions checked against the structures of the SRCI SDK (all CMD/RSP
+structures of the SDK are compared since 2026-11-15). TcUnit project SRCI_PLC_DEV: 3743 tests, all green
+on 2026-11-15.
+
+### Changed (behaviour - please check your programs)
+ - ST-FIX F182: SafeReferencing sends a reserved byte after ToolNo, MaximumDistance starts at byte 14
+   (SRCI SDK `CMD::SafeReferencing`). Table 6-838 of the specification has no reserved byte - the
+   deviation is reported to PI. Before, an SDK based RC read MaximumDistance, the joint position and Time
+   shifted by one byte.
+ - ST-FIX F183: ReadSafeReferencePosition reads the external axes E1..E6 directly after J6 (54 bytes, like
+   the RC sends them); before, they were read 20 bytes too late. Table 6-832 of the specification is a copy
+   of ReadActualPosition with 5 additional REAL. `ReadSafeReferencePositionRecvData.CartesianPositionExt`
+   is removed.
+ - `RobotLibraryConstants.PLCLibraryVersion` 1.5.7.
+
 ## [V1.5.6.0] - 2026-11-14
 
 All changes were checked against the specification V1.5.9 first (chapter and page per finding in

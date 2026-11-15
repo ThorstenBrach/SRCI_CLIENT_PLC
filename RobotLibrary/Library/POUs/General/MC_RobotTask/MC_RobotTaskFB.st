@@ -9127,7 +9127,7 @@ END_VAR
   // AxesGroup.OptionalCyclic.RobToPlc.SubProgramData {{{
   IF ( AxesGroup.CyclicOptional.RobToPlc.SubProgramData.Active )
   THEN
-    FOR _idx := 0 TO  RobotLibraryConstants.CYCLIC_SUB_PROGRAM_DATA_MAX (* ST-FIX F179 *) 
+    FOR _idx := 0 TO  RobotLibraryConstants.CYCLIC_SUB_PROGRAM_DATA_MAX (* ST-FIX F179 *)
     DO
       Telegram.RobToPlc.CyclicOptional.SubProgramData.Data[_idx] := RecvData.GetByte(); 
     END_FOR

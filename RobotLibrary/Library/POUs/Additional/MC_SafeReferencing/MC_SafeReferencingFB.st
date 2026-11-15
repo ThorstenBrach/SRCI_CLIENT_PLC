@@ -587,60 +587,61 @@ END_VAR
 // Byte 10 : UINT  - JerkRate HB
 // Byte 11 :       - JerkRate LB
 // Byte 12 : USINT - ToolNo
-// Byte 13 : REAL  - MaximumDistance HW HB
-// Byte 14 :       - MaximumDistance HW LB
-// Byte 15 :       - MaximumDistance LW HB
-// Byte 16 :       - MaximumDistance LW LB
-// Byte 17 : REAL  - JointPosition.J1 HW HB
-// Byte 18 :       - JointPosition.J1 HW LB
-// Byte 19 :       - JointPosition.J1 LW HB
-// Byte 20 :       - JointPosition.J1 LW LB
-// Byte 21 : REAL  - JointPosition.J2 HW HB
-// Byte 22 :       - JointPosition.J2 HW LB
-// Byte 23 :       - JointPosition.J2 LW HB
-// Byte 24 :       - JointPosition.J2 LW LB
-// Byte 25 : REAL  - JointPosition.J3 HW HB
-// Byte 26 :       - JointPosition.J3 HW LB
-// Byte 27 :       - JointPosition.J3 LW HB
-// Byte 28 :       - JointPosition.J3 LW LB
-// Byte 29 : REAL  - JointPosition.J4 HW HB
-// Byte 30 :       - JointPosition.J4 HW LB
-// Byte 31 :       - JointPosition.J4 LW HB
-// Byte 32 :       - JointPosition.J4 LW LB
-// Byte 33 : REAL  - JointPosition.J5 HW HB
-// Byte 34 :       - JointPosition.J5 HW LB
-// Byte 35 :       - JointPosition.J5 LW HB
-// Byte 36 :       - JointPosition.J5 LW LB
-// Byte 37 : REAL  - JointPosition.J6 HW HB
-// Byte 38 :       - JointPosition.J6 HW LB
-// Byte 39 :       - JointPosition.J6 LW HB
-// Byte 40 :       - JointPosition.J6 LW LB
-// Byte 41 : REAL  - JointPosition.E1 HW HB
-// Byte 42 :       - JointPosition.E1 HW LB
-// Byte 43 :       - JointPosition.E1 LW HB
-// Byte 44 :       - JointPosition.E1 LW LB
-// Byte 45 : UINT  - Time HB
-// Byte 46 :       - Time LB
-// Byte 47 : REAL  - JointPosition.E2 HW HB
-// Byte 48 :       - JointPosition.E2 HW LB
-// Byte 49 :       - JointPosition.E2 LW HB
-// Byte 50 :       - JointPosition.E2 LW LB
-// Byte 51 : REAL  - JointPosition.E3 HW HB
-// Byte 52 :       - JointPosition.E3 HW LB
-// Byte 53 :       - JointPosition.E3 LW HB
-// Byte 54 :       - JointPosition.E3 LW LB
-// Byte 55 : REAL  - JointPosition.E4 HW HB
-// Byte 56 :       - JointPosition.E4 HW LB
-// Byte 57 :       - JointPosition.E4 LW HB
-// Byte 58 :       - JointPosition.E4 LW LB
-// Byte 59 : REAL  - JointPosition.E5 HW HB
-// Byte 60 :       - JointPosition.E5 HW LB
-// Byte 61 :       - JointPosition.E5 LW HB
-// Byte 62 :       - JointPosition.E5 LW LB
-// Byte 63 : REAL  - JointPosition.E6 HW HB
-// Byte 64 :       - JointPosition.E6 HW LB
-// Byte 65 :       - JointPosition.E6 LW HB
-// Byte 66 :       - JointPosition.E6 LW LB
+// Byte 13 : BYTE  - Reserved (ST-FIX F182)
+// Byte 14 : REAL  - MaximumDistance HW HB
+// Byte 15 :       - MaximumDistance HW LB
+// Byte 16 :       - MaximumDistance LW HB
+// Byte 17 :       - MaximumDistance LW LB
+// Byte 18 : REAL  - JointPosition.J1 HW HB
+// Byte 19 :       - JointPosition.J1 HW LB
+// Byte 20 :       - JointPosition.J1 LW HB
+// Byte 21 :       - JointPosition.J1 LW LB
+// Byte 22 : REAL  - JointPosition.J2 HW HB
+// Byte 23 :       - JointPosition.J2 HW LB
+// Byte 24 :       - JointPosition.J2 LW HB
+// Byte 25 :       - JointPosition.J2 LW LB
+// Byte 26 : REAL  - JointPosition.J3 HW HB
+// Byte 27 :       - JointPosition.J3 HW LB
+// Byte 28 :       - JointPosition.J3 LW HB
+// Byte 29 :       - JointPosition.J3 LW LB
+// Byte 30 : REAL  - JointPosition.J4 HW HB
+// Byte 31 :       - JointPosition.J4 HW LB
+// Byte 32 :       - JointPosition.J4 LW HB
+// Byte 33 :       - JointPosition.J4 LW LB
+// Byte 34 : REAL  - JointPosition.J5 HW HB
+// Byte 35 :       - JointPosition.J5 HW LB
+// Byte 36 :       - JointPosition.J5 LW HB
+// Byte 37 :       - JointPosition.J5 LW LB
+// Byte 38 : REAL  - JointPosition.J6 HW HB
+// Byte 39 :       - JointPosition.J6 HW LB
+// Byte 40 :       - JointPosition.J6 LW HB
+// Byte 41 :       - JointPosition.J6 LW LB
+// Byte 42 : REAL  - JointPosition.E1 HW HB
+// Byte 43 :       - JointPosition.E1 HW LB
+// Byte 44 :       - JointPosition.E1 LW HB
+// Byte 45 :       - JointPosition.E1 LW LB
+// Byte 46 : UINT  - Time HB
+// Byte 47 :       - Time LB
+// Byte 48 : REAL  - JointPosition.E2 HW HB
+// Byte 49 :       - JointPosition.E2 HW LB
+// Byte 50 :       - JointPosition.E2 LW HB
+// Byte 51 :       - JointPosition.E2 LW LB
+// Byte 52 : REAL  - JointPosition.E3 HW HB
+// Byte 53 :       - JointPosition.E3 HW LB
+// Byte 54 :       - JointPosition.E3 LW HB
+// Byte 55 :       - JointPosition.E3 LW LB
+// Byte 56 : REAL  - JointPosition.E4 HW HB
+// Byte 57 :       - JointPosition.E4 HW LB
+// Byte 58 :       - JointPosition.E4 LW HB
+// Byte 59 :       - JointPosition.E4 LW LB
+// Byte 60 : REAL  - JointPosition.E5 HW HB
+// Byte 61 :       - JointPosition.E5 HW LB
+// Byte 62 :       - JointPosition.E5 LW HB
+// Byte 63 :       - JointPosition.E5 LW LB
+// Byte 64 : REAL  - JointPosition.E6 HW HB
+// Byte 65 :       - JointPosition.E6 HW LB
+// Byte 66 :       - JointPosition.E6 LW HB
+// Byte 67 :       - JointPosition.E6 LW LB
 // --------------------------
 
   // set command parameter
@@ -725,6 +726,7 @@ END_VAR
   THEN
     // add command.ToolNo
     CreateCommandPayload.AddUsint(_command.ToolNo);
+    CreateCommandPayload.AddByte(0); // ST-FIX F182: reserved byte after ToolNo (SRCI SDK, table 6-838 has none)
     // inc parameter counter
    _parameterCnt := _parameterCnt + 1;
   END_IF

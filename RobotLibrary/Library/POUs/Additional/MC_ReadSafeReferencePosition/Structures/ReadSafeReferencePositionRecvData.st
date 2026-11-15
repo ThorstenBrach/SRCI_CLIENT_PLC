@@ -9,8 +9,9 @@
 //
 //  Description:
 //    Received CMD payload of ReadSafeReferencePosition (spec table 6-832).
-//    Bytes 30..49 are named ActualCartesianPosition.E2..E6 in the spec table (5 REAL between J6 and
-//    the joint position E1); they are received into CartesianPositionExt and not output.
+//    ST-FIX F183: the spec table lists ActualCartesianPosition.E2..E6 between J6 and E1, but the
+//    function only outputs NumberOfPositions and a RobotJointPosition (copy error in the spec);
+//    the SRCI SDK sends E1..E6 directly after J6 (byte 30).
 //    F109: new data type (SRCI command 7009 ReadSafeReferencePosition, spec 6.5.38)
 //
 //  Copyright:
@@ -33,8 +34,6 @@ STRUCT
   /// • J1..J6: Position [°] of the joints of the robot
   /// • E1..E6: Position of the external axes
   Position             : RobotJointPosition;
-  /// Bytes 30..49 of the payload (spec table 6-832: ActualCartesianPosition.E2..E6)
-  CartesianPositionExt : ARRAY [2..6] OF REAL;
 END_STRUCT
 END_TYPE
 
