@@ -1,0 +1,60 @@
+name: "⭐ Feature or enhancement request"
+description: "Propose something new."
+title: "[Feature Request]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please make sure to [search for existing issues](https://github.com/ThorstenBrach/SRCI_CLIENT_PLC/issues?q=is%3Aissue) before filing a new one!
+        For a security problem (e.g. a robot that moves unexpectedly) do **not** open a public issue - use
+        "Report a security problem" on the previous page.
+  - type: markdown
+    attributes:
+      value: |
+        ## About the item
+  - type: input
+    id: item_name
+    attributes:
+      label: "Name"
+      description: "Function block, function or type"
+      placeholder: "e.g. MC_MoveLinearAbsoluteFB"
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: "Library version"
+      description: "From the library manager of the engineering tool"
+      placeholder: "e.g. 1.5.7.0"
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: |
+        ## About the feature
+  - type: textarea
+    id: feature
+    attributes:
+      label: "Description of the new feature / enhancement"
+      placeholder: "What is the expected behavior of the proposed feature?"
+    validations:
+      required: true
+  - type: textarea
+    id: scenario
+    attributes:
+      label: "Scenario when this would be used"
+      placeholder: "In which application would you use it?"
+    validations:
+      required: true
+  - type: textarea
+    id: spec
+    attributes:
+      label: "Reference to the SRCI specification"
+      description: "Chapter / table, if any."
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: |
+        Please limit one request per issue.
