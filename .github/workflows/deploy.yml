@@ -9,7 +9,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Download Release
-        uses: robinraju/release-downloader@v1.8
+        uses: robinraju/release-downloader@v1.13
         with:
           latest: true
           fileName: "Beckhoff-v*.zip"
